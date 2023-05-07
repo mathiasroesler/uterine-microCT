@@ -1,9 +1,11 @@
-function STPipeline(data_folder, diffusion, structure_tensor, streamlines)
+function STPipeline(data_folder, mask, diffusion, structure_tensor, streamlines)
 %STPipeline Runs the structure tensor analysis pipeline.
 %
 %   Input:
 %    - data_folder, name of the data folder to use located in the
 %    microCT/data folder.
+%    - mask, true if ThreeDMaskuCT code should be run, default value is
+%    true.
 %    - diffusion, true if the DiffusionTissueExtrapolation code should be
 %    run, default value is true.
 %    - structure_tensor, true if the StructureTensorExtraction code should
@@ -13,16 +15,20 @@ function STPipeline(data_folder, diffusion, structure_tensor, streamlines)
 %
 %   Return:
 %
-if nargin < 4
+if nargin < 5
     streamlines = true; 
 end
 
-if nargin < 3
+if nargin < 4
     structure_tensor = true;
 end
 
-if nargin < 2
+if nargin < 3
     diffusion = true;
+end
+
+if nargin < 2
+    mask = true;
 end
 
 %% General parameters
@@ -30,6 +36,115 @@ base_dir = join([getenv("HOME"), "Documents/phd/microCT/data"], '/');
 src_dir = join([base_dir, data_folder, "downsampled/ST"], '/');
 
 [file_template, extension] = loadParams(src_dir + '/ST.params');
+
+if mask
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %
+    % ThreeDMaskuCT.m
+    %
+    % This script loads in uCT images and then masks them.
+    %
+    % It is expected that the uCT images will have first been placed in a
+    % consistent orientation where the long axis of the LV is vertical and the
+    % LV and RV chamber centroids lie along a horizontal line when the image
+    % slices are displayed.
+    %
+    % The relatively simple approach to segmentation is possible because the
+    % uCT imaging settings are altered for each sample to match a common
+    % histogram profile.
+    %
+    % For consistency between hearts, not only are the ventricles reoriented
+    % along the LV axis, but the image stack is truncated so that a height of
+    % 1.4 mm from the apex of the heart is retained. Valve planes and atria are
+    % not retained for later comparison and analysis.
+    %
+    % Updated by:
+    %    Mark Trew, November 2022
+    %
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    TopPadding = 0; % pad top of image stack out by 20 blank layers.
+
+
+    %% Code edits
+    % Changed the overlap and stride to match the one from the reslice code.
+    %%
+    img_input_dir = src_dir;
+    mask_output_dir = src_dir + '/mask';
+    img_output_dir = src_dir + '/masked/';
+
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %
+    % Allocate memory and load in image stack
+    %
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % Load in image set
+    fprintf('... loading images ...\n');
+    img_paths = getImagePaths(img_input_dir, extension);
+    I = loadImageStack(img_paths);
+
+    % Add on zero padding to top of image beyond truncation
+    I = padarray(I,[0,0,TopPadding],0,'post');
+    [Nj, Ni, Nk] = size(I);
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %
+    % Pre-process image stack and threshold for segmentation. Break image stack
+    % into blocks or strips and process each in parallel and then reassemble at
+    % the end.
+    %
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % Parameters for strips and working memory allocation
+    Overlap = 10;
+    NThreads = 12;
+    Stride = ceil(Nk/NThreads);
+    Working = cell(ceil(Nk/Stride),1);
+    % Stride = 20;
+    % Working = cell(ceil(Nk/Stride),1);
+
+    % Parallel process of independent strips
+    fprintf(sprintf('... Processing and masking ...\n'));
+    parfor i=1:ceil(Nk/Stride)
+        Is = max((i-1)*Stride-Overlap+1,1);
+        Ie = min(i*Stride+Overlap,Nk);
+        fprintf(sprintf('... adjusting and saturating intensity - split %d...\n',i));
+        Working{i} = uint8(single(imadjustn(I(:,:,Is:Ie))).^1.2);
+        fprintf(sprintf('... median filter  - split %d...\n',i));
+        Working{i} = medfilt3(Working{i},[5,5,5]);
+        fprintf(sprintf('... morphological operations  - split %d...\n',i));
+        Working{i} = imopen(imclose(Working{i},ones(5,5,5)),ones(11,11,11));
+        %    Working = imopen(imclose(Working,ones(11,11,11)),ones(11,11,11)); % seems required for the PTA images
+        fprintf(sprintf('... Gaussian filtering  - split %d...\n',i));
+        Working{i} = imgaussfilt3(Working{i},7);
+        fprintf(sprintf('... Thresholding  - split %d...\n',i));
+        Working{i} = Working{i} > 100;
+    end
+    % Serial reassembly into the mask array
+    fprintf(sprintf('... Assembling strips ...\n'));
+    IPFM = cast(false(Nj,Ni,Nk),'logical');
+    StoreEnd = min(Stride,Nk);
+    IPFM(:,:,1:StoreEnd) = Working{1}(:,:,1:Stride);
+    for i=2:ceil(Nk/Stride)-1
+        StoreStart = max((i-1)*Stride+1,1);
+        StoreEnd = min(i*Stride,Nk);
+        IPFM(:,:,StoreStart:StoreEnd) = Working{i}(:,:,Overlap+1:end-Overlap);
+    end
+    StoreStart = max((ceil(Nk/Stride)-1)*Stride+1,1);
+    IPFM(:,:,StoreStart:Nk) = Working{ceil(Nk/Stride)}(:,:,Overlap+1:end);
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %
+    % Output masks and tissue.
+    %
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    fprintf('... writing images ...\n');
+    % Write mask
+    saveImageStack(IPFM, mask_output_dir, file_template);
+
+    % Write masked tissue
+    saveImageStack(uint8(IPFM).*I, img_output_dir, file_template);
+
+end
 
 if diffusion
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
