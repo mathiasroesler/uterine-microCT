@@ -21,20 +21,12 @@ function ST_pipeline(data_folder)
 % User defined parameters
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Image class, dimension and numbering sequence
-%ImageClass = 'logical';
-%ImageClass = 'uint16'; MaxVal = 2^16;
-ImageClass = 'uint8'; MaxVal = 2^8;
-DigitsInImageSequence = 3;
-
-%%
 base_dir = join([getenv("HOME"), "Documents/phd/microCT/data"], '/');
 src_dir = join([base_dir, data_folder, "downsampled/ST"], '/');
 img_input_dir = src_dir + '/masked/';
 img_output_dir = src_dir + '/extrapolated/';
 
 [file_template, extension] = loadParams(src_dir + '/ST.params');
-img_digit_size = '%s%s%03d.%s';
 %%
 % kindex = 1:325; 
 % Nj = 518; Ni = 753;
