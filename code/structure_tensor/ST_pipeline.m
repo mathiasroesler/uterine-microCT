@@ -212,11 +212,6 @@ ttotalprocess0 = cputime;
 % User defined parameters
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Image class, dimension and numbering sequence
-%ImageClass = 'logical';
-%ImageClass = 'uint16'; MaxVal = 2^16;
-ImageClass = 'uint8'; MaxVal = 2^8;
-
 img_input_dir = src_dir + '/extrapolated/';
 DataOutput = src_dir + '/binary/';
 %%
@@ -264,10 +259,6 @@ DataOutput = src_dir + '/binary/';
 % ImageInput = base_dir + '/AWA014_PTA_2_Rec_Trans/ST/extrapolated/';
 % DataOutput = base_dir + '/AWA014_PTA_2_Rec_Trans/ST/binary/';
 
-
-% Other parameteres
-InputFileExtension = 'png';
-DigitsInImageSequence = 3; % number of digits in image numbering pattern
 
 % Set the derivative and smoothing template voxel widths
 DerivativeTemplateWidth = 3;
@@ -348,9 +339,9 @@ clear IPadf;
 
 % Useful data ranges
 PL = 2; % valid derivative padding level
-SBi = [1+1*PL:Ni+4-1*PL];
-SBj = [1+1*PL:Nj+4-1*PL];
-SBk = [1+1*PL:Nk+4-1*PL];
+SBi = 1+1*PL:Ni+4-1*PL;
+SBj = 1+1*PL:Nj+4-1*PL;
+SBk = 1+1*PL:Nk+4-1*PL;
 
 % Raw index locations
 [SI0,SJ0,SK0] = ndgrid(1:length(SBi),1:length(SBj),1:length(SBk));
