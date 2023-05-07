@@ -145,7 +145,7 @@ trun0 = cputime;
 
 % Identify the points that will be used as boundary conditions 
 % on the diffusion 
-FixedPoints = find(IB);
+FixedPoints = IB;
 
 % 3D 7 point diffusion filter
 F = zeros(3,3,3);
@@ -198,13 +198,8 @@ fprintf(' Total time for %d its: %f\n',n,trun1-trun0);
 % Write boundary smoothed image files.
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-fprintf('... writing images ...\n');
-fstring = sprintf('%s%s%%0%dd.png',img_output_dir,file_template,DigitsInImageSequence);
-for k=1:length(kindex)
-  if ~mod(k,100), fprintf(' image: %d\n',k); end
-  fnameout = sprintf(fstring,kindex(k)); 
-  imwrite(DI(:,:,k),fnameout,'png');
-end
+saveImageStack(DI, img_output_dir, file_template);
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % StructureTensorExtraction.m
