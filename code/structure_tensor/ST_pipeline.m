@@ -446,16 +446,16 @@ t0 = clock;
 [Skk6,SI6,SJ6,SK6] = MultigridAveraging(Skk5,SI5,SJ5,SK5,SmoothingTemplateWidth);
 
 % Smooth to seventh level using multigrid binomial averaging
-fprintf('... Seventh level smoothing ...\n');
-t0 = clock; 
-[Sii7,SI7,SJ7,SK7] = MultigridAveraging(Sii6,SI6,SJ6,SK6,SmoothingTemplateWidth);
-[Sij7,SI7,SJ7,SK7] = MultigridAveraging(Sij6,SI6,SJ6,SK6,SmoothingTemplateWidth);
-[Sik7,SI7,SJ7,SK7] = MultigridAveraging(Sik6,SI6,SJ6,SK6,SmoothingTemplateWidth);
-[Sjj7,SI7,SJ7,SK7] = MultigridAveraging(Sjj6,SI6,SJ6,SK6,SmoothingTemplateWidth);
-[Sjk7,SI7,SJ7,SK7] = MultigridAveraging(Sjk6,SI6,SJ6,SK6,SmoothingTemplateWidth);
-[Skk7,SI7,SJ7,SK7] = MultigridAveraging(Skk6,SI6,SJ6,SK6,SmoothingTemplateWidth);
-t1 = etime(clock,t0); fprintf(' Seventh level smoothing time: %0.2f sec\n',t1);
-fprintf('... Seventh level data dimensions: (%d,%d,%d)\n',size(SI7));
+% fprintf('... Seventh level smoothing ...\n');
+% t0 = clock; 
+% [Sii7,SI7,SJ7,SK7] = MultigridAveraging(Sii6,SI6,SJ6,SK6,SmoothingTemplateWidth);
+% [Sij7,SI7,SJ7,SK7] = MultigridAveraging(Sij6,SI6,SJ6,SK6,SmoothingTemplateWidth);
+% [Sik7,SI7,SJ7,SK7] = MultigridAveraging(Sik6,SI6,SJ6,SK6,SmoothingTemplateWidth);
+% [Sjj7,SI7,SJ7,SK7] = MultigridAveraging(Sjj6,SI6,SJ6,SK6,SmoothingTemplateWidth);
+% [Sjk7,SI7,SJ7,SK7] = MultigridAveraging(Sjk6,SI6,SJ6,SK6,SmoothingTemplateWidth);
+% [Skk7,SI7,SJ7,SK7] = MultigridAveraging(Skk6,SI6,SJ6,SK6,SmoothingTemplateWidth);
+% t1 = etime(clock,t0); fprintf(' Seventh level smoothing time: %0.2f sec\n',t1);
+% fprintf('... Seventh level data dimensions: (%d,%d,%d)\n',size(SI7));
 
 ttotalprocess1 = cputime; fprintf(' *** total processing time: %0.2f sec\n',ttotalprocess1-ttotalprocess0);
 
@@ -516,15 +516,15 @@ fwrite(fid,reshape(Sjk6,numel(Sjk6),1),'double');
 fwrite(fid,reshape(Skk6,numel(Skk6),1),'double');
 fclose(fid);
 
-fid = fopen(sprintf('%sS7.bin',DataOutput),'wb');
-fwrite(fid,[size(Sii7,1),size(Sii7,2),size(Sii7,3)],'uint16');
-fwrite(fid,reshape(Sii7,numel(Sii7),1),'double');
-fwrite(fid,reshape(Sij7,numel(Sij7),1),'double');
-fwrite(fid,reshape(Sik7,numel(Sik7),1),'double');
-fwrite(fid,reshape(Sjj7,numel(Sjj7),1),'double');
-fwrite(fid,reshape(Sjk7,numel(Sjk7),1),'double');
-fwrite(fid,reshape(Skk7,numel(Skk7),1),'double');
-fclose(fid);
+% fid = fopen(sprintf('%sS7.bin',DataOutput),'wb');
+% fwrite(fid,[size(Sii7,1),size(Sii7,2),size(Sii7,3)],'uint16');
+% fwrite(fid,reshape(Sii7,numel(Sii7),1),'double');
+% fwrite(fid,reshape(Sij7,numel(Sij7),1),'double');
+% fwrite(fid,reshape(Sik7,numel(Sik7),1),'double');
+% fwrite(fid,reshape(Sjj7,numel(Sjj7),1),'double');
+% fwrite(fid,reshape(Sjk7,numel(Sjk7),1),'double');
+% fwrite(fid,reshape(Skk7,numel(Skk7),1),'double');
+% fclose(fid);
 
 
 fid = fopen(sprintf('%sIJK2.bin',DataOutput),'wb');
@@ -562,12 +562,12 @@ fwrite(fid,reshape(SJ6,numel(SJ6),1),'uint16');
 fwrite(fid,reshape(SK6,numel(SK6),1),'uint16');
 fclose(fid);
 
-fid = fopen(sprintf('%sIJK7.bin',DataOutput),'wb');
-fwrite(fid,[size(SI7,1),size(SI7,2),size(SI7,3)],'uint16');
-fwrite(fid,reshape(SI7,numel(SI7),1),'uint16');
-fwrite(fid,reshape(SJ7,numel(SJ7),1),'uint16');
-fwrite(fid,reshape(SK7,numel(SK7),1),'uint16');
-fclose(fid);
+% fid = fopen(sprintf('%sIJK7.bin',DataOutput),'wb');
+% fwrite(fid,[size(SI7,1),size(SI7,2),size(SI7,3)],'uint16');
+% fwrite(fid,reshape(SI7,numel(SI7),1),'uint16');
+% fwrite(fid,reshape(SJ7,numel(SJ7),1),'uint16');
+% fwrite(fid,reshape(SK7,numel(SK7),1),'uint16');
+% fclose(fid);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
