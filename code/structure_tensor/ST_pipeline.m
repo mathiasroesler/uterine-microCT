@@ -27,58 +27,6 @@ img_input_dir = src_dir + '/masked/';
 img_output_dir = src_dir + '/extrapolated/';
 
 [file_template, extension] = loadParams(src_dir + '/ST.params');
-%%
-% kindex = 1:325; 
-% Nj = 518; Ni = 753;
-% Nk = length(kindex);
-% base_dir = join([getenv("HOME"), "Documents/phd"], '/');
-% ImageInput = base_dir + '/AWA015_PTA_2_Ova_Rec_Trans/downsampled/ST/masked/';
-% InputFileTemplate = 'AWA015_PTA_2_Ova_Trans_';
-% ImageOutput = base_dir + '/AWA015_PTA_2_Ova_Rec_Trans/downsampled/ST/extrapolated/';
-% OutputFileTemplate = 'AWA015_PTA_2_Ova_Trans_';
-% img_digit_size = '%s%s%03d.%s';
-%% Downsampled version
-% Nj = 469; Ni = 512;
-% kindex = 1:138;
-% Nk = length(kindex);
-% base_dir = join([getenv("HOME"), "Documents/phd"], '/');
-% ImageInput = base_dir + '/AWA014_PTA_2_Rec_Trans/downsampled/ST/masked/';
-% InputFileTemplate = 'AWA014_PTA_2_';
-% ImageOutput = base_dir + '/AWA014_PTA_2_Rec_Trans/downsampled/ST/extrapolated/';
-% OutputFileTemplate = 'AWA014_PTA_2_';
-
-%% Full resolution segment version
-% kindex = 830:1030; 
-% Nj = 1401; Ni = 1001;
-% Nk = length(kindex);
-% base_dir = join([getenv("HOME"), "Documents/phd"], '/');
-% ImageInput = base_dir + '/AWA014_PTA_2_Rec_Trans/ST/masked/';
-% InputFileTemplate = 'AWA014_PTA_2_';
-% ImageOutput = base_dir + '/AWA014_PTA_2_Rec_Trans/ST/extrapolated/';
-% OutputFileTemplate = 'AWA014_PTA_2_';
-
-
-%% Reoriented downsampled version
-% Nj = 367; Ni = 473;
-% kindex = 1:352;
-% Nk = length(kindex);
-% base_dir = join([getenv("HOME"), "Documents/phd"], '/');
-% ImageInput = base_dir + '/AWA014_PTA_2_Rec_Trans/downsampled/ST/masked/';
-% InputFileTemplate = 'AWA014_PTA_2_';
-% ImageOutput = base_dir + '/AWA014_PTA_2_Rec_Trans/downsampled/ST/extrapolated/';
-% OutputFileTemplate = 'AWA014_PTA_2_';
-
-
-%% Reoriented full resolution segment version
-% Nj = 420; Ni = 388;
-% kindex = 1:383;
-% Nk = length(kindex);
-% base_dir = join([getenv("HOME"), "Documents/phd"], '/');
-% ImageInput = base_dir + '/AWA014_PTA_2_Rec_Trans/ST/masked/';
-% InputFileTemplate = 'AWA014_PTA_2_';
-% ImageOutput = base_dir + '/AWA014_PTA_2_Rec_Trans/ST/extrapolated/';
-% OutputFileTemplate = 'AWA014_PTA_2_';
-
 
 % Tissue mask erosion threshold and radius
 TissueMaskErosionThreshold = 10;
@@ -214,51 +162,6 @@ ttotalprocess0 = cputime;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 img_input_dir = src_dir + '/extrapolated/';
 DataOutput = src_dir + '/binary/';
-%%
-% kindex = 1:325; 
-% Nj = 518; Ni = 753;
-% Nk = length(kindex);
-% base_dir = join([getenv("HOME"), "Documents/phd"], '/');
-% ImageInput = base_dir + '/AWA015_PTA_2_Ova_Rec_Trans/downsampled/ST/extrapolated/';
-% InputFileTemplate = 'AWA015_PTA_2_Ova_Trans_';
-% DataOutput = base_dir + '/AWA015_PTA_2_Ova_Rec_Trans/downsampled/ST/binary/';
-% img_digit_size = '%s%s%03d.%s';
-%% Downsampled version
-% Nj = 469; Ni = 512;
-% kindex = 1:138;
-% Nk = length(kindex);
-% InputFileTemplate = 'AWA014_PTA_2_';
-% base_dir = join([getenv("HOME"), "Documents/phd"], '/');
-% ImageInput = base_dir + '/AWA014_PTA_2_Rec_Trans/downsampled/ST/extrapolated/';
-% DataOutput = base_dir + '/AWA014_PTA_2_Rec_Trans/downsampled/ST/binary/';
-
-%% Full resolution segment version
-% kindex = 830:1030; 
-% Nj = 1401; Ni = 1001;
-% Nk = length(kindex);
-% InputFileTemplate = 'AWA014_PTA_2_';
-% base_dir = join([getenv("HOME"), "Documents/phd"], '/');
-% ImageInput = base_dir + '/AWA014_PTA_2_Rec_Trans/ST/extrapolated/';
-% DataOutput = base_dir + '/AWA014_PTA_2_Rec_Trans/ST/binary/';
-
-%% Reoriented downsampled version
-% Nj = 367; Ni = 473;
-% kindex = 1:352;
-% Nk = length(kindex);
-% InputFileTemplate = 'AWA014_PTA_2_';
-% base_dir = join([getenv("HOME"), "Documents/phd"], '/');
-% ImageInput = base_dir + '/AWA014_PTA_2_Rec_Trans/downsampled/ST/extrapolated/';
-% DataOutput = base_dir + '/AWA014_PTA_2_Rec_Trans/downsampled/ST/binary/';
-
-%% Reoriented full resolution segment version
-% Nj = 420; Ni = 388;
-% kindex = 1:383;
-% Nk = length(kindex);
-% InputFileTemplate = 'AWA014_PTA_2_';
-% base_dir = join([getenv("HOME"), "Documents/phd"], '/');
-% ImageInput = base_dir + '/AWA014_PTA_2_Rec_Trans/ST/extrapolated/';
-% DataOutput = base_dir + '/AWA014_PTA_2_Rec_Trans/ST/binary/';
-
 
 % Set the derivative and smoothing template voxel widths
 DerivativeTemplateWidth = 3;
@@ -595,56 +498,6 @@ Level = 5; % frequency resolution of ST/Hessian data to use
 InputPath = src_dir + '/binary/';
 OutputPath = src_dir + '/binary/';
 MaskPath = src_dir + '/mask/';
-
-%%
-% base_dir = join([getenv("HOME"), "Documents/phd"], '/');
-% InputPath = base_dir + '/AWA015_PTA_2_Ova_Rec_Trans/downsampled/ST/binary/';
-% OutputPath = base_dir + '/AWA015_PTA_2_Ova_Rec_Trans/downsampled/ST/binary/';
-% MaskPath = base_dir + '/AWA015_PTA_2_Ova_Rec_Trans/downsampled/ST/mask/';
-% MaskPrefix = 'AWA015_PTA_2_Ova_Trans_';
-% kindex = 1:325; 
-% Nj = 518; Ni = 753;
-% Nkm = length(kindex);
-%% Downsampled version
-% base_dir = join([getenv("HOME"), "Documents/phd"], '/');
-% InputPath = base_dir + '/AWA014_PTA_2_Rec_Trans/downsampled/ST/binary/';
-% OutputPath = base_dir + '/AWA014_PTA_2_Rec_Trans/downsampled/ST/binary/';
-% MaskPath = base_dir + '/AWA014_PTA_2_Rec_Trans/downsampled/ST/mask/';
-% MaskPrefix = 'AWA014_PTA_2_';
-% Nj = 469; Ni = 512;
-% kindex = 1:138;
-% Nkm = length(kindex);
-
-%% Full resolution segment version 
-% base_dir = join([getenv("HOME"), "Documents/phd"], '/');
-% InputPath = base_dir + '/AWA014_PTA_2_Rec_Trans/ST/binary/';
-% OutputPath = base_dir + '/AWA014_PTA_2_Rec_Trans/ST/binary/';
-% MaskPath = base_dir + '/AWA014_PTA_2_Rec_Trans/ST/mask/';
-% MaskPrefix = 'AWA014_PTA_2_';
-% kindex = 830:1030; 
-% Nj = 1401; Ni = 1001;
-% Nkm = length(kindex);
-
-%% Reoriented downsampled version 
-% base_dir = join([getenv("HOME"), "Documents/phd"], '/');
-% InputPath = base_dir + '/AWA014_PTA_2_Rec_Trans/downsampled/ST/binary/';
-% OutputPath = base_dir + '/AWA014_PTA_2_Rec_Trans/downsampled/ST/binary/';
-% MaskPath = base_dir + '/AWA014_PTA_2_Rec_Trans/downsampled/ST/mask/';
-% MaskPrefix = 'AWA014_PTA_2_';
-% Nj = 367; Ni = 473;
-% kindex = 1:372;
-% Nkm = length(kindex);
-
-%% Reoriented full resolution segment version 
-% base_dir = join([getenv("HOME"), "Documents/phd"], '/');
-% InputPath = base_dir + '/AWA014_PTA_2_Rec_Trans/ST/binary/';
-% OutputPath = base_dir + '/AWA014_PTA_2_Rec_Trans/ST/binary/';
-% MaskPath = base_dir + '/AWA014_PTA_2_Rec_Trans/ST/mask/';
-% MaskPrefix = 'AWA014_PTA_2_';
-% Nj = 420; Ni = 388;
-% kindex = 1:383;
-% Nkm = length(kindex);
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % Load data
@@ -754,4 +607,4 @@ else
 end
 groupname = 'Streamlines';
 ExportStreamlines(Paths,[],exfname,groupname,1,1);
-
+end
