@@ -17,9 +17,6 @@ function ST_pipeline(data_folder)
 % Modified by: Mark Trew, September 2021
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-clear all;
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % User defined parameters
 %
@@ -108,7 +105,7 @@ TissueBoundaryDiffusionTestingDistance = 2;
 % Allocate memory
 img_paths = getImagePaths(img_input_dir, extension);
 I = loadImageStack(img_paths);
-[Ni, Nj, Nk] = size(I);
+[Nj, Ni, Nk] = size(I);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
