@@ -1,13 +1,17 @@
 function STPipeline(data_folder, diffusion, structure_tensor, streamlines)
-%STPipeline Loads parameters from a .params file.
+%STPipeline Runs the structure tensor analysis pipeline.
 %
-% If the file name of the .params file is not provided, the default
-% image.params name is added at the end of the path.
 %   Input:
-%    - params_file, path to the file containing the image parameters.
+%    - data_folder, name of the data folder to use located in the
+%    microCT/data folder.
+%    - diffusion, true if the DiffusionTissueExtrapolation code should be
+%    run.
+%    - structure_tensor, true if the StructureTensorExtraction code should
+%    be run.
+%    - streamlines, true if the ComputeStreamlines code should be run.
 %
 %   Return:
-%    - varargout, parameters found in the input file.
+%
 %% General parameters
 base_dir = join([getenv("HOME"), "Documents/phd/microCT/data"], '/');
 src_dir = join([base_dir, data_folder, "downsampled/ST"], '/');
