@@ -94,7 +94,7 @@ TissueBoundaryDiffusionTestingDistance = 2;
 % Set up and load in image stack
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Allocate memory
+fprintf('... loading images ...\n');
 img_paths = getImagePaths(img_input_dir, extension);
 I = loadImageStack(img_paths);
 [Nj, Ni, Nk] = size(I);
@@ -204,8 +204,6 @@ saveImageStack(DI, img_output_dir, file_template);
 % Modified by: Mark Trew, September 2021.
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-clear all;
-
 % Timing
 ttotalprocess0 = cputime;
 
@@ -219,15 +217,8 @@ ttotalprocess0 = cputime;
 %ImageClass = 'uint16'; MaxVal = 2^16;
 ImageClass = 'uint8'; MaxVal = 2^8;
 
-%%
-kindex = 80:534; 
-Nj = 548; Ni = 1124;
-Nk = length(kindex);
-base_dir = join([getenv("HOME"), "Documents/phd"], '/');
-img_input_dir = base_dir + '/AWA015_PTA_1_Rec_Trans/downsampled/ST/extrapolated/';
-InputFileTemplate = 'AWA015_PTA_1_';
-DataOutput = base_dir + '/AWA015_PTA_1_Rec_Trans/downsampled/ST/binary/';
-img_digit_size = '%s%s%03d.%s';
+img_input_dir = src_dir + '/extrapolated/';
+DataOutput = src_dir + '/binary/';
 %%
 % kindex = 1:325; 
 % Nj = 518; Ni = 753;
@@ -287,18 +278,13 @@ SmoothingTemplateWidth = 3;
 % Set up and load in image stack
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Allocate memory
-fprintf('... allocating memory ...\n');
-I = cast(zeros(Nj,Ni,Nk),ImageClass);
+
 
 % Load in image set
 fprintf('... loading images ...\n');
-fstring = sprintf('%s%s%%0%dd.%s',img_input_dir,InputFileTemplate,DigitsInImageSequence,InputFileExtension);
-for k=1:length(kindex)
-  if ~mod(k,100), fprintf(' image: %d\n',k); end
-  fnamein = sprintf(fstring,kindex(k)); 
-  I(:,:,k) = imread(fnamein);
-end
+img_paths = getImagePaths(img_input_dir, extension);
+I = loadImageStack(img_paths);
+[Nj, Ni, Nk] = size(I);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
