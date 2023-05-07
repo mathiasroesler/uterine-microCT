@@ -580,11 +580,6 @@ fclose(fid);
 % Updated by: Mark Trew, June 2022.
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-clear all;
-
-ttotalprocess0 = clock;
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % Set parameters and paths
 %
@@ -597,14 +592,10 @@ Level = 5; % frequency resolution of ST/Hessian data to use
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
-base_dir = join([getenv("HOME"), "Documents/phd"], '/');
-InputPath = base_dir + '/AWA015_PTA_1_Rec_Trans/downsampled/ST/binary/';
-OutputPath = base_dir + '/AWA015_PTA_1_Rec_Trans/downsampled/ST/binary/';
-MaskPath = base_dir + '/AWA015_PTA_1_Rec_Trans/downsampled/ST/mask/';
-MaskPrefix = 'AWA015_PTA_1_';
-kindex = 80:534; 
-Nj = 548; Ni = 1124;
-Nkm = length(kindex);
+InputPath = src_dir + '/binary/';
+OutputPath = src_dir + '/binary/';
+MaskPath = src_dir + '/mask/';
+
 %%
 % base_dir = join([getenv("HOME"), "Documents/phd"], '/');
 % InputPath = base_dir + '/AWA015_PTA_2_Ova_Rec_Trans/downsampled/ST/binary/';
@@ -680,23 +671,19 @@ J = fread(fid,prod(N),'uint16');
 K = fread(fid,prod(N),'uint16');
 fclose(fid);
 
-% Read in mask data and 
-kstart = kindex(1); kend = kindex(Nkm); 
-I3D = true(Nj,Ni,Nkm); 
-parfor k=1:Nkm
-  fnamein = sprintf('%s%s%03d.png',MaskPath,MaskPrefix,kindex(k));
-  M = ~(imread(fnamein) == 0);
-  I3D(:,:,k) = M;
-end
+% Read in mask data
+mask_paths = getImagePaths(MaskPath, extension);
+I3D = loadImageStack(mask_paths);
+[Nj, Ni, Nk] = size(I3D);
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % Manipulate loaded data
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-FullMask = I3D;
 I3D = permute(I3D,[2,1,3]);
-I3D = reshape(I3D,Ni*Nj*Nkm,1);
+I3D = reshape(I3D,Ni*Nj*Nk,1);
 GD = ((K-1)*Nj+J-1)*Ni+I;
 MaskGD = find(I3D(GD));
 
@@ -725,11 +712,11 @@ fprintf('DI: %d, DJ: %d, DK: %d\n',DI,DJ,DK);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 fprintf('... Set up sample grid: ');
 
-[SI,SJ,SK] = ndgrid(1:round(2*DI/0.5):Ni,1:round(2*DI/0.5):Nj,1:round(2*DI/0.5):Nkm);
+[SI,SJ,SK] = ndgrid(1:round(2*DI/0.5):Ni,1:round(2*DI/0.5):Nj,1:round(2*DI/0.5):Nk);
 fprintf('%dX%dX%d\n',size(SI));
 
 NS = size(SI);
-LIS = sub2ind([Ni,Nj,Nkm],reshape(SI,[prod(NS),1]),reshape(SJ,[prod(NS),1]),reshape(SK,[prod(NS),1]));
+LIS = sub2ind([Ni,Nj,Nk],reshape(SI,[prod(NS),1]),reshape(SJ,[prod(NS),1]),reshape(SK,[prod(NS),1]));
 IdxS = find(I3D(LIS));
 
 % Set up interpolant
@@ -754,7 +741,7 @@ MaxTrackLength = 10000; % Fiber tracks
 %MaxTrackLength = 500; % sheet tracks
 parfor i=1:length(IdxS)
     if ~mod(i,10) fprintf('Path: %d\n',i); end
-    Paths{i} = FiberTrack([SI(IdxS(i)),SJ(IdxS(i)),SK(IdxS(i))],DS,I,J,K,Fd2Xs,FdXYs,FdXZs,Fd2Ys,FdYZs,Fd2Zs,I3D,[Ni,Nj,Nkm],FiberIndex,MaxTrackLength);
+    Paths{i} = FiberTrack([SI(IdxS(i)),SJ(IdxS(i)),SK(IdxS(i))],DS,I,J,K,Fd2Xs,FdXYs,FdXZs,Fd2Ys,FdYZs,Fd2Zs,I3D,[Ni,Nj,Nk],FiberIndex,MaxTrackLength);
 
 end
 
