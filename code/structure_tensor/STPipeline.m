@@ -5,13 +5,26 @@ function STPipeline(data_folder, diffusion, structure_tensor, streamlines)
 %    - data_folder, name of the data folder to use located in the
 %    microCT/data folder.
 %    - diffusion, true if the DiffusionTissueExtrapolation code should be
-%    run.
+%    run, default value is true.
 %    - structure_tensor, true if the StructureTensorExtraction code should
-%    be run.
-%    - streamlines, true if the ComputeStreamlines code should be run.
+%    be run, default value is true.
+%    - streamlines, true if the ComputeStreamlines code should be run,
+%    default value is true.
 %
 %   Return:
 %
+if nargin < 4
+    streamlines = true; 
+end
+
+if nargin < 3
+    structure_tensor = true;
+end
+
+if nargin < 2
+    diffusion = true;
+end
+
 %% General parameters
 base_dir = join([getenv("HOME"), "Documents/phd/microCT/data"], '/');
 src_dir = join([base_dir, data_folder, "downsampled/ST"], '/');
