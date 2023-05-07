@@ -31,16 +31,12 @@ ImageClass = 'uint8'; MaxVal = 2^8;
 DigitsInImageSequence = 3;
 
 %%
-kindex = 80:534; 
-Nj = 548; Ni = 1124;
-Nk = length(kindex);
 base_dir = join([getenv("HOME"), "Documents/phd/microCT/data"], '/');
 src_dir = join([base_dir, data_folder, "downsampled/ST"], '/');
-base_dir = join([getenv("HOME"), "Documents/phd"], '/');
-ImageInput = base_dir + '/AWA015_PTA_1_Rec_Trans/downsampled/ST/masked/';
-InputFileTemplate = 'AWA015_PTA_1_';
-ImageOutput = base_dir + '/AWA015_PTA_1_Rec_Trans/downsampled/ST/extrapolated/';
-OutputFileTemplate = 'AWA015_PTA_1_';
+img_input_dir = src_dir + '/masked/';
+img_output_dir = src_dir + '/extrapolated/';
+
+[file_template, extension] = loadParams(src_dir + '/ST.params');
 img_digit_size = '%s%s%03d.%s';
 %%
 % kindex = 1:325; 
@@ -110,18 +106,9 @@ TissueBoundaryDiffusionTestingDistance = 2;
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Allocate memory
-fprintf('... allocating memory ...\n');
-I = cast(zeros(Nj,Ni,Nk),ImageClass);
-
-% Load in image set
-fprintf('... loading images ...\n');
-fstring = sprintf('%s%s%%0%dd.png',ImageInput,InputFileTemplate,...
-    DigitsInImageSequence);
-parfor k=1:length(kindex)
-  if ~mod(k,100), fprintf(' image: %d\n',k); end
-  fnamein = sprintf(fstring,kindex(k)); 
-  I(:,:,k) = imread(fnamein);
-end
+img_paths = getImagePaths(img_input_dir, extension);
+I = loadImageStack(img_paths);
+[Ni, Nj, Nk] = size(I);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -215,7 +202,7 @@ fprintf(' Total time for %d its: %f\n',n,trun1-trun0);
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 fprintf('... writing images ...\n');
-fstring = sprintf('%s%s%%0%dd.png',ImageOutput,OutputFileTemplate,DigitsInImageSequence);
+fstring = sprintf('%s%s%%0%dd.png',img_output_dir,file_template,DigitsInImageSequence);
 for k=1:length(kindex)
   if ~mod(k,100), fprintf(' image: %d\n',k); end
   fnameout = sprintf(fstring,kindex(k)); 
@@ -253,7 +240,7 @@ kindex = 80:534;
 Nj = 548; Ni = 1124;
 Nk = length(kindex);
 base_dir = join([getenv("HOME"), "Documents/phd"], '/');
-ImageInput = base_dir + '/AWA015_PTA_1_Rec_Trans/downsampled/ST/extrapolated/';
+img_input_dir = base_dir + '/AWA015_PTA_1_Rec_Trans/downsampled/ST/extrapolated/';
 InputFileTemplate = 'AWA015_PTA_1_';
 DataOutput = base_dir + '/AWA015_PTA_1_Rec_Trans/downsampled/ST/binary/';
 img_digit_size = '%s%s%03d.%s';
@@ -322,7 +309,7 @@ I = cast(zeros(Nj,Ni,Nk),ImageClass);
 
 % Load in image set
 fprintf('... loading images ...\n');
-fstring = sprintf('%s%s%%0%dd.%s',ImageInput,InputFileTemplate,DigitsInImageSequence,InputFileExtension);
+fstring = sprintf('%s%s%%0%dd.%s',img_input_dir,InputFileTemplate,DigitsInImageSequence,InputFileExtension);
 for k=1:length(kindex)
   if ~mod(k,100), fprintf(' image: %d\n',k); end
   fnamein = sprintf(fstring,kindex(k)); 
