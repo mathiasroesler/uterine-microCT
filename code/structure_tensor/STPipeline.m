@@ -33,6 +33,7 @@ end
 
 %% General parameters
 base_dir = join([getenv("HOME"), "Documents/phd/microCT/data"], '/');
+orig_img_dir = join([base_dir, data_folder, "downsampled"], '/');
 src_dir = join([base_dir, data_folder, "downsampled/ST"], '/');
 
 [file_template, extension] = loadParams(src_dir + '/ST.params');
@@ -68,7 +69,7 @@ if mask
     %% Code edits
     % Changed the overlap and stride to match the one from the reslice code.
     %%
-    img_input_dir = src_dir;
+    img_input_dir = orig_img_dir;
     mask_output_dir = src_dir + '/mask';
     img_output_dir = src_dir + '/masked/';
 
