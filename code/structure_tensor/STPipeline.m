@@ -147,6 +147,10 @@ if mask
 
 end
 
+% Clear everything except general parameters and input arguments
+clearvars -EXCEPT base_dir src_dir extension file_template data_folder mask diffusion structure_tensor streamlines
+
+
 if diffusion
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %
@@ -286,6 +290,9 @@ if diffusion
     saveImageStack(DI, img_output_dir, file_template);
 
 end
+
+% Clear everything except general parameters and input arguments
+clearvars -EXCEPT base_dir src_dir extension file_template data_folder mask diffusion structure_tensor streamlines
 
 if structure_tensor
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -621,6 +628,9 @@ if structure_tensor
     % fclose(fid);
 
 end
+
+% Clear everything except general parameters and input arguments
+clearvars -EXCEPT base_dir src_dir extension file_template data_folder mask diffusion structure_tensor streamlines
 
 if streamlines
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
