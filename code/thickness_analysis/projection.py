@@ -199,8 +199,7 @@ def rotateImageStack(img_stack, theta, padding_value=300):
 	
 	Arguments:
 	img_stack -- ndarray, stack of images to process (ZXY dimensions).
-	origin -- ndarray, coordinates of the origin of the system (ZXY dimensions).
-	centreline -- ndarray, coordinates of the centre point on each slice.
+	theta -- float, rotation angle.
 	padding_value -- int, amount of padding to add to the bottom of the stack.
 	
 	Return:
