@@ -713,7 +713,8 @@ if streamlines
     K = K(MaskGD);
 
     % Index step sizes
-    DJ = J(1+N(1))-J(1); DK = 225; %DK = K(1+N(1)*N(2))-K(1);
+    DJ = J(1+N(1))-J(1); %DK = 225; 
+    DK = K(1+N(1)*N(2))-K(1);
     DI = 32; % fix to this value regardless of data level.
 
     fprintf('DI: %d, DJ: %d, DK: %d\n',DI,DJ,DK);
