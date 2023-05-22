@@ -648,7 +648,7 @@ if streamlines
     % Set parameters and paths
     %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    Level = 5; % frequency resolution of ST/Hessian data to use
+    Level = 2; % frequency resolution of ST/Hessian data to use
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %
