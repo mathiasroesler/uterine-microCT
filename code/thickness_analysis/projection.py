@@ -215,23 +215,27 @@ def estimateMuscleThickness(img_stack, centreline, nb_points, slice_nbs):
 	slice_thickness_array = list()
 
 	for i, img in enumerate(img_stack):
-		projection_points = findProjectionPoints(img, centreline[i, :], 
-			nb_points)
+		try:
+			projection_points = findProjectionPoints(img, centreline[i, :], 
+				nb_points)
 
-		diff = np.diff(projection_points, axis=0)
-		norm = np.linalg.norm(diff, axis=1)	
-		thickness = norm[np.arange(0, projection_points.shape[0], 2)]
-		muscle_thickness_array[i] = np.mean(thickness)
-		
-		if i in slice_nbs:
-			# Order thickness to go from 0 to 2pi
-			ordered_thickness = np.append(
-				thickness[np.arange(0, len(thickness), 2)],
-				thickness[np.arange(1, len(thickness), 2)])
+			diff = np.diff(projection_points, axis=0)
+			norm = np.linalg.norm(diff, axis=1)	
+			thickness = norm[np.arange(0, projection_points.shape[0], 2)]
+			muscle_thickness_array[i] = np.mean(thickness)
+			
+			if i in slice_nbs:
+				# Order thickness to go from 0 to 2pi
+				ordered_thickness = np.append(
+					thickness[np.arange(0, len(thickness), 2)],
+					thickness[np.arange(1, len(thickness), 2)])
 
-			# Roll array to line up 0 with anti-mesometrial border
-			max_idx = np.argmax(ordered_thickness)
-			ordered_thickness = np.roll(ordered_thickness, nb_points - max_idx)
-			slice_thickness_array.append(ordered_thickness)
+				# Roll array to line up 0 with anti-mesometrial border
+				max_idx = np.argmax(ordered_thickness)
+				ordered_thickness = np.roll(ordered_thickness, nb_points - max_idx)
+				slice_thickness_array.append(ordered_thickness)
+		except:
+			sys.stderr.write("Warning: unable to process image number {}\n".format(
+				i))
 
 	return muscle_thickness_array, np.transpose(slice_thickness_array)
