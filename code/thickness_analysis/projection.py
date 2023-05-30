@@ -213,6 +213,7 @@ def estimateMuscleThickness(img_stack, centreline, nb_points, slice_nbs):
 	nb_imgs = len(img_stack)
 	muscle_thickness_array = np.zeros(nb_imgs)
 	slice_thickness_array = list()
+	idx_removed_slices = list()
 
 	for i, img in enumerate(img_stack):
 		try:
@@ -235,7 +236,13 @@ def estimateMuscleThickness(img_stack, centreline, nb_points, slice_nbs):
 				ordered_thickness = np.roll(ordered_thickness, nb_points - max_idx)
 				slice_thickness_array.append(ordered_thickness)
 		except:
+			# Write to stderr and add slice number to the remove list
 			sys.stderr.write("Warning: unable to process image number {}\n".format(
 				i))
+			idx_removed_slices.append(i)
+
+	# Remove the slices the values of the slices that were not processed
+	muscle_thickness_array = np.delete(muscle_thickness_array, 
+		idx_removed_slices)
 
 	return muscle_thickness_array, np.transpose(slice_thickness_array)
