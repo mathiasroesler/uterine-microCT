@@ -54,18 +54,15 @@ if __name__ == "__main__":
 		mask_stack = utils.loadImageStack(os.path.join(
 			full_path, "{}_horn".format(horn)), extension=args.extension)
 
-		param_dict = params[horn]
-		short_mask_stack = mask_stack[
-			param_dict['rot_start']:param_dict['rot_end']]
-		nb_imgs = len(short_mask_stack)
+		nb_imgs = len(mask_stack)
 		slice_nbs = [30, nb_imgs // 2, nb_imgs-52]
 
 		print("   Finding centreline")
-		centreline = projection.findCenterline(short_mask_stack, horn=horn)
+		centreline = projection.findCenterline(mask_stack, horn=horn)
 		
 		print("   Estimating muscle thickness")
 		muscle_thickness, slice_thickness = projection.estimateMuscleThickness(
-			short_mask_stack, centreline, args.points, slice_nbs)  
+			mask_stack, centreline, args.points, slice_nbs)  
 
 		# Rescale the thickness to mm
 		muscle_thickness *= params["scaling_factor"]
