@@ -37,6 +37,9 @@ def plotProjectionPoints(img, centre, projection_points):
 def plotMuscleThickness(muscle_thickness, errors):
 	""" Plots the muscle thickness of both horns on the same plot
 
+	The number of points is normalised so that both sets are shown
+	between 0 and 1
+
 	Arguments:
 	muscle_thickness -- dict(ndarray), thickness of the horns.
 	errors -- dict(ndarray), errors for the muscle thickness.
@@ -52,18 +55,19 @@ def plotMuscleThickness(muscle_thickness, errors):
 		error_bars = errors[horn]
 		horn_length = len(horn_thickness)
 
-		ax.errorbar(range(horn_length), horn_thickness, yerr=error_bars,
+		ax.errorbar(np.linspace(0, 1, horn_length), horn_thickness, 
+			yerr=error_bars,
 			label="{} horn".format(horn.capitalize()), linewidth=4, 
 			color=colors[horn])
 
 	ax.tick_params(length=12, width=4, labelsize=22)
 	
 	# Reset x-axis ticks
-	plt.xticks(ticks=[0, horn_length // 2, horn_length], 
+	plt.xticks(ticks=[0, 0.5, 1], 
 		labels=["Cervical end", "Centre", "Ovarian end"])
 
 	plt.ylim([0, 0.45])
-	plt.xlim([0, horn_length])
+	plt.xlim([0, 1])
 	plt.xlabel("Location", fontsize=22)
 	plt.ylabel("Muscle thickness (in mm)", fontsize=22)
 	plt.legend(fontsize=22)
