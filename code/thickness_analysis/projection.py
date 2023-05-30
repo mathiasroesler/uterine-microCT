@@ -194,36 +194,6 @@ def createProjectionPointCoords(x_coords, y_coords, centre_point):
 	return projection_points
 
 
-def rotateImageStack(img_stack, theta, padding_value=300):
-	""" Rotates an image stack to align the centreline with the z-axis
-	
-	Arguments:
-	img_stack -- ndarray, stack of images to process (ZXY dimensions).
-	theta -- float, rotation angle.
-	padding_value -- int, amount of padding to add to the bottom of the stack.
-	
-	Return:
-	rotated_stack -- ndarray, rotated image stack.
-
-	"""
-	transform = skt.AffineTransform(rotation=theta) # Rotation transformation
-	padded_stack = np.pad(img_stack, ((padding_value, padding_value), (0, 0), (0, 0)))
-	rotated_stack = skt.warp(padded_stack.transpose((0, 2, 1)), 
-		transform, preserve_range=True)
-	rotated_stack[rotated_stack > 0] = 255 # Convert back to binary mask
-	
-	# Remove all slices that are empty
-	rotated_stack = np.delete(rotated_stack, np.where(np.sum(
-		rotated_stack, axis=(1, 2)) == 0), axis=0)
-
-	# Smooth stack
-	print("   Smoothing stack")
-	rotated_stack = skmo.opening(rotated_stack, skmo.ball(2))
-	rotated_stack = skmo.closing(rotated_stack, skmo.ball(2))
-
-	return rotated_stack.transpose((0, 2, 1))
-
-
 def estimateMuscleThickness(img_stack, centreline, nb_points, slice_nbs):
 	""" Estimates the muscle thickness of each slice
 	
