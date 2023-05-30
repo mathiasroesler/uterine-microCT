@@ -30,7 +30,8 @@ end
 for k = 1:size(img_stack, 3)-nb_used_slices
     cur_mask = img_stack(:, :, k); % Current mask to rotate
     next_mask = img_stack(:, :, k+nb_used_slices); % Next mask for finding rotation axis
-
+    
+    % Find centre points
     cur_centrepoints = findCentrepoints(cur_mask);
     next_centrepoints = findCentrepoints(next_mask);
 
@@ -65,5 +66,6 @@ for k = 1:size(img_stack, 3)-nb_used_slices
         rotated_mask = rotated_mask(:, 1:end+dim_diff(2));
     end   
 
-    rotated_stack(:, :, k) = rotated_mask;
+    % Remove isolated pixels and add rotated mask to stack
+    rotated_stack(:, :, k) = bwmorph(rotated_mask, 'clean');
 end
