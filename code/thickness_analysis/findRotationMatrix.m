@@ -13,7 +13,7 @@ cross_product = cross(u, v);
 % Normalize the rotation axis
 cross_product = cross_product / norm(cross_product);
 
-% Calculate the dot product between u and Z=[0, 0, 1]
+% Calculate the dot product between u and v
 dot_product = dot(u, v);
 
 % Calculate the skew-symmetric matrix
