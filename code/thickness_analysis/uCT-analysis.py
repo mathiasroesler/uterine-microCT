@@ -55,7 +55,11 @@ if __name__ == "__main__":
 			full_path, "{}_horn".format(horn)), extension=args.extension)
 
 		nb_imgs = len(mask_stack)
-		slice_nbs = [30, nb_imgs // 2, nb_imgs-52]
+		slice_nbs = [10, nb_imgs // 2, nb_imgs-20]
+	
+		# Window sizes for different moving averages
+		muscle_win_size = round(0.05 * nb_imgs)
+		circular_win_size = round(0.05 * args.points)
 
 		print("   Finding centreline")
 		centreline = projection.findCenterline(mask_stack, horn=horn)
@@ -73,15 +77,17 @@ if __name__ == "__main__":
 		
 		if args.switch:
 			avg_thickness[horns[i-1]] = utils.movingAverage(
-				muscle_thickness, 15)
+				muscle_thickness, muscle_win_size)
 			avg_slice_thickness[horns[i-1]] = utils.circularAverage(
-				slice_thickness, 9)
-			errors[horns[i-1]] = utils.movingStd(muscle_thickness, 15)
+				slice_thickness, circular_win_size)
+			errors[horns[i-1]] = utils.movingStd(muscle_thickness, muscle_win_size)
 
 		else:
-			avg_thickness[horn] = utils.movingAverage(muscle_thickness, 15)
-			avg_slice_thickness[horn] = utils.circularAverage(slice_thickness, 9)
-			errors[horn] = utils.movingStd(muscle_thickness, 15)
+			avg_thickness[horn] = utils.movingAverage(muscle_thickness, 
+				muscle_win_size)
+			avg_slice_thickness[horn] = utils.circularAverage(slice_thickness, 
+				circular_win_size)
+			errors[horn] = utils.movingStd(muscle_thickness, muscle_win_size)
 
 	# Plot everything
 	plots.plotMuscleThickness(avg_thickness, errors)
