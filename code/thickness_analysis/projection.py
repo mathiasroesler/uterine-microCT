@@ -123,14 +123,17 @@ def findProjectionPoints(img, centre_point, nb_points):
 			y_points = y_points[intersection]
 
 		else:
+			# Case of the vertical line that goes through the centre
 			x_points = np.arange(img.shape[1], dtype=int)
 			y_points = np.ones(img.shape[1], dtype=int) * y_centre
 
+		# Create the line and get the pixel values that it cuts through
 		line_y, line_x = skd.line(y_points[0], x_points[0], y_points[-1],
 			x_points[-1])
 		line = img[line_y, line_x]
-		coords = np.where(line[:-1] != line[1:])[0]
 
+		# Find the indices of rising and falling edges
+		coords = np.where(line[:-1] != line[1:])[0] 
 		for j in np.arange(0, len(coords), 2):
 			coords[j] += 1
 
@@ -145,6 +148,9 @@ def findProjectionPoints(img, centre_point, nb_points):
 
 def createProjectionPointCoords(x_coords, y_coords, centre_point):
 	""" Creates the (x, y) pairs of coordinates for the projection points
+
+	The two first points are on the lower half of the horn and the two last
+	ones are on the upper half of the horn. 
 
 	Arguments:
 	x_coords -- list[int], list of coordinates of the projection points on
@@ -173,8 +179,9 @@ def createProjectionPointCoords(x_coords, y_coords, centre_point):
 	points_above = np.where(diff[:, 1] > 0)[0] # After x centre
 
 	if points_below.size == 0:
-		points_below = np.where(diff[:, 0] > 0)[0]
-		points_above = np.where(diff[:, 0] < 0)[0]
+		# Case of the horizontal line
+		points_below = np.where(diff[:, 0] > 0)[0] # Right side
+		points_above = np.where(diff[:, 0] < 0)[0] # Left side
 
 	lower_idx = points_below[
 		np.argmin(np.linalg.norm(diff[points_below], axis=1))]
