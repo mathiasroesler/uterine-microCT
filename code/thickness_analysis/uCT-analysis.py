@@ -55,18 +55,17 @@ if __name__ == "__main__":
 			full_path, "{}_horn".format(horn)), extension=args.extension)
 
 		nb_imgs = len(mask_stack)
-		slice_nbs = [10, nb_imgs // 2, nb_imgs-20]
 	
 		# Window sizes for different moving averages
 		muscle_win_size = round(0.05 * nb_imgs)
-		circular_win_size = round(0.05 * args.points)
+		circular_win_size = round(0.10 * args.points)
 
 		print("   Finding centreline")
 		centreline = projection.findCenterline(mask_stack, horn=horn)
 		
 		print("   Estimating muscle thickness")
 		muscle_thickness, slice_thickness = projection.estimateMuscleThickness(
-			mask_stack, centreline, args.points, slice_nbs)  
+			mask_stack, centreline, args.points, params[horn]["slice_nbs"])  
 
 		# Rescale the thickness to mm
 		muscle_thickness *= params["scaling_factor"]
