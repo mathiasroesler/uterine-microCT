@@ -24,7 +24,7 @@ if __name__ == "__main__":
 	parser.add_argument("--horn", type=str, choices={"left", "right", "both"},
 		help="horn to process", default="both")
 	parser.add_argument("-p", "--points", type=int, metavar="points",
-		help="number of points to use for the projection", default=32)
+		help="number of points to use for the projection", default=128)
 	parser.add_argument("-s", "--switch", action='store_true',
 		help="switches the labels of the left and right horn")
 
