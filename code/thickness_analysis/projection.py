@@ -134,8 +134,11 @@ def findProjectionPoints(img, centre_point, nb_points):
 		for j in np.arange(0, len(coords), 2):
 			coords[j] += 1
 
+		x_coords = line_x[coords]
+		y_coords = line_y[coords]
+
 		projection_points[i*4:(i+1)*4] = createProjectionPointCoords(
-			line_x[coords], line_y[coords], centre_point)
+			x_coords[:4], y_coords[:4], centre_point)
 
 	return projection_points
 
