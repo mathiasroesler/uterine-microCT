@@ -16,6 +16,7 @@ function [rotated_stack, centre_line] = rotateImageStack(img_stack, horn, nb_use
 nb_slices = size(img_stack, 3);
 rotated_stack = zeros(size(img_stack));
 centre_line = zeros(2, nb_slices);
+idx_to_remove = [];
 
 if matches(horn, 'left')
     direction = 1;
@@ -77,6 +78,18 @@ for k = 1:nb_slices
         rotated_mask = rotated_mask(:, 1:end+dim_diff(2));
     end   
 
-    % Remove isolated pixels and add rotated mask to stack
-    rotated_stack(:, :, k) = bwmorph(rotated_mask, 'clean');
+    % Check the ratio of white pixel to remove ill-rotated slices
+    nb_w_pixels = sum(sum(rotated_mask > 0));
+
+    if nb_w_pixels / numel(rotated_mask) > 1e-3
+        % Remove isolated pixels and add rotated mask to stack
+        rotated_stack(:, :, k) = bwmorph(rotated_mask, 'clean');
+
+    else
+        disp("Slice " + k + ": bad rotation");
+        idx_to_remove = [idx_to_remove, k];
+    end
 end
+
+centre_line(:, idx_to_remove) = [];
+rotated_stack(:, :, idx_to_remove) = [];
