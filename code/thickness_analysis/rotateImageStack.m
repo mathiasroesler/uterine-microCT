@@ -1,4 +1,4 @@
-function rotated_stack = rotateImageStack(img_stack, horn, nb_used_slices)
+function [rotated_stack, centre_line] = rotateImageStack(img_stack, horn, nb_used_slices)
 %ROTATEIMAGESTACK Rotates each image in the stack based on the direction of
 %the centreline vector
 %
@@ -9,9 +9,13 @@ function rotated_stack = rotateImageStack(img_stack, horn, nb_used_slices)
 %    vector.
 %
 %   Return:
-%    - rotated_stack, stack of N-nb_used_slices MxP rotated images, 
-%   rotated_stack(MxPx(N-nb_used_slices)).
+%    - rotated_stack, stack of N MxP rotated images, 
+%   rotated_stack(MxPxN).
+%    - centre_line, list of centre points for each slice,
+%   centre_line(2xN).
+nb_slices = size(img_stack, 3);
 rotated_stack = zeros(size(img_stack));
+centre_line = zeros(2, nb_slices);
 
 if matches(horn, 'left')
     direction = 1;
@@ -27,13 +31,20 @@ if ~isnumeric(img_stack)
     img_stack = double(img_stack);
 end
 
-for k = 1:size(img_stack, 3)-nb_used_slices
+for k = 1:nb_slices
     cur_mask = img_stack(:, :, k); % Current mask to rotate
-    next_mask = img_stack(:, :, k+nb_used_slices); % Next mask for finding rotation axis
-    
+
+    % Next mask for finding rotation axis
+    if k < nb_slices-nb_used_slices
+        next_mask = img_stack(:, :, k+nb_used_slices); 
+    else
+        % Use the previous slices to get rotation vector
+        next_mask = img_stack(:, :, k-nb_used_slices); 
+    end
     % Find centre points
     cur_centrepoints = findCentrepoints(cur_mask);
     next_centrepoints = findCentrepoints(next_mask);
+    centre_line(:, k) = cur_centrepoints(direction, :);
 
     % Get the normalised centre vector in 3D
     centre_vector = [next_centrepoints(direction, :) - cur_centrepoints(direction, :), nb_used_slices];
