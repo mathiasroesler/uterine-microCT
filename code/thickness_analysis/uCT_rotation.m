@@ -31,6 +31,6 @@ for k = 1:length(horns)
     saveImageStack(rotated_stack, base_dir + horn + "_horn", ...
         params.prefix, 0, extension);
 
-    save(base_dir + horn + "_horn/centreline.mat", centre_line);
+    save(base_dir + horn + "_horn/centreline.mat", "centre_line");
     clear rotated_stack % Save memory
 end
