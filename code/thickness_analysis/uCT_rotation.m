@@ -23,10 +23,11 @@ for k = 1:length(horns)
         error("Error: invalid horn selection.");
     end
 
-    rotated_stack = rotateImageStack( ...
+    [rotated_stack, centre_line] = rotateImageStack( ...
         mask_stack(:, :, start_nb:end_nb), horn, nb_used_slices); 
     saveImageStack(rotated_stack, base_dir + horn + "_horn", ...
         params.prefix, 0, extension);
 
+    save(base_dir + horn + "_horn/centreline.mat", centre_line);
     clear rotated_stack % Save memory
 end
