@@ -9,6 +9,7 @@ import os
 import utils
 import plots
 import argparse
+import scipy.io
 import projection
 import numpy as np
 
@@ -61,7 +62,9 @@ if __name__ == "__main__":
 		circular_win_size = round(0.10 * args.points)
 
 		print("   Finding centreline")
-		centreline = projection.findCenterline(mask_stack, horn=horn)
+		centreline_dict = scipy.io.loadmat(full_path + 
+			"/{}_horn/centreline.mat".format(horn))
+		centreline = np.transpose(centreline_dict["centre_line"])
 		
 		print("   Estimating muscle thickness")
 		muscle_thickness, slice_thickness = projection.estimateMuscleThickness(
