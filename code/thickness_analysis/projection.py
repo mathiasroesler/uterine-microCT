@@ -85,11 +85,11 @@ def findHornRegion(regions, horn="left"):
 
 def findProjectionPoints(img, centre_point, nb_points):
 	""" Find the projection points from the centre point onto the muscle
-	layers in four directions (top, bottom, left, right)
+	layers given the desired number of points.
 
 	Arguments:
 	img -- ndarray, image to analyse.
-	centre_point -- list[int], coordinates of the centre point.
+	centre_point -- list[int], coordinates of the centre point (XY).
 	nb_points -- int, number of desired projection points, must be a 
 		multiple of 2.
 
@@ -103,8 +103,8 @@ def findProjectionPoints(img, centre_point, nb_points):
 		exit(1)
 
 	# Ensure that coordinates are integers
-	x_centre = int(np.round(centre_point[1]))
-	y_centre = int(np.round(centre_point[0]))
+	x_centre = int(np.round(centre_point[0]))
+	y_centre = int(np.round(centre_point[1]))
 
 	angles = np.arange(1, 1+(nb_points/2)) * (np.pi / (nb_points / 2))
 	projection_points = np.zeros((nb_points*2, 2), dtype=int)
@@ -170,7 +170,7 @@ def createProjectionPointCoords(x_coords, y_coords, centre_point):
 			" the same size.\n")
 		exit(1)
 
-	point_list = np.transpose([y_coords, x_coords])
+	point_list = np.transpose([x_coords, y_coords])
 
 	# Find the indices of the two nearest points to the centre
 	diff = point_list - centre_point
@@ -234,7 +234,6 @@ def estimateMuscleThickness(img_stack, centreline, nb_points, slice_nbs):
 		try:
 			projection_points = findProjectionPoints(img, centreline[i, :], 
 				nb_points)
-
 			diff = np.diff(projection_points, axis=0)
 			norm = np.linalg.norm(diff, axis=1)	
 			thickness = norm[np.arange(0, projection_points.shape[0], 2)]
