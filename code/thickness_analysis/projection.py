@@ -217,6 +217,14 @@ def estimateMuscleThickness(img_stack, centreline, nb_points, slice_nbs):
 		for three slices.
 	
 	"""
+	try:
+		assert(len(img_stack) == len(centreline))
+
+	except AssertionError:
+		sys.stderr.write("Error: the image stack and the centreline do not " \
+			"have the same size.\n")
+		exit()
+
 	nb_imgs = len(img_stack)
 	muscle_thickness_array = np.zeros(nb_imgs)
 	slice_thickness_array = list()
