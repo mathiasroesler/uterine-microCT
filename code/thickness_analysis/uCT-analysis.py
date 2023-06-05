@@ -64,7 +64,7 @@ if __name__ == "__main__":
 		print("   Finding centreline")
 		centreline_dict = scipy.io.loadmat(full_path + 
 			"/{}_horn/centreline.mat".format(horn))
-		centreline = np.transpose(centreline_dict["centre_line"])
+		centreline = np.transpose(centreline_dict["centreline"])
 		
 		print("   Estimating muscle thickness")
 		muscle_thickness, slice_thickness = projection.estimateMuscleThickness(
