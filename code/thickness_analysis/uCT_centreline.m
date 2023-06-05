@@ -12,8 +12,8 @@ for k = 1:length(horns)
     centreline = zeros(2, nb_slices);
 
     for m = 1:nb_slices
-        centre_points = findCentrepoints(mask_stack(:, :, m));
-        centreline(:, m) = centre_points(k, :);
+        centre_points = findCentrepoints(mask_stack(:, :, m), horn);
+        centreline(:, m) = centre_points(1, :);
     end
 
     save(base_dir + horn + "_horn/centreline.mat", "centreline");
