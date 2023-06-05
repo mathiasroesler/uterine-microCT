@@ -166,7 +166,10 @@ def createProjectionPointCoords(x_coords, y_coords, centre_point, theta):
 		projection points.
 
 	"""
-	if len(x_coords) != len(y_coords):
+	try:
+		assert(len(x_coords) == len(y_coords))
+
+	except AssertionError:
 		sys.stderr.write("Error: x_coords and y_coords should have" \
 			" the same size.\n")
 		exit(1)
