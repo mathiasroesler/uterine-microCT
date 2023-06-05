@@ -24,13 +24,12 @@ for k = 1:length(horns)
     end
 
     disp("Rotating " + horn + " horn");
-    [rotated_stack, centre_line] = rotateImageStack( ...
+    rotated_stack = rotateImageStack( ...
         mask_stack(:, :, start_nb:end_nb), horn, nb_used_slices); 
 
     disp("Saving " + horn + " horn");
     saveImageStack(rotated_stack, base_dir + horn + "_horn", ...
         params.prefix, 0, extension);
 
-    save(base_dir + horn + "_horn/centreline.mat", "centre_line");
     clear rotated_stack % Save memory
 end
