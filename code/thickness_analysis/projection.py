@@ -141,12 +141,12 @@ def findProjectionPoints(img, centre_point, nb_points):
 		y_coords = line_y[coords]
 
 		projection_points[i*4:(i+1)*4] = createProjectionPointCoords(
-			x_coords, y_coords, centre_point, theta)
+			x_coords, y_coords, centre_point, theta, img)
 
 	return projection_points
 
 
-def createProjectionPointCoords(x_coords, y_coords, centre_point, theta):
+def createProjectionPointCoords(x_coords, y_coords, centre_point, theta, img):
 	""" Creates the (x, y) pairs of coordinates for the projection points
 
 	The points that are to the right of the centre point are placed first
@@ -185,6 +185,8 @@ def createProjectionPointCoords(x_coords, y_coords, centre_point, theta):
 	diff = point_list - centre_point
 	distances_neg = np.linalg.norm(diff[diff[:, 1] < 0], axis=1)
 	distances_pos = np.linalg.norm(diff[diff[:, 1] >= 0], axis=1)
+	point_list_neg = point_list[diff[:, 1] < 0]
+	point_list_pos = point_list[diff[:, 1] >= 0]
 
 	if len(point_list) == 4:
 		# If 4 points were found the indices are obvious
@@ -198,8 +200,8 @@ def createProjectionPointCoords(x_coords, y_coords, centre_point, theta):
 		max_idx = np.max(nearest_points_idx_pos)
 
 	# Create the sets of points on the inner and outer edges
-	first_set = point_list[min_idx-1:min_idx+1]
-	second_set = point_list[max_idx:max_idx+2]
+	first_set = point_list_neg[min_idx-1:min_idx+1]
+	second_set = point_list_pos[max_idx:max_idx+2]
 
 	# Sort the point sets to place the right points first
 	if theta == np.pi:
