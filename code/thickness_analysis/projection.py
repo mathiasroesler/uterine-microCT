@@ -191,13 +191,18 @@ def createProjectionPointCoords(x_coords, y_coords, centre_point, theta, img):
 	if len(point_list) == 4:
 		# If 4 points were found the indices are obvious
 		min_idx = 1
-		max_idx = 2
+		max_idx = 0
 	
 	else:
 		nearest_points_idx_neg = np.argmin(distances_neg)
 		nearest_points_idx_pos = np.argmin(distances_pos)
 		min_idx = np.min(nearest_points_idx_neg)
 		max_idx = np.max(nearest_points_idx_pos)
+		
+		if min_idx == 0:
+			# If only one point is found
+			min_idx = 1
+
 
 	if theta == np.pi:
 		# Flip point list back to XY
