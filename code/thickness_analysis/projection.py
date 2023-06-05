@@ -199,27 +199,20 @@ def createProjectionPointCoords(x_coords, y_coords, centre_point, theta, img):
 		min_idx = np.min(nearest_points_idx_neg)
 		max_idx = np.max(nearest_points_idx_pos)
 
+	if theta == np.pi:
+		# Flip point list back to XY
+		point_list_neg = np.fliplr(point_list_neg)
+		point_list_pos = np.fliplr(point_list_pos)
+
 	# Create the sets of points on the inner and outer edges
 	first_set = point_list_neg[min_idx-1:min_idx+1]
 	second_set = point_list_pos[max_idx:max_idx+2]
 
-	# Sort the point sets to place the right points first
-	if theta == np.pi:
-		# Flip point list back to XY
-		point_list = np.fliplr(point_list)
+	if diff[min_idx, 1] > 0:
+		projection_points = np.concatenate((first_set, second_set))
 
-		if diff[min_idx, 1] < 0:
-			projection_points = np.concatenate((first_set, second_set))
-
-		elif diff[min_idx, 1] > 0:
-			projection_points = np.concatenate((second_set, first_set))
-
-	else:	
-		if diff[min_idx, 1] > 0:
-			projection_points = np.concatenate((first_set, second_set))
-
-		elif diff[min_idx, 1] < 0:
-			projection_points = np.concatenate((second_set, first_set))
+	elif diff[min_idx, 1] < 0:
+		projection_points = np.concatenate((second_set, first_set))
 
 	return projection_points
 
