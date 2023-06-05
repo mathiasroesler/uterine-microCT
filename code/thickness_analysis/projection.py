@@ -141,15 +141,15 @@ def findProjectionPoints(img, centre_point, nb_points):
 		y_coords = line_y[coords]
 
 		projection_points[i*4:(i+1)*4] = createProjectionPointCoords(
-			x_coords, y_coords, centre_point)
+			x_coords, y_coords, centre_point, theta)
 
 	return projection_points
 
 
-def createProjectionPointCoords(x_coords, y_coords, centre_point):
+def createProjectionPointCoords(x_coords, y_coords, centre_point, theta):
 	""" Creates the (x, y) pairs of coordinates for the projection points
 
-	The points that are to the right of the centre points are placed first
+	The points that are to the right of the centre point are placed first
 	in the array. In the case of the vertical line, the top points are 
 	placed first.
 
@@ -159,6 +159,7 @@ def createProjectionPointCoords(x_coords, y_coords, centre_point):
 	y_coords -- list[int], list of coordinates of the projection points on
 		the y axis.
 	centre_point -- ndarray, coordinates of the centre point.
+	theta -- float, angle at which the projection line is on.
 	
 	Return:
 	projection_points -- ndarray, list of coordinates of the 
@@ -171,31 +172,48 @@ def createProjectionPointCoords(x_coords, y_coords, centre_point):
 		exit(1)
 
 	point_list = np.transpose([x_coords, y_coords])
+	
+	if theta == np.pi:
+		# In the case of the horizontal line flip x and y
+		point_list = np.transpose([y_coords, x_coords])
+		centre_point = np.flip(centre_point)
 
 	# Find the indices of the two nearest points to the centre
 	diff = point_list - centre_point
-	distances = np.linalg.norm(diff, axis=1)
-	nearest_points_idx = np.argpartition(distances, 2)[:2]
+	distances_neg = np.linalg.norm(diff[diff[:, 1] < 0], axis=1)
+	distances_pos = np.linalg.norm(diff[diff[:, 1] >= 0], axis=1)
+
+	if len(point_list) == 4:
+		# If 4 points were found the indices are obvious
+		min_idx = 1
+		max_idx = 2
+	
+	else:
+		nearest_points_idx_neg = np.argmin(distances_neg)
+		nearest_points_idx_pos = np.argmin(distances_pos)
+		min_idx = np.min(nearest_points_idx_neg)
+		max_idx = np.max(nearest_points_idx_pos)
 
 	# Create the sets of points on the inner and outer edges
-	min_idx = np.min(nearest_points_idx)
-	max_idx = np.max(nearest_points_idx)
 	first_set = point_list[min_idx-1:min_idx+1]
 	second_set = point_list[max_idx:max_idx+2]
 
 	# Sort the point sets to place the right points first
-	if diff[min_idx, 1] > 0:
-		projection_points = np.concatenate((first_set, second_set))
+	if theta == np.pi:
+		# Flip point list back to XY
+		point_list = np.fliplr(point_list)
 
-	elif diff[min_idx, 1] > 0:
-		projection_points = np.concatenate((second_set, first_set))
-
-	else:
-		# Case of a vertical line
-		if diff[min_idx, 0] <= 0:
+		if diff[min_idx, 1] < 0:
 			projection_points = np.concatenate((first_set, second_set))
 
-		else:
+		elif diff[min_idx, 1] > 0:
+			projection_points = np.concatenate((second_set, first_set))
+
+	else:	
+		if diff[min_idx, 1] > 0:
+			projection_points = np.concatenate((first_set, second_set))
+
+		elif diff[min_idx, 1] < 0:
 			projection_points = np.concatenate((second_set, first_set))
 
 	return projection_points
@@ -238,7 +256,7 @@ def estimateMuscleThickness(img_stack, centreline, nb_points, slice_nbs):
 			norm = np.linalg.norm(diff, axis=1)	
 			thickness = norm[np.arange(0, projection_points.shape[0], 2)]
 			muscle_thickness_array[i] = np.mean(thickness)
-			
+
 			if i in slice_nbs:
 				# Order thickness to go from 0 to 2pi
 				ordered_thickness = np.append(
