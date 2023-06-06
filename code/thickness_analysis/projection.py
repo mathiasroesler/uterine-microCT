@@ -195,9 +195,13 @@ def estimateMuscleThickness(img_stack, centreline, nb_points, slice_nbs):
 			if i in slice_nbs:
 				# Find the four quadrants
 				quad_1 = thickness[np.arange(0, nb_points // 2, 2)]
-				quad_2 = thickness[np.arange(1+nb_points // 2, nb_points, 2)]
+				quad_2 = thickness[np.arange(nb_points // 2, nb_points-2, 2)]
 				quad_3 = thickness[np.arange(1, nb_points // 2, 2)]
-				quad_4 = thickness[np.arange(nb_points // 2, nb_points, 2)]
+				quad_4 = thickness[np.arange(1+nb_points // 2, nb_points-1, 2)]
+
+				# Add two last points to correct quadrants
+				quad_1 = np.concatenate(([thickness[nb_points-1]], quad_1))
+				quad_2 = np.concatenate((quad_2, [thickness[nb_points-2]]))
 
 				# Order thickness to go from 0 to 2pi
 				ordered_thickness = np.concatenate((
@@ -207,6 +211,7 @@ def estimateMuscleThickness(img_stack, centreline, nb_points, slice_nbs):
 				max_idx = np.argmax(ordered_thickness)
 				ordered_thickness = np.roll(ordered_thickness, nb_points - max_idx)
 				slice_thickness_array.append(ordered_thickness)
+				breakpoint()
 
 		except:
 			# Write to stderr and add slice number to the remove list
