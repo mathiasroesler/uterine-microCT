@@ -73,8 +73,8 @@ for k = 1:nb_slices
     nb_w_pixels = sum(sum(rotated_mask > 0));
 
     if nb_w_pixels / numel(rotated_mask) > 1e-3
-        % Remove isolated pixels and add rotated mask to stack
-        rotated_stack(:, :, k) = bwmorph(rotated_mask, 'clean');
+        % Clean up mask and add rotated mask to stack
+        rotated_stack(:, :, k) = imclose(rotated_mask, strel("disk", 1, 4));
 
     else
         disp("Slice " + k + ": bad rotation");
