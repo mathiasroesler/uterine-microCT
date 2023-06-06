@@ -145,10 +145,10 @@ def createProjectionPointCoords(x_coords, y_coords, centre_point, theta, img):
 	first_set = point_list_neg[min_idx-1:min_idx+1]
 	second_set = point_list_pos[max_idx:max_idx+2]
 
-	if diff[min_idx, 1] > 0:
+	if diff[min_idx, 1] < 0:
 		projection_points = np.concatenate((first_set, second_set))
 
-	elif diff[min_idx, 1] < 0:
+	elif diff[min_idx, 1] > 0:
 		projection_points = np.concatenate((second_set, first_set))
 
 	return projection_points
@@ -202,7 +202,6 @@ def estimateMuscleThickness(img_stack, centreline, nb_points, slice_nbs):
 				# Order thickness to go from 0 to 2pi
 				ordered_thickness = np.concatenate((
 					quad_1, quad_2, quad_3, quad_4))
-				breakpoint()
 
 				# Roll array to line up 0 with anti-mesometrial border
 				max_idx = np.argmax(ordered_thickness)
