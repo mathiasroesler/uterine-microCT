@@ -193,10 +193,16 @@ def estimateMuscleThickness(img_stack, centreline, nb_points, slice_nbs):
 			muscle_thickness_array[i] = np.mean(thickness)
 
 			if i in slice_nbs:
+				# Find the four quadrants
+				quad_1 = thickness[np.arange(0, nb_points // 2, 2)]
+				quad_2 = thickness[np.arange(1+nb_points // 2, nb_points, 2)]
+				quad_3 = thickness[np.arange(1, nb_points // 2, 2)]
+				quad_4 = thickness[np.arange(nb_points // 2, nb_points, 2)]
+
 				# Order thickness to go from 0 to 2pi
-				ordered_thickness = np.append(
-					thickness[np.arange(0, len(thickness), 2)],
-					thickness[np.arange(1, len(thickness), 2)])
+				ordered_thickness = np.concatenate((
+					quad_1, quad_2, quad_3, quad_4))
+				breakpoint()
 
 				# Roll array to line up 0 with anti-mesometrial border
 				max_idx = np.argmax(ordered_thickness)
