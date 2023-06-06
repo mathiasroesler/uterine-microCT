@@ -320,7 +320,7 @@ if structure_tensor
 
     % Set the derivative and smoothing template voxel widths
     DerivativeTemplateWidth = 3;
-    SmoothingTemplateWidth = 3;
+    SmoothingTemplateWidth = 5;
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %
@@ -648,7 +648,7 @@ if streamlines
     % Set parameters and paths
     %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    Level = 2; % frequency resolution of ST/Hessian data to use
+    Level = 3; % frequency resolution of ST/Hessian data to use
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %
@@ -657,7 +657,7 @@ if streamlines
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%
     InputPath = src_dir + '/binary/';
-    OutputPath = src_dir + '/binary/';
+    OutputPath = src_dir + '/binary';
     MaskPath = src_dir + '/mask/';
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %
@@ -713,8 +713,9 @@ if streamlines
     K = K(MaskGD);
 
     % Index step sizes
-    DJ = J(1+N(1))-J(1); %DK = 225; 
-    DK = K(1+N(1)*N(2))-K(1);
+    DJ = J(1+N(1))-J(1); %
+    DK = 2; 
+    %DK = K(1+N(1)*N(2))-K(1);
     DI = 32; % fix to this value regardless of data level.
 
     fprintf('DI: %d, DJ: %d, DK: %d\n',DI,DJ,DK);
