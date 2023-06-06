@@ -53,7 +53,7 @@ if __name__ == "__main__":
 		print("Processing {} horn".format(horn))
 		print("   Loading mask stack")
 		mask_stack = utils.loadImageStack(os.path.join(
-			full_path, "{}_horn".format(horn)), extension=args.extension)
+			full_path, "{}".format(horn)), extension=args.extension)
 
 		nb_imgs = len(mask_stack)
 	
@@ -63,7 +63,7 @@ if __name__ == "__main__":
 
 		print("   Finding centreline")
 		centreline_dict = scipy.io.loadmat(full_path + 
-			"/{}_horn/centreline.mat".format(horn))
+			"/{}/centreline.mat".format(horn))
 		centreline = np.transpose(centreline_dict["centreline"])
 		
 		print("   Estimating muscle thickness")
