@@ -481,27 +481,27 @@ if structure_tensor
     t1 = etime(clock,t0); fprintf(' Fourth level smoothing time: %0.2f sec\n',t1);
     fprintf('... Fourth level data dimensions: (%d,%d,%d)\n',size(SI4));
 
-    % Smooth to fifth level using multigrid binomial averaging
-    fprintf('... Fifth level smoothing ...\n');
-    t0 = clock;
-    [Sii5,SI5,SJ5,SK5] = MultigridAveraging(Sii4,SI4,SJ4,SK4,SmoothingTemplateWidth);
-    [Sij5,SI5,SJ5,SK5] = MultigridAveraging(Sij4,SI4,SJ4,SK4,SmoothingTemplateWidth);
-    [Sik5,SI5,SJ5,SK5] = MultigridAveraging(Sik4,SI4,SJ4,SK4,SmoothingTemplateWidth);
-    [Sjj5,SI5,SJ5,SK5] = MultigridAveraging(Sjj4,SI4,SJ4,SK4,SmoothingTemplateWidth);
-    [Sjk5,SI5,SJ5,SK5] = MultigridAveraging(Sjk4,SI4,SJ4,SK4,SmoothingTemplateWidth);
-    [Skk5,SI5,SJ5,SK5] = MultigridAveraging(Skk4,SI4,SJ4,SK4,SmoothingTemplateWidth);
-    t1 = etime(clock,t0); fprintf(' Fifth level smoothing time: %0.2f sec\n',t1);
-    fprintf('... Fifth level data dimensions: (%d,%d,%d)\n',size(SI5));
-
-    % Smooth to sixth level using multigrid binomial averaging
-    fprintf('... Sixth level smoothing ...\n');
-    t0 = clock;
-    [Sii6,SI6,SJ6,SK6] = MultigridAveraging(Sii5,SI5,SJ5,SK5,SmoothingTemplateWidth);
-    [Sij6,SI6,SJ6,SK6] = MultigridAveraging(Sij5,SI5,SJ5,SK5,SmoothingTemplateWidth);
-    [Sik6,SI6,SJ6,SK6] = MultigridAveraging(Sik5,SI5,SJ5,SK5,SmoothingTemplateWidth);
-    [Sjj6,SI6,SJ6,SK6] = MultigridAveraging(Sjj5,SI5,SJ5,SK5,SmoothingTemplateWidth);
-    [Sjk6,SI6,SJ6,SK6] = MultigridAveraging(Sjk5,SI5,SJ5,SK5,SmoothingTemplateWidth);
-    [Skk6,SI6,SJ6,SK6] = MultigridAveraging(Skk5,SI5,SJ5,SK5,SmoothingTemplateWidth);
+%     % Smooth to fifth level using multigrid binomial averaging
+%     fprintf('... Fifth level smoothing ...\n');
+%     t0 = clock;
+%     [Sii5,SI5,SJ5,SK5] = MultigridAveraging(Sii4,SI4,SJ4,SK4,SmoothingTemplateWidth);
+%     [Sij5,SI5,SJ5,SK5] = MultigridAveraging(Sij4,SI4,SJ4,SK4,SmoothingTemplateWidth);
+%     [Sik5,SI5,SJ5,SK5] = MultigridAveraging(Sik4,SI4,SJ4,SK4,SmoothingTemplateWidth);
+%     [Sjj5,SI5,SJ5,SK5] = MultigridAveraging(Sjj4,SI4,SJ4,SK4,SmoothingTemplateWidth);
+%     [Sjk5,SI5,SJ5,SK5] = MultigridAveraging(Sjk4,SI4,SJ4,SK4,SmoothingTemplateWidth);
+%     [Skk5,SI5,SJ5,SK5] = MultigridAveraging(Skk4,SI4,SJ4,SK4,SmoothingTemplateWidth);
+%     t1 = etime(clock,t0); fprintf(' Fifth level smoothing time: %0.2f sec\n',t1);
+%     fprintf('... Fifth level data dimensions: (%d,%d,%d)\n',size(SI5));
+% 
+%     % Smooth to sixth level using multigrid binomial averaging
+%     fprintf('... Sixth level smoothing ...\n');
+%     t0 = clock;
+%     [Sii6,SI6,SJ6,SK6] = MultigridAveraging(Sii5,SI5,SJ5,SK5,SmoothingTemplateWidth);
+%     [Sij6,SI6,SJ6,SK6] = MultigridAveraging(Sij5,SI5,SJ5,SK5,SmoothingTemplateWidth);
+%     [Sik6,SI6,SJ6,SK6] = MultigridAveraging(Sik5,SI5,SJ5,SK5,SmoothingTemplateWidth);
+%     [Sjj6,SI6,SJ6,SK6] = MultigridAveraging(Sjj5,SI5,SJ5,SK5,SmoothingTemplateWidth);
+%     [Sjk6,SI6,SJ6,SK6] = MultigridAveraging(Sjk5,SI5,SJ5,SK5,SmoothingTemplateWidth);
+%     [Skk6,SI6,SJ6,SK6] = MultigridAveraging(Skk5,SI5,SJ5,SK5,SmoothingTemplateWidth);
 
     % Smooth to seventh level using multigrid binomial averaging
     % fprintf('... Seventh level smoothing ...\n');
@@ -554,25 +554,25 @@ if structure_tensor
     fwrite(fid,reshape(Skk4,numel(Skk4),1),'double');
     fclose(fid);
 
-    fid = fopen(sprintf('%sS5.bin',DataOutput),'wb');
-    fwrite(fid,[size(Sii5,1),size(Sii5,2),size(Sii5,3)],'uint16');
-    fwrite(fid,reshape(Sii5,numel(Sii5),1),'double');
-    fwrite(fid,reshape(Sij5,numel(Sij5),1),'double');
-    fwrite(fid,reshape(Sik5,numel(Sik5),1),'double');
-    fwrite(fid,reshape(Sjj5,numel(Sjj5),1),'double');
-    fwrite(fid,reshape(Sjk5,numel(Sjk5),1),'double');
-    fwrite(fid,reshape(Skk5,numel(Skk5),1),'double');
-    fclose(fid);
-
-    fid = fopen(sprintf('%sS6.bin',DataOutput),'wb');
-    fwrite(fid,[size(Sii6,1),size(Sii6,2),size(Sii6,3)],'uint16');
-    fwrite(fid,reshape(Sii6,numel(Sii6),1),'double');
-    fwrite(fid,reshape(Sij6,numel(Sij6),1),'double');
-    fwrite(fid,reshape(Sik6,numel(Sik6),1),'double');
-    fwrite(fid,reshape(Sjj6,numel(Sjj6),1),'double');
-    fwrite(fid,reshape(Sjk6,numel(Sjk6),1),'double');
-    fwrite(fid,reshape(Skk6,numel(Skk6),1),'double');
-    fclose(fid);
+%     fid = fopen(sprintf('%sS5.bin',DataOutput),'wb');
+%     fwrite(fid,[size(Sii5,1),size(Sii5,2),size(Sii5,3)],'uint16');
+%     fwrite(fid,reshape(Sii5,numel(Sii5),1),'double');
+%     fwrite(fid,reshape(Sij5,numel(Sij5),1),'double');
+%     fwrite(fid,reshape(Sik5,numel(Sik5),1),'double');
+%     fwrite(fid,reshape(Sjj5,numel(Sjj5),1),'double');
+%     fwrite(fid,reshape(Sjk5,numel(Sjk5),1),'double');
+%     fwrite(fid,reshape(Skk5,numel(Skk5),1),'double');
+%     fclose(fid);
+% 
+%     fid = fopen(sprintf('%sS6.bin',DataOutput),'wb');
+%     fwrite(fid,[size(Sii6,1),size(Sii6,2),size(Sii6,3)],'uint16');
+%     fwrite(fid,reshape(Sii6,numel(Sii6),1),'double');
+%     fwrite(fid,reshape(Sij6,numel(Sij6),1),'double');
+%     fwrite(fid,reshape(Sik6,numel(Sik6),1),'double');
+%     fwrite(fid,reshape(Sjj6,numel(Sjj6),1),'double');
+%     fwrite(fid,reshape(Sjk6,numel(Sjk6),1),'double');
+%     fwrite(fid,reshape(Skk6,numel(Skk6),1),'double');
+%     fclose(fid);
 
     % fid = fopen(sprintf('%sS7.bin',DataOutput),'wb');
     % fwrite(fid,[size(Sii7,1),size(Sii7,2),size(Sii7,3)],'uint16');
@@ -606,19 +606,19 @@ if structure_tensor
     fwrite(fid,reshape(SK4,numel(SK4),1),'uint16');
     fclose(fid);
 
-    fid = fopen(sprintf('%sIJK5.bin',DataOutput),'wb');
-    fwrite(fid,[size(SI5,1),size(SI5,2),size(SI5,3)],'uint16');
-    fwrite(fid,reshape(SI5,numel(SI5),1),'uint16');
-    fwrite(fid,reshape(SJ5,numel(SJ5),1),'uint16');
-    fwrite(fid,reshape(SK5,numel(SK5),1),'uint16');
-    fclose(fid);
-
-    fid = fopen(sprintf('%sIJK6.bin',DataOutput),'wb');
-    fwrite(fid,[size(SI6,1),size(SI6,2),size(SI6,3)],'uint16');
-    fwrite(fid,reshape(SI6,numel(SI6),1),'uint16');
-    fwrite(fid,reshape(SJ6,numel(SJ6),1),'uint16');
-    fwrite(fid,reshape(SK6,numel(SK6),1),'uint16');
-    fclose(fid);
+%     fid = fopen(sprintf('%sIJK5.bin',DataOutput),'wb');
+%     fwrite(fid,[size(SI5,1),size(SI5,2),size(SI5,3)],'uint16');
+%     fwrite(fid,reshape(SI5,numel(SI5),1),'uint16');
+%     fwrite(fid,reshape(SJ5,numel(SJ5),1),'uint16');
+%     fwrite(fid,reshape(SK5,numel(SK5),1),'uint16');
+%     fclose(fid);
+% 
+%     fid = fopen(sprintf('%sIJK6.bin',DataOutput),'wb');
+%     fwrite(fid,[size(SI6,1),size(SI6,2),size(SI6,3)],'uint16');
+%     fwrite(fid,reshape(SI6,numel(SI6),1),'uint16');
+%     fwrite(fid,reshape(SJ6,numel(SJ6),1),'uint16');
+%     fwrite(fid,reshape(SK6,numel(SK6),1),'uint16');
+%     fclose(fid);
 
     % fid = fopen(sprintf('%sIJK7.bin',DataOutput),'wb');
     % fwrite(fid,[size(SI7,1),size(SI7,2),size(SI7,3)],'uint16');
