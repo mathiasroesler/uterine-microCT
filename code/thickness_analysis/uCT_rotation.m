@@ -1,7 +1,7 @@
 dir_name = "AWA015_PTA_1_Rec_Trans/downsampled/muscle_segmentation/";
 extension = "png";
 horns = ["left", "right"];
-nb_used_slices = 3;
+nb_used_slices = 5;
 base_dir = join([getenv("HOME"), "Documents/phd/microCT/data", dir_name], '/');
 
 toml_map = toml.read(base_dir + "analysis.toml");
