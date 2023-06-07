@@ -211,7 +211,6 @@ def estimateMuscleThickness(img_stack, centreline, nb_points, slice_nbs):
 				max_idx = np.argmax(ordered_thickness)
 				ordered_thickness = np.roll(ordered_thickness, nb_points - max_idx)
 				slice_thickness_array.append(ordered_thickness)
-				breakpoint()
 
 		except:
 			# Write to stderr and add slice number to the remove list
