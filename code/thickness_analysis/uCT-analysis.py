@@ -8,6 +8,7 @@
 import os
 import utils
 import plots
+import pickle
 import argparse
 import scipy.io
 import projection
@@ -91,6 +92,12 @@ if __name__ == "__main__":
 				circular_win_size)
 			errors[horn] = utils.movingStd(muscle_thickness, muscle_win_size)
 
+		# Save angular thickness 
+		with open(full_path + "/{}/angular_thickness.pkl".format(
+			horn), 'wb') as f:
+			pickle.dump(avg_slice_thickness, f)
+
 	# Plot everything
 	plots.plotMuscleThickness(avg_thickness, errors)
 	plots.plotAngularThickness(avg_slice_thickness)
+

@@ -8,6 +8,7 @@
 import os
 import utils
 import plots
+import pickle
 import scipy.io
 import argparse
 import projection
@@ -71,3 +72,8 @@ if __name__ == "__main__":
 	# Plot everything
 	plots.plotAngularThickness(avg_slice_thickness)
 
+
+	# Save angular thickness
+	with open(full_path + "/{}/angular_thickness.pkl".format(
+		horn), 'wb') as f:
+		pickle.dump(avg_slice_thickness, f)
