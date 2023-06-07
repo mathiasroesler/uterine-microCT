@@ -8,6 +8,7 @@
 import os
 import utils
 import plots
+import scipy.io
 import argparse
 import projection
 import numpy as np
@@ -44,13 +45,15 @@ if __name__ == "__main__":
 	print("Processing {} horn".format(horn))
 	print("   Loading mask stack")
 	mask_stack = utils.loadImageStack(os.path.join(
-		full_path, "{}_horn".format(horn)), extension=args.extension)
+		full_path, "{}".format(horn)), extension=args.extension)
 
 	circular_win_size = round(0.10 * args.points)
 
 	print("   Finding centreline")
-	centreline = projection.findCenterline(mask_stack, horn=horn)
-	
+	centreline_dict = scipy.io.loadmat(full_path + 
+		"/{}/centreline.mat".format(horn))
+	centreline = np.transpose(centreline_dict["centreline"])
+
 	print("   Estimating muscle thickness")
 	muscle_thickness, slice_thickness = projection.estimateMuscleThickness(
 		mask_stack, centreline, args.points, params[horn]["slice_nbs"])  
@@ -62,7 +65,8 @@ if __name__ == "__main__":
 	print(u"{} horn muscle thickness: {:.2f} \u00B1 {:.2f}".format(horn, 
 		np.mean(muscle_thickness), np.std(muscle_thickness)))
 	
-	avg_slice_thickness[horn] = utils.circularAverage(slice_thickness, 9)
+	avg_slice_thickness[horn] = utils.circularAverage(slice_thickness,
+		circular_win_size)
 
 	# Plot everything
 	plots.plotAngularThickness(avg_slice_thickness)
