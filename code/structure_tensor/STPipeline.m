@@ -178,13 +178,13 @@ if diffusion
     img_output_dir = src_dir + '/extrapolated/';
 
     % Tissue mask erosion threshold and radius
-    TissueMaskErosionThreshold = 10;
-    TissueMaskErosionRadius = 2;
+    TissueMaskErosionThreshold = 20;
+    TissueMaskErosionRadius = 4;
 
     % Set the tissue boundary diffusion testing distance (voxels) - points
     % at this distance from the tissue will be used to assess the stopping
     % criteria for the diffusion iterations.
-    TissueBoundaryDiffusionTestingDistance = 2;
+    TissueBoundaryDiffusionTestingDistance = 7;
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %
@@ -648,7 +648,7 @@ if streamlines
     % Set parameters and paths
     %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    Level = 3; % frequency resolution of ST/Hessian data to use
+    Level = 2; % frequency resolution of ST/Hessian data to use
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %
@@ -675,7 +675,7 @@ if streamlines
     d2Ys = double(fread(fid,prod(N),'double'));
     dYZs = double(fread(fid,prod(N),'double'));
     d2Zs = double(fread(fid,prod(N),'double'));
-    fclose(fid);
+    fclose(fid);    
 
     fid = fopen(sprintf('%sIJK%1d.bin',InputPath,Level),'r');
     N = fread(fid,3,'uint16');
@@ -712,9 +712,58 @@ if streamlines
     J = J(MaskGD);
     K = K(MaskGD);
 
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %
+    % Eigenanalysis
+    %
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    fprintf(' ... finding ethings ... \n');
+    FA= zeros(length(d2Xs),1);
+    Fibre = zeros(length(d2Xs),3);
+    for i=1:length(d2Xs)
+        if ~mod(i,100000) fprintf(' entry: %d\n',i); end
+        % local structure tensor
+        ST = [d2Xs(i),dXYs(i),dXZs(i);dXYs(i),d2Ys(i),dYZs(i);dXZs(i),dYZs(i),d2Zs(i)];
+        [V,D] = eig(ST); % evect/eval in largest to smallest
+        [y,idx]=sort(diag(D));
+        L1 = D(idx(3),idx(3));
+        L2 = D(idx(2),idx(2));
+        L3 = D(idx(1),idx(1));
+        Fibre(i,:) = V(:,idx(1))';
+
+        Trace = (L1+L2+L3)/3;
+        Denom = sqrt(L1.^2+L2.^2+L3.^3+1e-6);
+        FA(i) = sqrt(3/2)*(sqrt((L1-Trace).^2+(L2-Trace).^2+(L3-Trace).^2))./Denom;
+    end
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %
+    % Write exdata file
+    %
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    fprintf(' ... Writing exdata file ... \n');
+
+    % output file name
+    exfname = OutputPath + '/data_points';
+
+    DataSLabels = {'FA'};
+    DataVLabels = {'Fibre'};
+    DataS = zeros(length(I),1);
+    DataS(:,1) = FA;
+    DataV = cell(1);
+    DataV{1} = Fibre;
+    GName = sprintf('DataPoints');
+    WriteGeneralExdataFile(I,J,K,[1:length(I)]',DataS,DataV,exfname,GName,DataSLabels,DataVLabels);
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %
+    % Manipulate loaded data
+    %
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
     % Index step sizes
     DJ = J(1+N(1))-J(1); %
-    DK = 2; 
+    DK = 2;
     %DK = K(1+N(1)*N(2))-K(1);
     DI = 32; % fix to this value regardless of data level.
 
