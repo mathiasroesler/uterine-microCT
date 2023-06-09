@@ -648,7 +648,7 @@ if streamlines
     % Set parameters and paths
     %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    Level = 2; % frequency resolution of ST/Hessian data to use
+    Level = 3; % frequency resolution of ST/Hessian data to use
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %
@@ -664,6 +664,7 @@ if streamlines
     % Load data
     %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    fprintf("... Level " + Level + " ...\n");
     fprintf(' ... loading in data ... \n');
 
     fid = fopen(sprintf('%sS%1d.bin',InputPath,Level),'r');
@@ -744,7 +745,7 @@ if streamlines
     fprintf(' ... Writing exdata file ... \n');
 
     % output file name
-    exfname = OutputPath + '/data_points';
+    exfname = OutputPath + '/data_points_level_' + Level;
 
     DataSLabels = {'FA'};
     DataVLabels = {'Fibre'};
@@ -762,11 +763,10 @@ if streamlines
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     % Index step sizes
-    DJ = J(1+N(1))-J(1); %
+    % Manually set
+    DJ = 8;
+    DI = 8;
     DK = 2;
-    %DK = K(1+N(1)*N(2))-K(1);
-    DI = 32; % fix to this value regardless of data level.
-
     fprintf('DI: %d, DJ: %d, DK: %d\n',DI,DJ,DK);
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
