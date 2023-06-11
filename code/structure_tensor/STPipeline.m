@@ -184,7 +184,7 @@ if diffusion
     % Set the tissue boundary diffusion testing distance (voxels) - points
     % at this distance from the tissue will be used to assess the stopping
     % criteria for the diffusion iterations.
-    TissueBoundaryDiffusionTestingDistance = 7;
+    TissueBoundaryDiffusionTestingDistance = 14;
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %
@@ -319,7 +319,7 @@ if structure_tensor
     DataOutput = src_dir + '/binary/';
 
     % Set the derivative and smoothing template voxel widths
-    DerivativeTemplateWidth = 3;
+    DerivativeTemplateWidth = 5;
     SmoothingTemplateWidth = 5;
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -766,7 +766,7 @@ if streamlines
     % Manually set
     DJ = 8;
     DI = 8;
-    DK = 2;
+    DK = 4;
     fprintf('DI: %d, DJ: %d, DK: %d\n',DI,DJ,DK);
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
