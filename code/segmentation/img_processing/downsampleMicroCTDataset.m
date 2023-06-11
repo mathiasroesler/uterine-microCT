@@ -57,12 +57,14 @@ if sum(size(new_resolution)) == 4
     new_nb_pixel_x = new_resolution(1);
     new_nb_pixel_y = new_resolution(2);
     new_stack_size = new_resolution(3);
+    z_factor = new_resolution(3);
 
 elseif isscalar(new_resolution)
     % The input is the downsampling factory
     new_nb_pixel_x = round(nb_pixel_x/new_resolution(1));
     new_nb_pixel_y = round(nb_pixel_y/new_resolution(1));
     new_stack_size = round(stack_size/new_resolution(1));
+    z_factor = new_resolution(1);
 
 else
     error("The size of the input resolution is wrong. Size should be 1 or 3.")
@@ -74,6 +76,7 @@ new_resolution_z = (stack_size/new_stack_size)*resolution; % um/pixel z-dir
 
 nb_runs = ceil(stack_size/batch_size); % Number of times to run loop
 img_paths = getImagePaths(load_directory, img_extension);
+img_save_index = 0;
 
 %% Main resizing loop
 for run = 1:nb_runs
@@ -86,6 +89,7 @@ for run = 1:nb_runs
     end
 
     batch_stack_size = last_image_nb - first_image_nb;
+    new_batch_stack_size = round(batch_stack_size / z_factor);
 
     % Load all images in current batch
     disp("Loading " + num2str(batch_stack_size) + " images in batch");
@@ -93,12 +97,13 @@ for run = 1:nb_runs
 
     % Resize current batch stack
     new_stack = imresize3(uint8(img_stack), [new_nb_pixel_x, ...
-        new_nb_pixel_y, batch_stack_size]); 
+        new_nb_pixel_y, new_batch_stack_size]); 
 
     % Save current batch stack
-    disp("Saving " + num2str(batch_stack_size) + " downsampled images");
+    disp("Saving " + num2str(new_batch_stack_size) + " downsampled images");
     saveImageStack(new_stack, save_directory, img_prefix, ...
-        first_image_nb, save_extension);
+        img_save_index, save_extension);
+    img_save_index = img_save_index + new_batch_stack_size;
 end
 
 %% Log required information
