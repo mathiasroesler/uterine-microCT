@@ -20,22 +20,32 @@ filled_mask = imfill(mask, "holes");
 centre_regions = and(not(mask), filled_mask);
 
 props = regionprops(filled_mask, 'Area', 'Centroid');
+nb_regions = length(props);
+proper_region = 0;
 
-if length(props) == 1
+% Go through regions to filter out the abherent regions
+for k = 1:nb_regions
+    if props(k).Area > 250
+        proper_region = proper_region + 1;
+        region_idx = k; % Only care about this if there is 1 proper region
+    end
+end
+
+if proper_region == 1
     % No clear separation between left and right horn, need 3 points
     % Or single horn, need 1 point
-    area = props(1).Area;
+    area = props(region_idx).Area;
 
     % Use area to sort if in the body or if single horn situation
     % 3500 may be dataset depend and a better way of doing might be needed
     if area >= 3500
         % In the body
         centrepoints = zeros(3, 2);
-        centrepoints(2, :) = props(1).Centroid; 
+        centrepoints(2, :) = props(region_idx).Centroid; 
 
     else
         % Single horn and can exit early
-        centrepoints = props(1).Centroid;
+        centrepoints = props(region_idx).Centroid;
         return;
     end
 
