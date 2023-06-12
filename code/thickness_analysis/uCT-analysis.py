@@ -34,7 +34,7 @@ if __name__ == "__main__":
 	args = parser.parse_args()
 
 	full_path = os.path.join(utils.HOME, utils.BASE, args.input_folder, 
-		utils.MASK_FOLDER)
+		utils.DATA_FOLDER)
 
 	param_file = full_path + "/analysis.toml"
 	params = utils.parseTOML(param_file)

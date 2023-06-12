@@ -14,7 +14,7 @@ import skimage.io as skio
 
 HOME = os.path.expanduser('~')
 BASE = "Documents/phd"
-MASK_FOLDER = "downsampled/muscle_segmentation"
+DATA_FOLDER = "downsampled/muscle_segmentation"
 
 
 def loadImageStack(dir_path, extension="png"):
