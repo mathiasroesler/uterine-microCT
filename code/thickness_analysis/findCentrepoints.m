@@ -1,43 +1,80 @@
 function centrepoints = findCentrepoints(mask, region)
-%FINDCENTREPOINTS Finds the centrepoints of a mask stack and places the one
-%corresponding to the horn first
+%FINDCENTREPOINTS Finds the centrepoint of a mask given the region.
+%
+%   If there is no clear separation between the left and right horn, three
+%   points are given: left, centre, and right. Otherwise a single point
+%   corresponding to the desired region is returned.
 %
 %   Input:
 %    - mask, binary mask.
-%    - region, either left, right or body. 
+%    - region, either left or right and used to sort the centrepoints. 
 %   Return:
-%    - centrepoints, centrepoints of the different regions in the mask.
-%   The first row is the centre point that corresponds to the inputed horn.
+%    - centrepoints, coordinates of the centrepoints,
+%    centrepoints(1, 2) or centrepoints(3, 2).
 filled_mask = imfill(mask, "holes");
+centre_regions = and(not(mask), filled_mask);
 
-if strcmp(region, "body")
-    centre_region = mask;
+props = regionprops(filled_mask, 'Area', 'Centroid');
+
+if length(props) == 1
+    % No clear separation between left and right horn, need 3 points
+    % Or single horn, need 1 point
+    area = props(1).Area;
+
+    % Use area to sort if in the body or if single horn situation
+    % 3500 may be dataset depend and a better way of doing might be needed
+    if area >= 3500
+        % In the body
+        centrepoints = zeros(3, 2);
+        centrepoints(2, :) = props(1).Centroid; 
+
+    else
+        % Single horn and can exit early
+        centrepoints = props(1).Centroid;
+        return;
+    end
+
 else
-    centre_region = and(not(mask), filled_mask);
+    centrepoints = zeros(1, 2);
 end
 
-props = regionprops(centre_region, 'Area', 'Centroid');
+props = regionprops(centre_regions, 'Area', 'Centroid');
+nb_regions = length(props);
 
 % Create arrays to recuperate region properties
-areas = zeros(3, 1);
-centroids = zeros(3, 2);
+areas = zeros(nb_regions, 1);
+centroids = zeros(nb_regions, 2);
 
-for k = 1:length(props)
+for k = 1:nb_regions
     areas(k) = props(k).Area;
     centroids(k, :) = props(k).Centroid;
 end
 
 [~, ind] = maxk(areas, 2); % Find two largest areas indices
-centrepoints = centroids(ind, :); % Get the correct centroids
+centroids = centroids(ind, :); % Get the correct centroids
 
-if centrepoints(1) > centrepoints(2) && strcmp(region, "left") && centrepoints(2) > 0
-    % Swap the centrepoints to ensure the left one is first
-    % Make sure the second centre point exists first
-    centrepoints([1, 2], :) = centrepoints([2, 1], :);
+if size(centrepoints, 1) == 3
+    % Find the left and right centroids and sort them
+    if centroids(1, 1) > centroids(2, 1)
+        centrepoints(1, :) = centroids(2, :);
+        centrepoints(3, :) = centroids(1, :);
 
-elseif centrepoints(2) > centrepoints(1) && strcmp(region, "right")
-    % Swap the centrepoints to ensure the right one is first
-    centrepoints([2, 1], :) = centrepoints([1, 2], :);
+    else
+        centrepoints(1, :) = centroids(1, :);
+        centrepoints(3, :) = centroids(2, :);
+    end
+
+else
+    if strcmp(region, "left")
+        % Get the left most centre point
+        [~, idx] = min(centroids(:, 1));
+        centrepoints(1, :) = centroids(idx, :);
+
+    elseif strcmp(region, "right")
+        % Get the right most centre point
+        [~, idx] = max(centroids(:, 1));
+        centrepoints(1, :) = centroids(idx, :);
+    end
 end
 
 end
