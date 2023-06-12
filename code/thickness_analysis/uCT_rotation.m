@@ -1,6 +1,6 @@
 dir_name = "AWA015_PTA_1_Rec_Trans/downsampled/muscle_segmentation/";
 extension = "png";
-regions = ["left", "right", "body"];
+regions = ["left", "right"];
 nb_used_slices = 5;
 base_dir = join([getenv("HOME"), "Documents/phd/microCT/data", dir_name], '/');
 

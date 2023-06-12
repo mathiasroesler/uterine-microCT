@@ -15,8 +15,12 @@ nb_slices = size(img_stack, 3);
 rotated_stack = zeros(size(img_stack));
 idx_to_remove = [];
 
-if ~matches(region, 'left') && ~matches(region, 'right') && ~matches(region, 'body')
-    error("Error: incorrect value for horn. Should be either left, right or body")
+if matches(region, 'left')
+    region_nb = 1;
+elseif matches(region, 'right')
+    region_nb = 3;
+else
+    error("Error: incorrect value for horn. Should be either left or right")
 end
 
 if ~isnumeric(img_stack)
@@ -38,12 +42,22 @@ for k = 1:nb_slices
     cur_centrepoints = findCentrepoints(cur_mask, region);
     next_centrepoints = findCentrepoints(next_mask, region);
 
+    if size(cur_centrepoints, 1) == 3
+        % Get correct centre point if several are returned
+        cur_centrepoints = cur_centrepoints(region_nb, :);
+    end
+
+    if size(next_centrepoints, 1) == 3
+        % Get correct centre point if several are returned
+        next_centrepoints = next_centrepoints(region_nb, :);
+    end
+
     % Get the normalised centre vector in 3D
-    centre_vector = [next_centrepoints(1, :) - cur_centrepoints(1, :), nb_used_slices];
+    centre_vector = [next_centrepoints - cur_centrepoints, nb_used_slices];
     centre_vector = centre_vector ./ norm(centre_vector);
 
     % Create the transformation matrix
-    origin = [cur_centrepoints(1, :), 0];
+    origin = [cur_centrepoints, 0];
     T = findRotationMatrix(centre_vector, [0, 0, 1], origin);
 
     % Pad the current mask to make a 3D object for rotation
