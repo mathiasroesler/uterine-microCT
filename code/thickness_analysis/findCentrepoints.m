@@ -11,6 +11,11 @@ function centrepoints = findCentrepoints(mask, region)
 %   Return:
 %    - centrepoints, coordinates of the centrepoints,
 %    centrepoints(1, 2) or centrepoints(3, 2).
+if ~islogical(mask)
+    % Convert to logical if not because regionprops only works on logical
+    mask = imbinarize(mask);
+end
+
 filled_mask = imfill(mask, "holes");
 centre_regions = and(not(mask), filled_mask);
 
