@@ -649,7 +649,10 @@ if streamlines
     %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     Level = 3; % frequency resolution of ST/Hessian data to use
-
+    % Index step size
+    DJ = 4;
+    DI = 4;
+    DK = 3;
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %
     % Data and path locations
@@ -763,10 +766,7 @@ if streamlines
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     % Index step sizes
-    % Manually set
-    DJ = 8;
-    DI = 8;
-    DK = 4;
+    % Manually set earlier
     fprintf('DI: %d, DJ: %d, DK: %d\n',DI,DJ,DK);
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
