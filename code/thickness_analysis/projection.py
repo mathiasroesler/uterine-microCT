@@ -15,6 +15,19 @@ import skimage.transform as skt
 import skimage.morphology as skmo
 
 
+def projectPoint(A, B, P):
+    AB = B - A  # Vector representing the line AB
+    AP = P - A  # Vector from point A to the point P
+
+    # Calculate the projection of AP onto AB
+    projection = np.dot(AP, AB) / np.dot(AB, AB)
+
+    # Calculate the projected point
+    projected_point = A + projection * AB
+
+    return projected_point
+
+
 def findProjectionPoints(img, centre_point, nb_points):
 	""" Find the projection points from the centre point onto the muscle
 	layers given the desired number of points.
