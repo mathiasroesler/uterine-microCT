@@ -102,10 +102,16 @@ def findProjectionPoints(img, centre_point, nb_points, horn):
 			elif horn == "right":
 				img[i, :line_x[i]] = 0;
 
+		# Select the correct centre point based on the horn
+		if horn == "left":
+			centre_point = centre_point[0:2]
+
+		elif horn == "right":
+			centre_point = centre_point[4:6]
 	
 	for i, theta in enumerate(angles):
 		# Find the line for the given angle
-		line_x, line_y = findLineCoordinates(img, centre_point, angle)
+		line_x, line_y = findLineCoordinates(img.shape, centre_point, theta)
 		line = img[line_y, line_x]
 
 		# Find the indices of rising and falling edges
@@ -263,7 +269,6 @@ def estimateMuscleThickness(img_stack, centreline, nb_points, slice_nbs, horn):
 			sys.stderr.write("Warning: unable to process image number {}\n".format(
 				i))
 			idx_removed_slices.append(i)
-			
 
 	# Remove the slices the values of the slices that were not processed
 	muscle_thickness_array = np.delete(muscle_thickness_array, 
