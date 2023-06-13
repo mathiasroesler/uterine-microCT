@@ -58,7 +58,7 @@ def findLineCoordinates(img_shape, centre_point, theta):
 	return line_x, line_y
 
 
-def findProjectionPoints(img, centre_point, nb_points):
+def findProjectionPoints(img, centre_point, nb_points, horn):
 	""" Find the projection points from the centre point onto the muscle
 	layers given the desired number of points.
 
@@ -67,13 +67,17 @@ def findProjectionPoints(img, centre_point, nb_points):
 	centre_point -- list[int], coordinates of the centre point (XY).
 	nb_points -- int, number of desired projection points, must be a 
 		multiple of 2.
+	horn -- str {left, right}, horn that is been analysed
 
 	Return:
 	projection_points -- ndarray, list of the coordinates of the
 		projection points.
 
 	"""
-	if not nb_points % 2 == 0:
+	try:
+		assert(nb_points % 2 == 0)
+
+	except AssertionError:
 		sys.stderr.write("Error: the number of points needs to be even.\n")
 		exit(1)
 
@@ -87,13 +91,21 @@ def findProjectionPoints(img, centre_point, nb_points):
 		v = v / np.linalg.norm(v)
 
 		# Use the middle point to draw a line
-		line_x, line_y = findLine(img.shape, centre_point[2:4], 
+		line_x, _ = findLineCoordinates(img.shape, centre_point[2:4], 
 			np.arccos(np.dot(v, [0, -1])))
-		breakpoint()
 
+		for i in range(len(line_x)):
+			# Clear half of the image based on the horn
+			if horn == "left":
+				img[i, line_x[i]:] = 0
+
+			elif horn == "right":
+				img[i, :line_x[i]] = 0;
+
+	
 	for i, theta in enumerate(angles):
 		# Find the line for the given angle
-		line_x, line_y = findLine(img, centre_point, angle)
+		line_x, line_y = findLineCoordinates(img, centre_point, angle)
 		line = img[line_y, line_x]
 
 		# Find the indices of rising and falling edges
@@ -186,7 +198,7 @@ def createProjectionPointCoords(x_coords, y_coords, centre_point, theta, img):
 	return projection_points
 
 
-def estimateMuscleThickness(img_stack, centreline, nb_points, slice_nbs):
+def estimateMuscleThickness(img_stack, centreline, nb_points, slice_nbs, horn):
 	""" Estimates the muscle thickness of each slice
 	
 	Arguments:
@@ -195,6 +207,7 @@ def estimateMuscleThickness(img_stack, centreline, nb_points, slice_nbs):
 	nb_points -- int, number of points to use for projection.
 	slice_nbs -- list[int], number of the slices at which to save
 		angular thickness.
+	horn -- str {left, right}, horn that is been analysed
 
 	Return:
 	muscle_thickness_array -- ndarray, muscle thickness of each slice.
@@ -218,7 +231,7 @@ def estimateMuscleThickness(img_stack, centreline, nb_points, slice_nbs):
 	for i, img in enumerate(img_stack):
 		try:
 			projection_points = findProjectionPoints(img, centreline[i, :], 
-				nb_points)
+				nb_points, horn)
 			diff = np.diff(projection_points, axis=0)
 			norm = np.linalg.norm(diff, axis=1)	
 			thickness = norm[np.arange(0, projection_points.shape[0], 2)]
@@ -241,7 +254,8 @@ def estimateMuscleThickness(img_stack, centreline, nb_points, slice_nbs):
 
 				# Roll array to line up 0 with anti-mesometrial border
 				max_idx = np.argmax(ordered_thickness)
-				ordered_thickness = np.roll(ordered_thickness, nb_points - max_idx)
+				ordered_thickness = np.roll(ordered_thickness, 
+					nb_points - max_idx)
 				slice_thickness_array.append(ordered_thickness)
 
 		except:
@@ -249,7 +263,7 @@ def estimateMuscleThickness(img_stack, centreline, nb_points, slice_nbs):
 			sys.stderr.write("Warning: unable to process image number {}\n".format(
 				i))
 			idx_removed_slices.append(i)
-			exit()
+			
 
 	# Remove the slices the values of the slices that were not processed
 	muscle_thickness_array = np.delete(muscle_thickness_array, 
