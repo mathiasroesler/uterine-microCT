@@ -15,17 +15,47 @@ import skimage.transform as skt
 import skimage.morphology as skmo
 
 
-def projectPoint(A, B, P):
-    AB = B - A  # Vector representing the line AB
-    AP = P - A  # Vector from point A to the point P
+def findLineCoordinates(img_shape, centre_point, theta):
+	""" Finds the line in the image given an angle and a point.
 
-    # Calculate the projection of AP onto AB
-    projection = np.dot(AP, AB) / np.dot(AB, AB)
+	Arguments:
+	img_shape -- ndarray, shape of the image that is being analysed.
+	centre_point -- ndarray, coordinates of the centre point (XY).
+	theta -- angle in radians.
+	
+	Return:
+	line_x -- list[int], x coordinates of the line that belong to the
+		image.
+	line_y -- list[int], y coordinates of the line that belong to the
+		image.
 
-    # Calculate the projected point
-    projected_point = A + projection * AB
+	"""
+	# Ensure that coordinates are integers
+	x_centre = int(np.round(centre_point[0]))
+	y_centre = int(np.round(centre_point[1]))
 
-    return projected_point
+	if theta != np.pi:
+		y_points = np.arange(img_shape[0], dtype=int)
+		x_points = (((y_centre - y_points) * np.cos(theta)) /
+			 np.sin(theta) + x_centre)
+		x_points = x_points.astype(int) # Convert to int
+		
+		# Find the points that are in the image
+		intersection = np.intersect1d(np.where(x_points >= 0),
+			np.where(x_points < img_shape[1]))
+		x_points = x_points[intersection]
+		y_points = y_points[intersection]
+
+	else:
+		# Case of the vertical line that goes through the centre
+		x_points = np.arange(img_shape[1], dtype=int)
+		y_points = np.ones(img_shape[1], dtype=int) * y_centre
+
+	# Create the line and get the pixel values that it cuts through
+	line_y, line_x = skd.line(y_points[0], x_points[0], y_points[-1],
+		x_points[-1])
+
+	return line_x, line_y
 
 
 def findProjectionPoints(img, centre_point, nb_points):
@@ -47,34 +77,23 @@ def findProjectionPoints(img, centre_point, nb_points):
 		sys.stderr.write("Error: the number of points needs to be even.\n")
 		exit(1)
 
-	# Ensure that coordinates are integers
-	x_centre = int(np.round(centre_point[0]))
-	y_centre = int(np.round(centre_point[1]))
-
 	angles = np.arange(1, 1+(nb_points/2)) * (np.pi / (nb_points / 2))
 	projection_points = np.zeros((nb_points*2, 2), dtype=int)
+	
+	if (centre_point[2:4] != np.array([0, 0])).all():
+		# The horns are not clearly separated and three points are given
+		# Create a vector between the left and right points
+		v = centre_point[1:2] - centre_point[4:6]
+		v = v / np.linalg.norm(v)
+
+		# Use the middle point to draw a line
+		line_x, line_y = findLine(img.shape, centre_point[2:4], 
+			np.arccos(np.dot(v, [0, -1])))
+		breakpoint()
 
 	for i, theta in enumerate(angles):
-		if theta != np.pi:
-			y_points = np.arange(img.shape[0], dtype=int)
-			x_points = (((y_centre - y_points) * np.cos(theta)) /
-				 np.sin(theta) + x_centre)
-			x_points = x_points.astype(int) # Convert to int
-			
-			# Find the points that are in the image
-			intersection = np.intersect1d(np.where(x_points >= 0),
-				np.where(x_points < img.shape[1]))
-			x_points = x_points[intersection]
-			y_points = y_points[intersection]
-
-		else:
-			# Case of the vertical line that goes through the centre
-			x_points = np.arange(img.shape[1], dtype=int)
-			y_points = np.ones(img.shape[1], dtype=int) * y_centre
-
-		# Create the line and get the pixel values that it cuts through
-		line_y, line_x = skd.line(y_points[0], x_points[0], y_points[-1],
-			x_points[-1])
+		# Find the line for the given angle
+		line_x, line_y = findLine(img, centre_point, angle)
 		line = img[line_y, line_x]
 
 		# Find the indices of rising and falling edges
@@ -230,6 +249,7 @@ def estimateMuscleThickness(img_stack, centreline, nb_points, slice_nbs):
 			sys.stderr.write("Warning: unable to process image number {}\n".format(
 				i))
 			idx_removed_slices.append(i)
+			exit()
 
 	# Remove the slices the values of the slices that were not processed
 	muscle_thickness_array = np.delete(muscle_thickness_array, 
