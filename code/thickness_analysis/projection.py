@@ -108,7 +108,10 @@ def findProjectionPoints(img, centre_point, nb_points, horn):
 
 		elif horn == "right":
 			centre_point = centre_point[4:6]
-	
+
+	else:
+		centre_point = centre_point[0:2]
+
 	for i, theta in enumerate(angles):
 		# Find the line for the given angle
 		line_x, line_y = findLineCoordinates(img.shape, centre_point, theta)
@@ -122,25 +125,28 @@ def findProjectionPoints(img, centre_point, nb_points, horn):
 		x_coords = line_x[coords]
 		y_coords = line_y[coords]
 
-		projection_points[i*4:(i+1)*4] = createProjectionPointCoords(
-			x_coords, y_coords, centre_point, theta, img)
+		points = createProjectionPointCoords(
+			x_coords, y_coords, centre_point, theta)
+
+		projection_points[i*4:(i+1)*4] = points
 
 	return projection_points
 
 
-def createProjectionPointCoords(x_coords, y_coords, centre_point, theta, img):
+def createProjectionPointCoords(x_coords, y_coords, centre_point, theta):
 	""" Creates the (x, y) pairs of coordinates for the projection points
 
 	The points that are to the right of the centre point are placed first
 	in the array. In the case of the vertical line, the top points are 
-	placed first.
+	placed first. This function assumes that the coordinates are organised
+	from right to left.
 
 	Arguments:
 	x_coords -- list[int], list of coordinates of the projection points on
-		the x axis.
+		the x axis, ordred from right to left.
 	y_coords -- list[int], list of coordinates of the projection points on
-		the y axis.
-	centre_point -- ndarray, coordinates of the centre point.
+		the y axis, ordred from right to left.
+	centre_point -- ndarray, coordinates of the centre point (XY)
 	theta -- float, angle at which the projection line is on.
 	
 	Return:
@@ -158,48 +164,51 @@ def createProjectionPointCoords(x_coords, y_coords, centre_point, theta, img):
 
 	point_list = np.transpose([x_coords, y_coords])
 	
-	if theta == np.pi:
-		# In the case of the horizontal line flip x and y
+	if theta == np.pi/2:
+		# In the case of the vertical line flip x and y
 		point_list = np.transpose([y_coords, x_coords])
 		centre_point = np.flip(centre_point)
 
-	# Find the indices of the two nearest points to the centre
+	# Get the indices of points before and after on the first axis
 	diff = point_list - centre_point
-	distances_neg = np.linalg.norm(diff[diff[:, 1] < 0], axis=1)
-	distances_pos = np.linalg.norm(diff[diff[:, 1] >= 0], axis=1)
-	point_list_neg = point_list[diff[:, 1] < 0]
-	point_list_pos = point_list[diff[:, 1] >= 0]
 
-	if len(point_list) == 4:
-		# If 4 points were found the indices are obvious
-		min_idx = 1
-		max_idx = 0
+	if diff.shape == (2, 2):
+		# If there are only two points, assume minimal distance of 1
+		if diff[0, 0] < 0:
+			# Points need to be added after the centre point
+			point_list = np.concatenate(([[centre_point[0]+2, centre_point[1]]], 
+				[[centre_point[0]+1, centre_point[1]]], point_list))
+
+		elif diff[0, 0] >= 0:
+			# Points need to be added before the centre point
+			point_list = np.concatenate((point_list,
+				[[centre_point[0]-1, centre_point[1]]], 
+				[[centre_point[0]-2, centre_point[1]]]))
+			
+		diff = point_list - centre_point
 	
-	else:
-		nearest_points_idx_neg = np.argmin(distances_neg)
-		nearest_points_idx_pos = np.argmin(distances_pos)
-		min_idx = np.min(nearest_points_idx_neg)
-		max_idx = np.max(nearest_points_idx_pos)
+	neg_indices = np.arange(len(diff))[diff[:, 0] < 0]
+	pos_indices = np.arange(len(diff))[diff[:, 0] >= 0]
+
+	# Find the distances of the points from the centre
+	distances_neg = np.linalg.norm(diff[neg_indices], axis=1)
+	distances_pos = np.linalg.norm(diff[pos_indices], axis=1)
+
+	# Sort indices to ensure that the points are sorted
+	# from nearest to furthest
+	neg_indices = neg_indices[np.argsort(distances_neg)]
+	pos_indices = pos_indices[np.argsort(distances_pos)]
+
+	if theta == np.pi/2:
+		# In the case of the vertical reset x and y
+		point_list = np.transpose([y_coords, x_coords])
+		centre_point = np.flip(centre_point)
 		
-		if min_idx == 0:
-			# If only one point is found
-			min_idx = 1
-
-
-	if theta == np.pi:
-		# Flip point list back to XY
-		point_list_neg = np.fliplr(point_list_neg)
-		point_list_pos = np.fliplr(point_list_pos)
-
 	# Create the sets of points on the inner and outer edges
-	first_set = point_list_neg[min_idx-1:min_idx+1]
-	second_set = point_list_pos[max_idx:max_idx+2]
+	first_set = point_list[[neg_indices[0], neg_indices[1]]]
+	second_set = point_list[[pos_indices[0], pos_indices[1]]]
 
-	if diff[min_idx, 1] < 0:
-		projection_points = np.concatenate((first_set, second_set))
-
-	elif diff[min_idx, 1] > 0:
-		projection_points = np.concatenate((second_set, first_set))
+	projection_points = np.concatenate((first_set, second_set))
 
 	return projection_points
 
