@@ -124,6 +124,6 @@ def plotAngularThickness(slice_thickness):
 		rotation='vertical', fontsize=22)
 	plt.xlabel(r"Angle $\theta$ (in rad)", fontsize=22)
 
-	plt.ylim([0, 0.65])
+	plt.ylim([0, 0.7])
 	plt.xlim([0, nb_points-1])
 	plt.show()
