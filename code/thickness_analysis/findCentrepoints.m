@@ -19,13 +19,16 @@ end
 filled_mask = imfill(mask, "holes");
 centre_regions = and(not(mask), filled_mask);
 
-props = regionprops(filled_mask, 'Area', 'Centroid');
-nb_regions = length(props);
+filled_props = regionprops(filled_mask, 'Area', 'Centroid');
+nb_regions = length(filled_props);
 proper_region = 0;
+
+centre_props = regionprops(centre_regions, 'Area', 'Centroid');
+nb_holes = length(centre_props);
 
 % Go through regions to filter out the abherent regions
 for k = 1:nb_regions
-    if props(k).Area > 250
+    if filled_props(k).Area > 250
         proper_region = proper_region + 1;
         region_idx = k; % Only care about this if there is 1 proper region
     end
@@ -34,18 +37,16 @@ end
 if proper_region == 1
     % No clear separation between left and right horn, need 3 points
     % Or single horn, need 1 point
-    area = props(region_idx).Area;
-
-    % Use area to sort if in the body or if single horn situation
-    % 3500 may be dataset depend and a better way of doing might be needed
-    if area >= 3500
+    % Use the number of holes to filter out the region. If there are two
+    % then in the body, if there is 1 then single horn
+    if nb_holes > 1
         % In the body
         centrepoints = zeros(3, 2);
-        centrepoints(2, :) = props(region_idx).Centroid; 
+        centrepoints(2, :) = filled_props(region_idx).Centroid; 
 
     else
         % Single horn and can exit early
-        centrepoints = props(region_idx).Centroid;
+        centrepoints = filled_props(region_idx).Centroid;
         return;
     end
 
@@ -53,16 +54,13 @@ else
     centrepoints = zeros(1, 2);
 end
 
-props = regionprops(centre_regions, 'Area', 'Centroid');
-nb_regions = length(props);
+% Create arrays to recuperate region properties if not exited early
+areas = zeros(nb_holes, 1);
+centroids = zeros(nb_holes, 2);
 
-% Create arrays to recuperate region properties
-areas = zeros(nb_regions, 1);
-centroids = zeros(nb_regions, 2);
-
-for k = 1:nb_regions
-    areas(k) = props(k).Area;
-    centroids(k, :) = props(k).Centroid;
+for k = 1:nb_holes
+    areas(k) = centre_props(k).Area;
+    centroids(k, :) = centre_props(k).Centroid;
 end
 
 [~, ind] = maxk(areas, 2); % Find two largest areas indices
