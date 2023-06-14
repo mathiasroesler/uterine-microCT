@@ -214,6 +214,37 @@ def createProjectionPointCoords(x_coords, y_coords, centre_point, theta):
 	return projection_points
 
 
+def alignBorder(thickness):
+	""" Organises the thickness array to align the first value
+		with the anti-mesometrial border
+
+	Arguments:
+	thickness -- ndarray, array of thickness for each angle.
+
+	Return:
+	ordered_thickness -- ndarray, ordered thickness array.
+
+	"""
+	# Find the four quadrants
+	quad_1 = thickness[np.arange(0, nb_points // 2, 2)]
+	quad_2 = thickness[np.arange(nb_points // 2, nb_points-2, 2)]
+	quad_3 = thickness[np.arange(1, nb_points // 2, 2)]
+	quad_4 = thickness[np.arange(1+nb_points // 2, nb_points-1, 2)]
+
+	# Add two last points to correct quadrants
+	quad_1 = np.concatenate(([thickness[nb_points-1]], quad_1))
+	quad_2 = np.concatenate((quad_2, [thickness[nb_points-2]]))
+
+	# Order thickness to go from 0 to 2pi
+	ordered_thickness = np.concatenate((
+	quad_1, quad_2, quad_3, quad_4))
+
+	# Roll array to line up 0 with anti-mesometrial border
+	max_idx = np.argmax(ordered_thickness)
+	ordered_thickness = np.roll(ordered_thickness, 
+	nb_points - max_idx)
+
+
 def estimateMuscleThickness(img_stack, centreline, nb_points, slice_nbs, horn):
 	""" Estimates the muscle thickness of each slice
 	
@@ -254,24 +285,7 @@ def estimateMuscleThickness(img_stack, centreline, nb_points, slice_nbs, horn):
 			muscle_thickness_array[i] = np.mean(thickness)
 
 			if i in slice_nbs:
-				# Find the four quadrants
-				quad_1 = thickness[np.arange(0, nb_points // 2, 2)]
-				quad_2 = thickness[np.arange(nb_points // 2, nb_points-2, 2)]
-				quad_3 = thickness[np.arange(1, nb_points // 2, 2)]
-				quad_4 = thickness[np.arange(1+nb_points // 2, nb_points-1, 2)]
-
-				# Add two last points to correct quadrants
-				quad_1 = np.concatenate(([thickness[nb_points-1]], quad_1))
-				quad_2 = np.concatenate((quad_2, [thickness[nb_points-2]]))
-
-				# Order thickness to go from 0 to 2pi
-				ordered_thickness = np.concatenate((
-					quad_1, quad_2, quad_3, quad_4))
-
-				# Roll array to line up 0 with anti-mesometrial border
-				max_idx = np.argmax(ordered_thickness)
-				ordered_thickness = np.roll(ordered_thickness, 
-					nb_points - max_idx)
+				ordered_thickness = alignBorder(thickness)	
 				slice_thickness_array.append(ordered_thickness)
 
 		except:
