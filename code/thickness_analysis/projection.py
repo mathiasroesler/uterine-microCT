@@ -244,6 +244,7 @@ def alignBorder(thickness):
 
 	return ordered_thickness
 
+
 def estimateMuscleThickness(img_stack, centreline, nb_points, slice_nbs, horn):
 	""" Estimates the muscle thickness of each slice
 	
