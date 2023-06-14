@@ -126,26 +126,25 @@ def findProjectionPoints(img, centre_point, nb_points, horn):
 		y_coords = line_y[coords]
 
 		points = createProjectionPointCoords(
-			x_coords, y_coords, centre_point, theta, img)
+			x_coords, y_coords, centre_point, theta)
 
 		projection_points[i*4:(i+1)*4] = points
 
 	return projection_points
 
 
-def createProjectionPointCoords(x_coords, y_coords, centre_point, theta, img):
+def createProjectionPointCoords(x_coords, y_coords, centre_point, theta):
 	""" Creates the (x, y) pairs of coordinates for the projection points
 
 	The points that are to the right of the centre point are placed first
 	in the array. In the case of the vertical line, the top points are 
-	placed first. This function assumes that the coordinates are organised
-	from right to left.
+	placed first. 
 
 	Arguments:
 	x_coords -- list[int], list of coordinates of the projection points on
-		the x axis, ordred from right to left.
+		the x axis.
 	y_coords -- list[int], list of coordinates of the projection points on
-		the y axis, ordred from right to left.
+		the y axis.
 	centre_point -- ndarray, coordinates of the centre point (XY)
 	theta -- float, angle at which the projection line is on.
 	
