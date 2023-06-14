@@ -36,7 +36,7 @@ if __name__ == "__main__":
 	horn = args.horn
 
 	# Read data 
-	uCT_data = np.load(uCT_path + "/{}/angular_thickness.pkl".format(
+	uCT_data = np.load(uCT_path + "/angular_thickness.pkl".format(
 		horn), allow_pickle=True)[horn]
 	histo_data = np.load(histo_path + "/{}/angular_thickness.pkl".format(
 		horn), allow_pickle=True)[horn]
