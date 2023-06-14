@@ -57,7 +57,7 @@ if __name__ == "__main__":
 
 	print("   Estimating muscle thickness")
 	muscle_thickness, slice_thickness = projection.estimateMuscleThickness(
-		mask_stack, centreline, args.points, params[horn]["slice_nbs"])  
+		mask_stack, centreline, args.points, params[horn]["slice_nbs"], horn)  
 
 	# Rescale the thickness to mm
 	muscle_thickness *= params["scaling_factor"]
