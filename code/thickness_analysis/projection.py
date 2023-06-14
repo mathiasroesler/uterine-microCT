@@ -225,6 +225,8 @@ def alignBorder(thickness):
 	ordered_thickness -- ndarray, ordered thickness array.
 
 	"""
+	nb_points = len(thickness)
+
 	# Find the four quadrants
 	quad_1 = thickness[np.arange(0, nb_points // 2, 2)]
 	quad_2 = thickness[np.arange(nb_points // 2, nb_points-2, 2)]
@@ -239,11 +241,13 @@ def alignBorder(thickness):
 	ordered_thickness = np.concatenate((
 	quad_1, quad_2, quad_3, quad_4))
 
+
 	# Roll array to line up 0 with anti-mesometrial border
 	max_idx = np.argmax(ordered_thickness)
 	ordered_thickness = np.roll(ordered_thickness, 
 	nb_points - max_idx)
 
+	return ordered_thickness
 
 def estimateMuscleThickness(img_stack, centreline, nb_points, slice_nbs, horn):
 	""" Estimates the muscle thickness of each slice
