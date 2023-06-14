@@ -237,6 +237,7 @@ def alignBorder(thickness):
 	ordered_thickness = np.concatenate((
 	quad_1, quad_2, quad_3, quad_4))
 
+
 	# Roll array to line up 0 with anti-mesometrial border
 	max_idx = np.argmax(ordered_thickness)
 	ordered_thickness = np.roll(ordered_thickness, 
