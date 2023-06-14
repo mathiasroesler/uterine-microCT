@@ -62,12 +62,12 @@ def plotMuscleThickness(muscle_thickness, errors):
 	ax.tick_params(length=12, width=4, labelsize=22)
 	
 	# Reset x-axis ticks
-	plt.xticks(ticks=[0, 0.5, 1], 
-		labels=["Cervical end", "Centre", "Ovarian end"])
+	plt.xticks(ticks=[0, 0.2, 0.6, 1], 
+		labels=["Cervix", "Cervical end", "Centre", "Ovarian end"])
 
 	plt.ylim([0, 1])
 	plt.xlim([0, 1])
-	plt.xlabel("Location", fontsize=22)
+	plt.xlabel("Locations", fontsize=22)
 	plt.ylabel("Muscle thickness (in mm)", fontsize=22)
 	plt.legend(fontsize=22)
 
@@ -85,40 +85,40 @@ def plotAngularThickness(slice_thickness):
 	Return:
 	
 	"""
-	fig, ax = plt.subplots()
+	fig, ax = plt.subplots(2, 1, sharex=True, sharey=True)
 	colors = {"left": "black", "right": "silver"} 
 
-	for horn in slice_thickness.keys():
-		# Add last value to top of each slice
+	for i, horn in enumerate(slice_thickness.keys()):
 		y_values = slice_thickness[horn]
 
-		# Create x-axis values
+		# Create x-axis values so that everything is normalised
 		nb_points = y_values.shape[0]
 		x_values = np.arange(nb_points)
 
-		ax.plot(x_values, y_values[:, 0], 
+		ax[i].plot(x_values, y_values[:, 0], 
 			linestyle='solid', color=colors[horn],
-			label="{} horn cervical end".format(horn.capitalize()), 
-			linewidth=4)
-		ax.plot(x_values, y_values[:, 1],
+			label="Cervical end", linewidth=4)
+		ax[i].plot(x_values, y_values[:, 1],
 			linestyle='dashed', color=colors[horn],
-			label="{}  horn centre".format(horn.capitalize()), 
-			linewidth=4)
-		ax.plot(x_values, y_values[:, 2],
+			label="Centre",	linewidth=4)
+		ax[i].plot(x_values, y_values[:, 2],
 			linestyle='dotted', color=colors[horn],
-			label="{} horn ovarian end".format(horn.capitalize()),
-			linewidth=4)
+			label="Ovarian end", linewidth=4)
+		ax[i].set_title("{} horn".format(horn.capitalize()), fontsize=22)
 
-	# Change tick parameters
-	ax.tick_params(length=12, width=4, labelsize=22)
+		# Change tick parameters
+		ax[i].tick_params(length=12, width=4, labelsize=22)
+		ax[i].legend(fontsize=22)
+
 	plt.xticks(ticks=
 		[nb_points // 4, nb_points // 2,  3*nb_points // 4, nb_points-1],
 		labels=[r"$\frac{\pi}{2}$", r"$\pi$", r"$\frac{3\pi}{4}$" ,r"$2\pi$"])
 
 	# Set labels and legends
+	fig.text(0.06, 0.5, 'Muscle thickness (in mm)', ha='center', va='center', 
+		rotation='vertical', fontsize=22)
 	plt.xlabel(r"Angle $\theta$ (in rad)", fontsize=22)
-	plt.ylabel("Muscle thickness (in mm)", fontsize=22)
-	plt.legend(fontsize=22)
+	#plt.ylabel("Muscle thickness (in mm)", fontsize=22)
 
 	plt.ylim([0, 0.65])
 	plt.xlim([0, nb_points-1])
