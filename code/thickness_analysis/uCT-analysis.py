@@ -99,6 +99,11 @@ if __name__ == "__main__":
 			horn), 'wb') as f:
 			pickle.dump(avg_slice_thickness, f)
 
+		# Save muscle thickness
+		with open(full_path + "/{}/muscle_thickness.pkl".format(
+			horn), 'wb') as f:
+			pickle.dump(avg_thickness, f)
+	
 	# Plot everything
 	plots.plotMuscleThickness(avg_thickness, errors)
 	plots.plotAngularThickness(avg_slice_thickness)
