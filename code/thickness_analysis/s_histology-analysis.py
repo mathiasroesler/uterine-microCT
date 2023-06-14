@@ -8,6 +8,8 @@
 import os
 import utils
 import plots
+import pickle
+import scipy.io
 import argparse
 import projection
 import numpy as np
@@ -21,12 +23,8 @@ if __name__ == "__main__":
 		help="name of the folder containing the images")
 	parser.add_argument("-e", "--extension", type=str, metavar="extension",
 		help="extension for the saved images", default="png")
-	parser.add_argument("--horn", type=str, choices={"left", "right", "both"},
-		help="horn to process", default="right")
-	parser.add_argument("-p", "--points", type=int, metavar="points",
-		help="number of points to use for the projection", default=32)
-	parser.add_argument("-s", "--switch", action='store_true',
-		help="switches the labels of the left and right horn")
+	parser.add_argument("--points", type=int, 
+		help="number of points to use for the projection", default=128)
 
 	# Parse input arguments
 	args = parser.parse_args()
@@ -37,49 +35,45 @@ if __name__ == "__main__":
 	param_file = full_path + "/analysis.toml"
 	params = utils.parseTOML(param_file)
 
-	if args.horn == "both":
-		horns = ["left", "right"]
-
-	else:
-		horns = [args.horn]
-
 	# Dicts for results of both horns
 	avg_thickness = dict()
 	avg_slice_thickness = dict()
 	errors = dict()
 
-	for i, horn in enumerate(horns):
-		print("Processing {} horn".format(horn))
-		print("   Loading mask stack")
-		mask_stack = utils.loadImageStack(os.path.join(
-			full_path, "{}_horn".format(horn)), extension=args.extension)
+	# Use only the right horn
+	horn = "right"
 
-		param_dict = params[horn]
-		short_mask_stack = mask_stack[
-			param_dict['rot_start']:param_dict['rot_end']]
-		slice_nbs = [0, 1, 2]
+	print("Processing {} horn".format(horn))
+	print("   Loading mask stack")
+	mask_stack = utils.loadImageStack(os.path.join(
+		full_path, "{}".format(horn)), extension=args.extension)
 
-		print("   Finding centreline")
-		centreline = projection.findCenterline(short_mask_stack, horn=horn)
-		
-		print("   Estimating muscle thickness")
-		muscle_thickness, slice_thickness = projection.estimateMuscleThickness(
-			short_mask_stack, centreline, args.points, slice_nbs)  
+	circular_win_size = round(0.10 * args.points)
 
-		# Rescale the thickness to mm
-		muscle_thickness *= params["scaling_factor"]
-		slice_thickness *= params["scaling_factor"]
+	print("   Finding centreline")
+	centreline_dict = scipy.io.loadmat(full_path + 
+		"/{}/centreline.mat".format(horn))
+	centreline = np.transpose(centreline_dict["centreline"])
 
-		print(u"{} horn muscle thickness: {:.2f} \u00B1 {:.2f}".format(horn, 
-			np.mean(muscle_thickness), np.std(muscle_thickness)))
-		
-		if args.switch:
-			avg_slice_thickness[horns[i-1]] = utils.circularAverage(
-				slice_thickness, 9)
+	print("   Estimating muscle thickness")
+	muscle_thickness, slice_thickness = projection.estimateMuscleThickness(
+		mask_stack, centreline, args.points, params[horn]["slice_nbs"], horn)  
 
-		else:
-			avg_slice_thickness[horn] = utils.circularAverage(slice_thickness, 9)
+	# Rescale the thickness to mm
+	muscle_thickness *= params["scaling_factor"]
+	slice_thickness *= params["scaling_factor"]
+
+	print(u"{} horn muscle thickness: {:.2f} \u00B1 {:.2f}".format(horn, 
+		np.mean(muscle_thickness), np.std(muscle_thickness)))
+	
+	avg_slice_thickness[horn] = utils.circularAverage(slice_thickness,
+		circular_win_size)
 
 	# Plot everything
 	plots.plotAngularThickness(avg_slice_thickness)
 
+
+	# Save angular thickness
+	with open(full_path + "/{}/angular_thickness.pkl".format(
+		horn), 'wb') as f:
+		pickle.dump(avg_slice_thickness, f)
