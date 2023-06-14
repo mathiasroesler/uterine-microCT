@@ -68,6 +68,16 @@ end
 [~, ind] = maxk(areas, 2); % Find two largest areas indices
 centroids = centroids(ind, :); % Get the correct centroids
 
+% Refine the centres by using the skeleton
+skeleton = bwskel(centre_regions);
+[idx_y, idx_x] = find(skeleton == 1);
+
+for k = 1:size(centroids, 1)
+    differences = [idx_x, idx_y] - centroids(k, :);
+    [~, min_idx] = min(vecnorm(differences'));
+    centroids(k, :) = [idx_x(min_idx), idx_y(min_idx)];
+end
+
 if size(centrepoints, 1) == 3
     % Find the left and right centroids and sort them
     if centroids(1, 1) > centroids(2, 1)
