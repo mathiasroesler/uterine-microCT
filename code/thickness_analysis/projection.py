@@ -3,7 +3,7 @@
 #
 # projection.py: Functions used to find the projections points
 # Author: Mathias Roesler
-# Last modified: 03/23
+# Last modified: 06/23
 
 import sys
 import plots
@@ -126,14 +126,14 @@ def findProjectionPoints(img, centre_point, nb_points, horn):
 		y_coords = line_y[coords]
 
 		points = createProjectionPointCoords(
-			x_coords, y_coords, centre_point, theta)
+			x_coords, y_coords, centre_point, theta, img)
 
 		projection_points[i*4:(i+1)*4] = points
 
 	return projection_points
 
 
-def createProjectionPointCoords(x_coords, y_coords, centre_point, theta):
+def createProjectionPointCoords(x_coords, y_coords, centre_point, theta, img):
 	""" Creates the (x, y) pairs of coordinates for the projection points
 
 	The points that are to the right of the centre point are placed first
@@ -171,9 +171,12 @@ def createProjectionPointCoords(x_coords, y_coords, centre_point, theta):
 
 	# Get the indices of points before and after on the first axis
 	diff = point_list - centre_point
-
-	if diff.shape == (2, 2):
-		# If there are only two points, assume minimal distance of 1
+	
+	neg_indices = np.arange(len(diff))[diff[:, 0] < 0]
+	pos_indices = np.arange(len(diff))[diff[:, 0] >= 0]
+	
+	if pos_indices.shape[0] <= 1 or neg_indices.shape[0] <= 1:
+		# If some points where not found, assure minimal distance of 1
 		if diff[0, 0] < 0:
 			# Points need to be added after the centre point
 			point_list = np.concatenate(([[centre_point[0]+2, centre_point[1]]], 
@@ -186,9 +189,8 @@ def createProjectionPointCoords(x_coords, y_coords, centre_point, theta):
 				[[centre_point[0]-2, centre_point[1]]]))
 			
 		diff = point_list - centre_point
-	
-	neg_indices = np.arange(len(diff))[diff[:, 0] < 0]
-	pos_indices = np.arange(len(diff))[diff[:, 0] >= 0]
+		neg_indices = np.arange(len(diff))[diff[:, 0] < 0]
+		pos_indices = np.arange(len(diff))[diff[:, 0] >= 0]
 
 	# Find the distances of the points from the centre
 	distances_neg = np.linalg.norm(diff[neg_indices], axis=1)
