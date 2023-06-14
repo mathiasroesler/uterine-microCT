@@ -66,6 +66,7 @@ if __name__ == "__main__":
 		centreline_dict = scipy.io.loadmat(full_path + 
 			"/{}/centreline.mat".format(horn))
 		centreline = np.transpose(centreline_dict["centreline"])
+		centreline = np.round(centreline).astype(int) # Round and convert to int
 
 		print("   Estimating muscle thickness")
 		muscle_thickness, slice_thickness = projection.estimateMuscleThickness(
