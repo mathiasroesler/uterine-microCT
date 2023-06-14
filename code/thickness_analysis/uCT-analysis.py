@@ -3,7 +3,7 @@
 #
 # uCT-analysis.py: Script to analyse muscle thickness in uterine horns
 # Author: Mathias Roesler
-# Last modified: 02/23
+# Last modified: 06/23
 
 import os
 import utils
@@ -34,7 +34,7 @@ if __name__ == "__main__":
 	args = parser.parse_args()
 
 	full_path = os.path.join(utils.HOME, utils.BASE, args.input_folder, 
-		utils.MASK_FOLDER)
+		utils.DATA_FOLDER)
 
 	param_file = full_path + "/analysis.toml"
 	params = utils.parseTOML(param_file)
@@ -66,10 +66,12 @@ if __name__ == "__main__":
 		centreline_dict = scipy.io.loadmat(full_path + 
 			"/{}/centreline.mat".format(horn))
 		centreline = np.transpose(centreline_dict["centreline"])
-		
+		centreline = np.round(centreline).astype(int) # Round and convert to int
+
 		print("   Estimating muscle thickness")
 		muscle_thickness, slice_thickness = projection.estimateMuscleThickness(
-			mask_stack, centreline, args.points, params[horn]["slice_nbs"])  
+			mask_stack, centreline, args.points, params[horn]["slice_nbs"], 
+			horn)
 
 		# Rescale the thickness to mm
 		muscle_thickness *= params["scaling_factor"]
@@ -92,10 +94,13 @@ if __name__ == "__main__":
 				circular_win_size)
 			errors[horn] = utils.movingStd(muscle_thickness, muscle_win_size)
 
-		# Save angular thickness 
-		with open(full_path + "/{}/angular_thickness.pkl".format(
-			horn), 'wb') as f:
-			pickle.dump(avg_slice_thickness, f)
+	# Save angular thickness 
+	with open(full_path + "/angular_thickness.pkl", 'wb') as f:
+		pickle.dump(avg_slice_thickness, f)
+
+	# Save muscle thickness
+	with open(full_path + "/muscle_thickness.pkl", 'wb') as f:
+		pickle.dump(avg_thickness, f)
 
 	# Plot everything
 	plots.plotMuscleThickness(avg_thickness, errors)

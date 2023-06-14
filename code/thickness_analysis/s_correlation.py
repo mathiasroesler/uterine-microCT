@@ -29,14 +29,14 @@ if __name__ == "__main__":
 
 	# Set up variables
 	uCT_path = os.path.join(utils.HOME, utils.BASE, args.uCT_folder, 
-		utils.MASK_FOLDER)
+		utils.DATA_FOLDER)
 	histo_path = os.path.join(utils.HOME, utils.BASE, args.histo_folder, 
 		"muscle_segmentation")
 	regions = ["cervical", "central", "ovarian"]
 	horn = args.horn
 
 	# Read data 
-	uCT_data = np.load(uCT_path + "/{}/angular_thickness.pkl".format(
+	uCT_data = np.load(uCT_path + "/angular_thickness.pkl".format(
 		horn), allow_pickle=True)[horn]
 	histo_data = np.load(histo_path + "/{}/angular_thickness.pkl".format(
 		horn), allow_pickle=True)[horn]

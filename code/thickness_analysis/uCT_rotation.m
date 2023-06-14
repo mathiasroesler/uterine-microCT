@@ -1,7 +1,7 @@
 dir_name = "AWA015_PTA_1_Rec_Trans/downsampled/muscle_segmentation/";
 extension = "png";
-regions = ["left", "right", "body"];
-nb_used_slices = 5;
+regions = ["left", "right"];
+nb_used_slices = 4;
 base_dir = join([getenv("HOME"), "Documents/phd/microCT/data", dir_name], '/');
 
 toml_map = toml.read(base_dir + "analysis.toml");
@@ -32,7 +32,7 @@ for k = 1:length(regions)
 
     disp("Saving region: " + region);
     saveImageStack(rotated_stack, base_dir + region, ...
-        params.prefix, 0, extension);
+        params.prefix, start_nb, extension);
 
     clear rotated_stack % Save memory
 end

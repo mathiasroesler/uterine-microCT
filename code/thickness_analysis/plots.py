@@ -3,13 +3,12 @@
 #
 # plots.py: Functions used for plotting
 # Author: Mathias Roesler
-# Last modified: 03/23
+# Last modified: 06/23
 
 import sys
 import sys
 import numpy as np
 import matplotlib.pyplot as plt
-
 
 
 def plotProjectionPoints(img, centre, projection_points):
@@ -66,7 +65,7 @@ def plotMuscleThickness(muscle_thickness, errors):
 	plt.xticks(ticks=[0, 0.5, 1], 
 		labels=["Cervical end", "Centre", "Ovarian end"])
 
-	plt.ylim([0, 0.45])
+	plt.ylim([0, 1])
 	plt.xlim([0, 1])
 	plt.xlabel("Location", fontsize=22)
 	plt.ylabel("Muscle thickness (in mm)", fontsize=22)
