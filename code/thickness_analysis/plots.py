@@ -85,9 +85,14 @@ def plotAngularThickness(slice_thickness):
 	Return:
 	
 	"""
-	fig, ax = plt.subplots(2, 1, sharex=True, sharey=True)
+	fig, ax = plt.subplots(len(slice_thickness.keys()), 1, 
+		sharex=True, sharey=True)
 	colors = {"left": "black", "right": "silver"} 
 
+	if not hasattr(ax, "__len__"):
+		# If only one subplot is created
+		ax = [ax] # Convert to list for rest of code to work
+	
 	for i, horn in enumerate(slice_thickness.keys()):
 		y_values = slice_thickness[horn]
 
@@ -118,7 +123,6 @@ def plotAngularThickness(slice_thickness):
 	fig.text(0.06, 0.5, 'Muscle thickness (in mm)', ha='center', va='center', 
 		rotation='vertical', fontsize=22)
 	plt.xlabel(r"Angle $\theta$ (in rad)", fontsize=22)
-	#plt.ylabel("Muscle thickness (in mm)", fontsize=22)
 
 	plt.ylim([0, 0.65])
 	plt.xlim([0, nb_points-1])
