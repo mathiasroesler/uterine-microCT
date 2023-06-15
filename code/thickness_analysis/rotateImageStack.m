@@ -13,7 +13,6 @@ function rotated_stack = rotateImageStack(img_stack, region, nb_used_slices)
 %   rotated_stack(MxPxN).
 nb_slices = size(img_stack, 3);
 rotated_stack = zeros(size(img_stack));
-idx_to_remove = [];
 
 if matches(region, 'left')
     region_nb = 1;
@@ -29,6 +28,11 @@ if ~isnumeric(img_stack)
 end
 
 for k = 1:nb_slices
+
+    if mod(k, 50) == 0
+        disp("Slice " + k)
+    end
+
     cur_mask = img_stack(:, :, k); % Current mask to rotate
 
     % Next mask for finding rotation axis
@@ -87,18 +91,13 @@ for k = 1:nb_slices
             rotated_mask = rotated_mask(:, 1:end+dim_diff(2));
         end
 
+        rotated_stack(:, :, k) = imclose(rotated_mask, strel("disk", 1, 4));
+
         % Check the ratio of white pixel to remove ill-rotated slices
         nb_w_pixels = sum(sum(rotated_mask > 0));
 
-        if nb_w_pixels / numel(rotated_mask) > 1e-3
-            % Clean up mask and add rotated mask to stack
-            rotated_stack(:, :, k) = imclose(rotated_mask, strel("disk", 1, 4));
-
-        else
+        if nb_w_pixels / numel(rotated_mask) < 1e-3
             disp("Slice " + k + ": bad rotation");
-            idx_to_remove = [idx_to_remove, k];
         end
     end
 end
-
-rotated_stack(:, :, idx_to_remove) = [];
