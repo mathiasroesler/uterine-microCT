@@ -6,6 +6,7 @@ base_dir = join([getenv("HOME"), "Documents/phd/", dir_name], '/');
 
 for k = 1:length(regions)
     region = regions(k);
+    disp("Processing region: " + region)
     mask_paths = getImagePaths(base_dir + region, extension);
     mask_stack = loadImageStack(mask_paths);
 
