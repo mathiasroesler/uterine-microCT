@@ -648,10 +648,10 @@ if streamlines
     % Set parameters and paths
     %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    Level = 3; % frequency resolution of ST/Hessian data to use
+    Level = 4; % frequency resolution of ST/Hessian data to use
     % Index step size
-    DJ = 4;
-    DI = 4;
+    DJ = 3;
+    DI = 3;
     DK = 3;
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %
