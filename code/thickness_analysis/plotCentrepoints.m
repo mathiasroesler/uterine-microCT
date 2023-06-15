@@ -1,4 +1,4 @@
-dir_name = "AWA015_PTA_1_Rec_Trans/downsampled/muscle_segmentation/";
+dir_name = "AWA015_PTA_1_Rec_Trans/downsampled/muscle_segmentation/right";
 extension = "png";
 base_dir = join([getenv("HOME"), "Documents/phd/microCT/data", dir_name], '/');
 
@@ -7,7 +7,7 @@ mask_stack = loadImageStack(mask_paths);
 
 for k = 1:size(mask_stack, 3)
     mask = mask_stack(:, :, k);
-    centrepoints = findCentrepoints(mask, "left");
+    centrepoints = findCentrepoints(mask, "right");
 
     fig = figure;
     set(gcf,'visible','off')
