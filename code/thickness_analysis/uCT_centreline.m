@@ -1,5 +1,5 @@
-dir_name = "histology/muscle_segmentation/";
-% dir_name = "microCT/data/AWA015_PTA_1_Rec_Trans/downsampled/muscle_segmentation/";
+% dir_name = "histology/muscle_segmentation/";
+dir_name = "microCT/data/AWA015_PTA_1_Rec_Trans/downsampled/muscle_segmentation/";
 extension = "png";
 regions = ["left", "right"];
 base_dir = join([getenv("HOME"), "Documents/phd/", dir_name], '/');
