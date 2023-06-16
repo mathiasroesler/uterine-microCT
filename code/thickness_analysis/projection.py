@@ -296,7 +296,6 @@ def estimateMuscleThickness(img_stack, centreline, nb_points, slice_nbs, horn):
 			sys.stderr.write("Warning: unable to process image number {}\n".format(
 				i))
 			idx_removed_slices.append(i)
-			exit()
 
 	# Remove the slices the values of the slices that were not processed
 	muscle_thickness_array = np.delete(muscle_thickness_array, 
