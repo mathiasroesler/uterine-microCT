@@ -6,6 +6,7 @@
 # Last modified: 06/23
 
 import os
+import sys
 import utils
 import argparse
 import scipy.io
@@ -36,10 +37,10 @@ if __name__ == "__main__":
 	horn = args.horn
 
 	# Read data 
-	uCT_data = np.load(uCT_path + "/angular_thickness.pkl".format(
-		horn), allow_pickle=True)[horn]
-	histo_data = np.load(histo_path + "/{}/angular_thickness.pkl".format(
-		horn), allow_pickle=True)[horn]
+	uCT_data = np.load(uCT_path + "/angular_thickness.pkl", 
+		allow_pickle=True)[horn]
+	histo_data = np.load(histo_path + "/angular_thickness.pkl",
+		 allow_pickle=True)[horn]
 
 	try:
 		assert(uCT_data.shape == histo_data.shape)

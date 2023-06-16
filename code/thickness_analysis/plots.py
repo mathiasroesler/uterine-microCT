@@ -65,7 +65,7 @@ def plotMuscleThickness(muscle_thickness, errors):
 	plt.xticks(ticks=[0, 0.2, 0.6, 1], 
 		labels=["Cervix", "Cervical end", "Centre", "Ovarian end"])
 
-	plt.ylim([0, 1])
+	plt.ylim([0, 0.75])
 	plt.xlim([0, 1])
 	plt.xlabel("Locations", fontsize=22)
 	plt.ylabel("Muscle thickness (in mm)", fontsize=22)
@@ -124,6 +124,6 @@ def plotAngularThickness(slice_thickness):
 		rotation='vertical', fontsize=22)
 	plt.xlabel(r"Angle $\theta$ (in rad)", fontsize=22)
 
-	plt.ylim([0, 0.65])
+	plt.ylim([0, 0.7])
 	plt.xlim([0, nb_points-1])
 	plt.show()

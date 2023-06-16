@@ -119,6 +119,7 @@ def findProjectionPoints(img, centre_point, nb_points, horn):
 
 		# Find the indices of rising and falling edges
 		coords = np.where(line[:-1] != line[1:])[0] 
+
 		for j in np.arange(0, len(coords), 2):
 			coords[j] += 1
 
@@ -126,14 +127,14 @@ def findProjectionPoints(img, centre_point, nb_points, horn):
 		y_coords = line_y[coords]
 
 		points = createProjectionPointCoords(
-			x_coords, y_coords, centre_point, theta)
+			x_coords, y_coords, centre_point, theta, i)
 
 		projection_points[i*4:(i+1)*4] = points
 
 	return projection_points
 
 
-def createProjectionPointCoords(x_coords, y_coords, centre_point, theta):
+def createProjectionPointCoords(x_coords, y_coords, centre_point, theta, i):
 	""" Creates the (x, y) pairs of coordinates for the projection points
 
 	The points that are to the right of the centre point are placed first
@@ -202,8 +203,7 @@ def createProjectionPointCoords(x_coords, y_coords, centre_point, theta):
 
 	if theta == np.pi/2:
 		# In the case of the vertical reset x and y
-		point_list = np.transpose([y_coords, x_coords])
-		centre_point = np.flip(centre_point)
+		point_list = np.flip(point_list)
 		
 	# Create the sets of points on the inner and outer edges
 	first_set = point_list[[neg_indices[0], neg_indices[1]]]
@@ -213,6 +213,36 @@ def createProjectionPointCoords(x_coords, y_coords, centre_point, theta):
 
 	return projection_points
 
+
+def alignBorder(thickness):
+	""" Organises the thickness array to align the first value
+		with the anti-mesometrial border
+
+	Arguments:
+	thickness -- ndarray, array of thickness for each angle.
+
+	Return:
+	ordered_thickness -- ndarray, ordered thickness array.
+
+	"""
+	nb_points = len(thickness)
+
+	# Find the four quadrants
+	quad_1 = thickness[np.arange(0, nb_points // 2, 2)]
+	quad_2 = thickness[np.arange(1 + (nb_points) // 2, nb_points, 2)]
+	quad_3 = thickness[np.arange(1, nb_points // 2, 2)]
+	quad_4 = thickness[np.arange(nb_points // 2, nb_points, 2)]
+
+	# Order thickness to go from 0 to 2pi
+	ordered_thickness = np.concatenate((
+	quad_1, quad_2, quad_3, quad_4))
+
+	# Roll array to line up 0 with anti-mesometrial border
+	max_idx = np.argmax(ordered_thickness)
+	ordered_thickness = np.roll(ordered_thickness, 
+	nb_points - max_idx)
+
+	return ordered_thickness
 
 def estimateMuscleThickness(img_stack, centreline, nb_points, slice_nbs, horn):
 	""" Estimates the muscle thickness of each slice
@@ -254,24 +284,7 @@ def estimateMuscleThickness(img_stack, centreline, nb_points, slice_nbs, horn):
 			muscle_thickness_array[i] = np.mean(thickness)
 
 			if i in slice_nbs:
-				# Find the four quadrants
-				quad_1 = thickness[np.arange(0, nb_points // 2, 2)]
-				quad_2 = thickness[np.arange(nb_points // 2, nb_points-2, 2)]
-				quad_3 = thickness[np.arange(1, nb_points // 2, 2)]
-				quad_4 = thickness[np.arange(1+nb_points // 2, nb_points-1, 2)]
-
-				# Add two last points to correct quadrants
-				quad_1 = np.concatenate(([thickness[nb_points-1]], quad_1))
-				quad_2 = np.concatenate((quad_2, [thickness[nb_points-2]]))
-
-				# Order thickness to go from 0 to 2pi
-				ordered_thickness = np.concatenate((
-					quad_1, quad_2, quad_3, quad_4))
-
-				# Roll array to line up 0 with anti-mesometrial border
-				max_idx = np.argmax(ordered_thickness)
-				ordered_thickness = np.roll(ordered_thickness, 
-					nb_points - max_idx)
+				ordered_thickness = alignBorder(thickness)	
 				slice_thickness_array.append(ordered_thickness)
 
 		except:
