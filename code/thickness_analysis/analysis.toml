@@ -2,11 +2,11 @@ prefix = "AWA015_PTA_1"
 scaling_factor = 0.043773012 # in mm
 
 [left]
-start_nb = 111 # Slice to start rotation
+start_nb = 74 # Slice to start rotation
 end_nb = 284 # Slice to end rotation
-slice_nbs = [24, 80, 154]
+slice_nbs = [128, 200, 266]
 
 [right]
-start_nb = 111 # Slice to start rotation
-end_nb = 455 # Slice to end rotation
-slice_nbs = [29, 158, 282]
+start_nb = 74 # Slice to start rotation
+end_nb = 453 # Slice to end rotation
+slice_nbs = [149, 252, 395]
