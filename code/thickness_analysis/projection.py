@@ -119,6 +119,7 @@ def findProjectionPoints(img, centre_point, nb_points, horn):
 
 		# Find the indices of rising and falling edges
 		coords = np.where(line[:-1] != line[1:])[0] 
+
 		for j in np.arange(0, len(coords), 2):
 			coords[j] += 1
 
@@ -126,14 +127,14 @@ def findProjectionPoints(img, centre_point, nb_points, horn):
 		y_coords = line_y[coords]
 
 		points = createProjectionPointCoords(
-			x_coords, y_coords, centre_point, theta)
+			x_coords, y_coords, centre_point, theta, i)
 
 		projection_points[i*4:(i+1)*4] = points
 
 	return projection_points
 
 
-def createProjectionPointCoords(x_coords, y_coords, centre_point, theta):
+def createProjectionPointCoords(x_coords, y_coords, centre_point, theta, i):
 	""" Creates the (x, y) pairs of coordinates for the projection points
 
 	The points that are to the right of the centre point are placed first
@@ -202,8 +203,7 @@ def createProjectionPointCoords(x_coords, y_coords, centre_point, theta):
 
 	if theta == np.pi/2:
 		# In the case of the vertical reset x and y
-		point_list = np.transpose([y_coords, x_coords])
-		centre_point = np.flip(centre_point)
+		point_list = np.flip(point_list)
 		
 	# Create the sets of points on the inner and outer edges
 	first_set = point_list[[neg_indices[0], neg_indices[1]]]
@@ -231,7 +231,7 @@ def alignBorder(thickness):
 	quad_1 = thickness[np.arange(0, nb_points // 2, 2)]
 	quad_2 = thickness[np.arange(nb_points // 2, nb_points-2, 2)]
 	quad_3 = thickness[np.arange(1, nb_points // 2, 2)]
-	quad_4 = thickness[np.arange(1+nb_points // 2, nb_points-1, 2)]
+	quad_4 = thickness[np.arange((1+nb_points) // 2, nb_points-1, 2)]
 
 	# Add two last points to correct quadrants
 	quad_1 = np.concatenate(([thickness[nb_points-1]], quad_1))
@@ -240,7 +240,6 @@ def alignBorder(thickness):
 	# Order thickness to go from 0 to 2pi
 	ordered_thickness = np.concatenate((
 	quad_1, quad_2, quad_3, quad_4))
-
 
 	# Roll array to line up 0 with anti-mesometrial border
 	max_idx = np.argmax(ordered_thickness)
@@ -297,6 +296,7 @@ def estimateMuscleThickness(img_stack, centreline, nb_points, slice_nbs, horn):
 			sys.stderr.write("Warning: unable to process image number {}\n".format(
 				i))
 			idx_removed_slices.append(i)
+			exit()
 
 	# Remove the slices the values of the slices that were not processed
 	muscle_thickness_array = np.delete(muscle_thickness_array, 
