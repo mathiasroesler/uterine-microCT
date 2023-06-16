@@ -60,7 +60,7 @@ if __name__ == "__main__":
 	
 		# Window sizes for different moving averages
 		muscle_win_size = round(0.05 * nb_imgs)
-		circular_win_size = round(0.05 * args.points)
+		circular_win_size = round(0.04 * args.points)
 
 		print("   Finding centreline")
 		centreline_dict = scipy.io.loadmat(full_path + 

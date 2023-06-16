@@ -48,7 +48,7 @@ if __name__ == "__main__":
 	mask_stack = utils.loadImageStack(os.path.join(
 		full_path, "{}".format(horn)), extension=args.extension)
 
-	circular_win_size = round(0.02 * args.points)
+	circular_win_size = round(0.04 * args.points)
 
 	print("   Finding centreline")
 	centreline_dict = scipy.io.loadmat(full_path + 
