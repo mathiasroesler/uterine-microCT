@@ -9,6 +9,6 @@ code/thickness_analysis/__pycache__
 
 # Ignore asv files
 code/segmentation/img_processing/*.asv
-code/segmentation/utils/*.asv
+code/utils/*.asv
 code/structure_tensor/*.asv
 code/thickness_analysis/*.asv
