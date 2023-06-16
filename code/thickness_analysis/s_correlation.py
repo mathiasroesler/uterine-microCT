@@ -37,10 +37,10 @@ if __name__ == "__main__":
 	horn = args.horn
 
 	# Read data 
-	uCT_data = np.load(uCT_path + "/angular_thickness.pkl".format(
-		horn), allow_pickle=True)[horn]
-	histo_data = np.load(histo_path + "/{}/angular_thickness.pkl".format(
-		horn), allow_pickle=True)[horn]
+	uCT_data = np.load(uCT_path + "/angular_thickness.pkl", 
+		allow_pickle=True)[horn]
+	histo_data = np.load(histo_path + "/angular_thickness.pkl",
+		 allow_pickle=True)[horn]
 
 	try:
 		assert(uCT_data.shape == histo_data.shape)
@@ -48,6 +48,7 @@ if __name__ == "__main__":
 	except AssertionError:
 		sys.stderr.write("Error: uCT and histology data show have same shape.\n")
 
+	breakpoint()
 	for i in range(uCT_data.shape[1]):
 		correl_matrix = np.corrcoef(uCT_data[:, i], histo_data[:, i])
 		print(u"{} section correlation factor: {:.2f}".format(
