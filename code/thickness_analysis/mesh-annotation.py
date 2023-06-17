@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# mesh_annotation.py: Script that adds the thickness data to a vtu mesh
+# mesh-annotation.py: Script that adds the thickness data to a vtu mesh
 # Author: Mathias Roesler
 # Last modified: 06/23
 
