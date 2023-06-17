@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# s_projection.py: Script to generate the projection point figure
+# projection_fig_gen.py: Script to generate the projection point figure
 # Author: Mathias Roesler
-# Last modified: 03/23
+# Last modified: 06/23
 
 import os
 import argparse

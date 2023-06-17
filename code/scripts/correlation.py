@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# s_correlation.py: Script to estimate correlation between histology and uCT
+# correlation.py: Script to estimate correlation between histology and uCT
 # Author: Mathias Roesler
 # Last modified: 06/23
 

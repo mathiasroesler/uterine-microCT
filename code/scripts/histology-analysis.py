@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# s_histology-analysis.py: Script to generate the thickness based on histology
+# histology-analysis.py: Script to generate the thickness based on histology
 # Author: Mathias Roesler
-# Last modified: 03/23
+# Last modified: 06/23
 
 import os
 import pickle
