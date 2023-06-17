@@ -6,13 +6,13 @@
 # Last modified: 06/23
 
 import sys
-import plots
 import numpy as np
 import skimage.io as skio
 import skimage.draw as skd
 import skimage.measure as skme
 import skimage.transform as skt
 import skimage.morphology as skmo
+import thickness_analysis.plots as plots
 
 
 def findLineCoordinates(img_shape, centre_point, theta):

@@ -7,11 +7,11 @@
 
 import os
 import sys
-import utils
 import argparse
 import scipy.io
-import projection
 import numpy as np
+import utils.utils as utils
+import thickness_analysis.projection as projection
 
 
 if __name__ == "__main__":

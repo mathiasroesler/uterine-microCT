@@ -6,13 +6,13 @@
 # Last modified: 06/23
 
 import os
-import utils
-import plots
 import pickle
 import argparse
 import scipy.io
-import projection
 import numpy as np
+import utils.utils as utils
+import thickness_analysis.projection as projection
+import thickness_analysis.plots as plots
 
 
 if __name__ == "__main__":

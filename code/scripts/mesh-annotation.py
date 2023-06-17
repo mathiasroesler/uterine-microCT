@@ -7,10 +7,10 @@
 
 import os
 import sys
-import utils
 import meshio
 import argparse
 import numpy as np
+import utils.utils as utils
 
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser(description=

@@ -6,7 +6,6 @@
 # Last modified: 06/23
 
 import sys
-import sys
 import numpy as np
 import matplotlib.pyplot as plt
 

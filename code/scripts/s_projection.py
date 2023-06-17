@@ -6,12 +6,12 @@
 # Last modified: 03/23
 
 import os
-import utils
-import plots
 import argparse
-import projection
 import numpy as np
+import utils.utils as utils
 import matplotlib.pyplot as plt
+import thickness_analysis.plots as plots
+import thickness_analysis.projection as projection
 
 
 if __name__ == "__main__":
