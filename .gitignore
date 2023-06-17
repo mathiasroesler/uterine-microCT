@@ -2,10 +2,12 @@
 data/
 
 # Ignore python swp and cache
-code/*.swp
-code/__pycache__
+code/scripts/*.swp
+code/scripts/__pycache__
 code/thickness_analysis/*.swp
 code/thickness_analysis/__pycache__
+code/utils/*.swp
+code/utils/__pycache__
 
 # Ignore asv files
 code/segmentation/img_processing/*.asv
