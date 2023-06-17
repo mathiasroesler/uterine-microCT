@@ -5,7 +5,7 @@
 # Last modified: 06/23
 
 
-# Export the path to the utils folder in bashrc
+# Export the path to code folder in bashrc
 CURRENT_DIR=$(pwd)
 echo export PYTHONPATH=${CURRENT_DIR}:${PYTHONPATH} >> ~/.bashrc
 source ~/.bashrc
