@@ -41,6 +41,12 @@ for i=1:2
       NewSheet = V(:,idx(2))';
       NewFiber = V(:,idx(FiberIndex))';
     
+      angle = rad2deg(acos(NewFiber * [0;0;1]));
+
+      if angle > 90
+          angle = 180 - angle;
+      end
+      
       NewFiber = W(i)*NewFiber;
       NewSheet = W(i)*NewSheet;
 
@@ -67,7 +73,7 @@ for i=1:2
 
               Paths{i} = [Paths{i};CurrentPoint];
               Length(i) = Length(i)+DS;
-              Paths{i+2} = [Paths{i+2};[L3,L2,L1]];
+              Paths{i+2} = [Paths{i+2};[L3,L2,L1, angle]];
               
               Test = 1;
           else
@@ -93,6 +99,6 @@ for i=1:2
       NSteps = NSteps + 1;
 
   end
-  Paths{i+2} = [Paths{i+2};[L3,L2,L1]]; % repeat final eigenvalue content
+  Paths{i+2} = [Paths{i+2};[L3,L2,L1, angle]]; % repeat final eigenvalue content
 
 end
