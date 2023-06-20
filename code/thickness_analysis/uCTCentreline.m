@@ -61,11 +61,7 @@ for k = 1:length(regions)
         if size(centre_points, 1) == 3
             centreline(:, m) = reshape(centre_points', [6, 1]);
         else
-            if matches(region, "left")
-                centreline(1:2, m) = centre_points;
-            elseif matches(region, "right")
-                centreline(1:2, m) = centre_points;
-            end
+            centreline(1:2, m) = centre_points;
         end
     end
 
