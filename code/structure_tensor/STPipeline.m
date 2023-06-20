@@ -1,9 +1,11 @@
-function STPipeline(data_folder, mask, diffusion, structure_tensor, streamlines)
+function STPipeline(dir_path, base_name, mask, diffusion, structure_tensor, streamlines, downsampled)
 %STPipeline Runs the structure tensor analysis pipeline.
 %
+%   base_dir is $HOME/Documents/phd/
+%
 %   Input:
-%    - data_folder, name of the data folder to use located in the
-%    microCT/data folder.
+%    - dir_path, path to the directory containing the dataset from base_dir
+%    - base_name, name of the dataset.
 %    - mask, true if ThreeDMaskuCT code should be run, default value is
 %    true.
 %    - diffusion, true if the DiffusionTissueExtrapolation code should be
@@ -12,31 +14,49 @@ function STPipeline(data_folder, mask, diffusion, structure_tensor, streamlines)
 %    be run, default value is true.
 %    - streamlines, true if the ComputeStreamlines code should be run,
 %    default value is true.
+%    - downsampled, true if the dataset has been downsampled, default value
+%    is true.
 %
 %   Return:
 %
-if nargin < 5
+if nargin < 7
+    downsampled = true;
+end
+
+if nargin < 6
     streamlines = true; 
 end
 
-if nargin < 4
+if nargin < 5
     structure_tensor = true;
 end
 
-if nargin < 3
+if nargin < 4
     diffusion = true;
 end
 
-if nargin < 2
+if nargin < 3
     mask = true;
 end
 
 %% General parameters
-base_dir = join([getenv("HOME"), "Documents/phd/microCT/data"], '/');
-orig_img_dir = join([base_dir, data_folder, "downsampled"], '/');
-src_dir = join([base_dir, data_folder, "downsampled/ST"], '/');
+load_directory = join([getenv("HOME"), ...
+    "Documents/phd", dir_path, base_name], ...
+    '/'); % Directory where images are located
 
-[file_template, extension] = loadParams(src_dir + '/ST.params');
+% Load parameters 
+toml_map = toml.read(join([load_directory, base_name + ".toml"], '/'));
+params = toml.map_to_struct(toml_map);
+file_template = params.prefix;
+extension = params.extension;
+
+if downsampled
+    load_directory = join([load_directory, "downsampled"], '/');
+end
+
+orig_img_dir = load_directory;
+src_dir = join([load_directory, "ST"], '/');
+
 
 if mask
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
