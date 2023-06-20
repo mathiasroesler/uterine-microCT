@@ -694,6 +694,13 @@ if streamlines
     I3D = loadImageStack(mask_paths);
     [Nj, Ni, Nk] = size(I3D);
 
+    try
+        % Try to read the centreline file if it exists
+        centreline = load(MaskPath +  "/centreline.mat");
+        centreline = centreline.centreline;
+    catch
+        centreline = [];
+    end
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %
@@ -736,7 +743,7 @@ if streamlines
         L2 = D(idx(2),idx(2));
         L3 = D(idx(1),idx(1));
         Fibre(i,:) = V(:,idx(1))';
-        angle(i) = rad2deg(acos(Fibre(i, :) * [0; 0; 1])); % Store the orientation angle
+        angle(i) = ComputeFibreAngle(Fibre(i, :), centreline, I(i), K(i)); % Store the orientation angle
 
         Trace = (L1+L2+L3)/3;
         Denom = sqrt(L1.^2+L2.^2+L3.^3+1e-6);
