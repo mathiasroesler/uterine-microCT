@@ -16,6 +16,9 @@ if isempty(centrepoints)
     z_vector = [0; 0; 1];
 
 else
+    cur_Z = round(cur_Z);
+    cur_X = round(cur_X);
+    
     if all(centrepoints(3:4, cur_Z))
         % If a middle point is found
         % Define the z vector as the centre vector between current slice
