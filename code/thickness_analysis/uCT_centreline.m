@@ -1,13 +1,45 @@
-% dir_name = "histology/muscle_segmentation/";
-dir_name = "microCT/data/AWA015_PTA_1_Rec_Trans/downsampled/muscle_segmentation/";
-extension = "png";
-regions = ["left", "right"];
-base_dir = join([getenv("HOME"), "Documents/phd/", dir_name], '/');
+function uCTCentreline(dir_path, base_name, regions, downsampled, extension)
+%UCTCENTRELINE Computes the centreline for the dataset provided by
+%base_name given the selected regions. The funciton assumes that the masks
+%that are used to compute the centreline are located in a
+%muscle_segmentation folder.
+%   
+%   base_dir is $HOME/Documents/phd/
+%
+%   Input:
+%    - dir_path, path to the directory containing the dataset from base_dir
+%    - base_name, name of the dataset.
+%    - region, either left, right or both, used to sort the centrepoints. 
+%    - downsampled, true if the dataset has been downsampled, default value
+%    is true.
+%    - extension, extension of the images to load, default value is png.
+%
+%   Return: 
+if nargin < 5
+    extension = "png";
+end
+if nargin < 4
+    downsampled = true;
+end
+
+base_dir = join([getenv("HOME"), "Documents/phd/", dir_path, base_name], '/');
+
+if downsampled
+    base_dir = join([base_dir, "downsampled"], '/');
+end
+
+base_dir = join([base_dir, "muscle_segmentation"], '/');
 
 for k = 1:length(regions)
     region = regions(k);
     disp("Processing region: " + region)
-    mask_paths = getImagePaths(base_dir + region, extension);
+
+    if strcmp(region, "both")
+        mask_paths = getImagePaths(base_dir, extension);
+    else
+        mask_paths = getImagePaths(base_dir + region, extension);
+    end
+
     mask_stack = loadImageStack(mask_paths);
 
     nb_slices = size(mask_stack, 3);
@@ -27,6 +59,10 @@ for k = 1:length(regions)
         end
     end
 
-    save(base_dir + region + "/centreline.mat", "centreline");
+    if strcmp(region, "both")
+        save(base_dir + "/centreline.mat", "centreline");
+    else
+        save(base_dir + region + "/centreline.mat", "centreline");
+    end
     clear centreline
 end
