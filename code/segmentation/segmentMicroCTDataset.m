@@ -37,14 +37,12 @@ toml_map = toml.read(join([load_directory, base_name + ".toml"], '/'));
 params = toml.map_to_struct(toml_map);
 preprocess = params.preprocess;
 morph_size = params.morph_size;
-sigma = params.sigma;
 
 if downsampled
     % If using the downsampled dataset
     load_directory = join([load_directory, "downsampled"], '/');
     preprocess = params.downsampled.preprocess;
     morph_size = params.downsampled.morph_size;
-    sigma = params.downsampled.sigma;
 end
 
 img_paths = getImagePaths(load_directory, extension);
@@ -104,7 +102,7 @@ disp('Fusing mask stack')
 mask_stack = fuseImageStacks(mask_cell);
 
 disp('Saving mask stack')
-saveImageStack(mask_stack, save_dir, params.img_prefix, start_nb, extension);
+saveImageStack(mask_stack, save_dir, params.prefix, start_nb, extension);
 
 
 end

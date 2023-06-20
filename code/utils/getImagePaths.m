@@ -1,9 +1,9 @@
-function img_paths = getImagePaths(dir_path, extension)
+function img_paths = getImagePaths(load_directory, extension)
 %GETIMAGESPATHS Retrieves the paths to the images in the provided folder
 %with the given extension.
 %   
 %   Input:
-%    - dir_path, path to folder containing the images.
+%    - load_directory, path to folder containing the images.
 %    - extension, file extension to search for in folder, default .bmp.
 %   
 %   Return:
@@ -18,7 +18,7 @@ if char_extension(1) ~= '.'
     extension = "." + extension;
 end
 
-listings = dir(dir_path);
+listings = dir(load_directory);
 len = length(listings);
 
 img_paths = cell(len, 1);

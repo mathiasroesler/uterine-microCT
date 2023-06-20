@@ -18,7 +18,6 @@ if nargin < 4
     extension = "png";
 end
 
-
 load_directory = join([getenv("HOME"), "Documents/phd", dir_path, base_name], '/');
 img_paths = getImagePaths(load_directory, extension);
 
@@ -58,7 +57,6 @@ for k = params.downsampled.right_ovary:nb_img
 end
 
 disp('Saving image stack')
-img_prefix = loadParams(load_directory + '/' + params_file);
-saveImageStack(img_stack, load_directory, img_prefix, start_nb, extension);
+saveImageStack(img_stack, load_directory, params.prefix, start_nb, extension);
 
 end

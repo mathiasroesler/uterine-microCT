@@ -104,7 +104,7 @@ for run = 1:nb_runs
 
     % Save current batch stack
     disp("Saving " + num2str(new_batch_stack_size) + " downsampled images");
-    saveImageStack(new_stack, save_directory, params.img_prefix, ...
+    saveImageStack(new_stack, save_directory, params.prefix, ...
         img_save_index, save_extension);
     img_save_index = img_save_index + new_batch_stack_size;
 end

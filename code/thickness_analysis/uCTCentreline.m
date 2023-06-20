@@ -26,18 +26,18 @@ if nargin < 4
     downsampled = true;
 end
 
-base_dir = join([getenv("HOME"), "Documents/phd/", dir_path, base_name], '/');
+load_directory = join([getenv("HOME"), "Documents/phd/", dir_path, base_name], '/');
 
 if downsampled
     % Deal with downsampled dataset
-    base_dir = join([base_dir, "downsampled"], '/');
+    load_directory = join([load_directory, "downsampled"], '/');
 end
 
 if ST
     % Deal with final location
-    base_dir = join([base_dir, "ST/mask"], '/');
+    load_directory = join([load_directory, "ST/mask"], '/');
 else
-    base_dir = join([base_dir, "muscle_segmentation"], '/');
+    load_directory = join([load_directory, "muscle_segmentation"], '/');
 end
 
 for k = 1:length(regions)
@@ -45,9 +45,9 @@ for k = 1:length(regions)
     disp("Processing region: " + region)
 
     if strcmp(region, "both")
-        mask_paths = getImagePaths(base_dir, extension);
+        mask_paths = getImagePaths(load_directory, extension);
     else
-        mask_paths = getImagePaths(base_dir + region, extension);
+        mask_paths = getImagePaths(load_directory + region, extension);
     end
 
     mask_stack = loadImageStack(mask_paths);
@@ -66,9 +66,9 @@ for k = 1:length(regions)
     end
 
     if strcmp(region, "both")
-        save(base_dir + "/centreline.mat", "centreline");
+        save(load_directory + "/centreline.mat", "centreline");
     else
-        save(base_dir + region + "/centreline.mat", "centreline");
+        save(load_directory + region + "/centreline.mat", "centreline");
     end
     clear centreline
 end

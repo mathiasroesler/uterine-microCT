@@ -19,17 +19,17 @@ if nargin < 3
     downsampled = true;
 end
 
-base_dir = join([getenv("HOME"), "Documents/phd", dir_path, base_name], '/');
+load_directory = join([getenv("HOME"), "Documents/phd", dir_path, base_name], '/');
 
 if downsampled
-    base_dir = join([base_dir, "downsampled"], '/');
+    load_directory = join([load_directory, "downsampled"], '/');
 end
 
 mask_file = base_name + "_segmentation.nii.gz";
 img_file = base_name + ".nii.gz";
 
-mask_stack = niftiread(join([base_dir, mask_file], '/'));
-img_stack = niftiread(join([base_dir, img_file], '/'));
+mask_stack = niftiread(join([load_directory, mask_file], '/'));
+img_stack = niftiread(join([load_directory, img_file], '/'));
 
 % Binarize the masks
 mask_stack = imbinarize(mask_stack); 
