@@ -1,8 +1,7 @@
-function uCTCentreline(dir_path, base_name, regions, downsampled, extension)
+function uCTCentreline(dir_path, base_name, regions, downsampled, ST, ...
+    extension)
 %UCTCENTRELINE Computes the centreline for the dataset provided by
-%base_name given the selected regions. The funciton assumes that the masks
-%that are used to compute the centreline are located in a
-%muscle_segmentation folder.
+%base_name given the selected regions.
 %   
 %   base_dir is $HOME/Documents/phd/
 %
@@ -12,11 +11,16 @@ function uCTCentreline(dir_path, base_name, regions, downsampled, extension)
 %    - region, either left, right or both, used to sort the centrepoints. 
 %    - downsampled, true if the dataset has been downsampled, default value
 %    is true.
+%    - ST, true if the dataset is located in the ST folder, otherwise
+%    located in the muscle_segmentation folder, default value is true.
 %    - extension, extension of the images to load, default value is png.
 %
 %   Return: 
-if nargin < 5
+if nargin < 6
     extension = "png";
+end
+if nargin < 5
+    ST = true;
 end
 if nargin < 4
     downsampled = true;
@@ -25,10 +29,16 @@ end
 base_dir = join([getenv("HOME"), "Documents/phd/", dir_path, base_name], '/');
 
 if downsampled
+    % Deal with downsampled dataset
     base_dir = join([base_dir, "downsampled"], '/');
 end
 
-base_dir = join([base_dir, "muscle_segmentation"], '/');
+if ST
+    % Deal with final location
+    base_dir = join([base_dir, "ST/mask"], '/');
+else
+    base_dir = join([base_dir, "muscle_segmentation"], '/');
+end
 
 for k = 1:length(regions)
     region = regions(k);
