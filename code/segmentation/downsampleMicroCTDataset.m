@@ -1,8 +1,11 @@
-function downsampleMicroCTDataset(dir_name, varargin)
+function downsampleMicroCTDataset(dir_path, base_name, varargin)
 %DOWNSAMPLEMICROCTDATASET Downsamples a uCT dataset. 
 %
+%   base_dir is $HOME/Documents/phd/
+%
 %   Input:
-%    - dir_name, name of the uCT dataset directory.
+%    - dir_path, path to the directory containing the dataset from base_dir
+%    - base_name, name of the dataset.
 %    - new_resolution, either an array with the X, Y, and Z resolutions or
 %    the factor by which to downsample by.
 %    - batch_size, number of image to process in one batch, default 512.
@@ -14,25 +17,25 @@ function downsampleMicroCTDataset(dir_name, varargin)
 % Author Alys Clark
 % Modified by Emily-Jade Yee
 % Modified by Mathias Roesler Nov 2022
-narginchk(2, 5);
+narginchk(3, 6);
 
 new_resolution = varargin{1};
 
-if nargin < 5
+if nargin < 6
     save_extension = "png";
 
 else
     save_extension = varargin{4};
 end
 
-if nargin < 4
+if nargin < 5
     img_extension = "bmp";
 
 else
     img_extension = varargin{3};
 end
 
-if nargin < 3
+if nargin < 4
     batch_size = 512;
 
 else
@@ -40,17 +43,17 @@ else
 end
 
 load_directory = join([getenv("HOME"), ...
-    "Documents/phd", dir_name], ...
+    "Documents/phd", dir_path, base_name], ...
     '/'); % Directory where images are located
 save_directory = join([load_directory, "downsampled"], '/');
 
 %% Load and set parameters
 % Load properties of the original images that dont change
-[nb_pixel_x, nb_pixel_y, resolution, start_nb, end_nb, img_prefix] ...
-    = loadParams(load_directory);
-stack_size = end_nb - start_nb + 1;
+toml_map = toml.read(join([load_directory, base_name + ".toml"], '/'));
+params = toml.map_to_struct(toml_map);
+stack_size = params.end_nb - params.start_nb + 1;
 
-log_file = join([save_directory, img_prefix + "_downsampled.log"], '/');
+log_file = join([save_directory, params.img_prefix + "_downsampled.log"], '/');
 
 if sum(size(new_resolution)) == 4
     % The input is the new resolution vector with 3 components
@@ -61,8 +64,8 @@ if sum(size(new_resolution)) == 4
 
 elseif isscalar(new_resolution)
     % The input is the downsampling factory
-    new_nb_pixel_x = round(nb_pixel_x/new_resolution(1));
-    new_nb_pixel_y = round(nb_pixel_y/new_resolution(1));
+    new_nb_pixel_x = round(params.nb_pixel_x/new_resolution(1));
+    new_nb_pixel_y = round(params.nb_pixel_y/new_resolution(1));
     new_stack_size = round(stack_size/new_resolution(1));
     z_factor = new_resolution(1);
 
@@ -70,9 +73,9 @@ else
     error("The size of the input resolution is wrong. Size should be 1 or 3.")
 end
 
-new_resolution_x = (nb_pixel_x/new_nb_pixel_x)*resolution; % um/pixel x-dir
-new_resolution_y = (nb_pixel_y/new_nb_pixel_y)*resolution; % um/pixel y-dir
-new_resolution_z = (stack_size/new_stack_size)*resolution; % um/pixel z-dir
+new_resolution_x = (params.nb_pixel_x/new_nb_pixel_x)*params.resolution; % um/pixel x-dir
+new_resolution_y = (params.nb_pixel_y/new_nb_pixel_y)*params.resolution; % um/pixel y-dir
+new_resolution_z = (stack_size/new_stack_size)*params.resolution; % um/pixel z-dir
 
 nb_runs = ceil(stack_size/batch_size); % Number of times to run loop
 img_paths = getImagePaths(load_directory, img_extension);
@@ -84,8 +87,8 @@ for run = 1:nb_runs
     first_image_nb = (run-1) * batch_size + 1;
     last_image_nb = run * batch_size + 1;
 
-    if last_image_nb > end_nb
-        last_image_nb = end_nb;
+    if last_image_nb > params.end_nb
+        last_image_nb = params.end_nb;
     end
 
     batch_stack_size = last_image_nb - first_image_nb;
@@ -101,7 +104,7 @@ for run = 1:nb_runs
 
     % Save current batch stack
     disp("Saving " + num2str(new_batch_stack_size) + " downsampled images");
-    saveImageStack(new_stack, save_directory, img_prefix, ...
+    saveImageStack(new_stack, save_directory, params.img_prefix, ...
         img_save_index, save_extension);
     img_save_index = img_save_index + new_batch_stack_size;
 end
