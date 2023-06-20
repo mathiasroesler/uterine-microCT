@@ -102,18 +102,6 @@ def parseTOML(toml_file):
 	"""	
 	with open(toml_file, 'rb') as f:
 		data = tomli.load(f)
-
-	for horn in ["left", "right"]:
-		try:
-			param_dict = data[horn]
-			
-			for item in param_dict:
-				if param_dict[item] == -1:
-					param_dict[item] = None
-
-		except KeyError:
-			sys.stderr.write("Warning: the key {} was not found in the " \
-				"provided TOML file\n".format(horn));
 				
 	return data	
 
