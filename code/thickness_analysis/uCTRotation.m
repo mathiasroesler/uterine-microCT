@@ -1,6 +1,6 @@
 function uCTRotation(dir_path, base_name, regions, nb_used_slices, ...
     downsampled, extension)
-%UCTCENTRELINE Computes the centreline for the dataset provided by
+%UCTROTATION Computes the centreline for the dataset provided by
 %base_name given the selected regions.
 %   
 %   base_dir is $HOME/Documents/phd/
