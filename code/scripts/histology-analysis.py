@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# s_histology-analysis.py: Script to generate the thickness based on histology
+# histology-analysis.py: Script to generate the thickness based on histology
 # Author: Mathias Roesler
-# Last modified: 03/23
+# Last modified: 06/23
 
 import os
-import utils
-import plots
 import pickle
 import scipy.io
 import argparse
-import projection
 import numpy as np
+import utils.utils as utils
+import thickness_analysis.plots as plots
+import thickness_analysis.projection as projection
 
 
 if __name__ == "__main__":
@@ -48,7 +48,7 @@ if __name__ == "__main__":
 	mask_stack = utils.loadImageStack(os.path.join(
 		full_path, "{}".format(horn)), extension=args.extension)
 
-	circular_win_size = round(0.10 * args.points)
+	circular_win_size = round(0.04 * args.points)
 
 	print("   Finding centreline")
 	centreline_dict = scipy.io.loadmat(full_path + 
@@ -74,6 +74,6 @@ if __name__ == "__main__":
 
 
 	# Save angular thickness
-	with open(full_path + "/{}/angular_thickness.pkl".format(
+	with open(full_path + "/angular_thickness.pkl".format(
 		horn), 'wb') as f:
 		pickle.dump(avg_slice_thickness, f)

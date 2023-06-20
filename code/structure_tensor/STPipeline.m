@@ -178,13 +178,13 @@ if diffusion
     img_output_dir = src_dir + '/extrapolated/';
 
     % Tissue mask erosion threshold and radius
-    TissueMaskErosionThreshold = 10;
-    TissueMaskErosionRadius = 2;
+    TissueMaskErosionThreshold = 20;
+    TissueMaskErosionRadius = 4;
 
     % Set the tissue boundary diffusion testing distance (voxels) - points
     % at this distance from the tissue will be used to assess the stopping
     % criteria for the diffusion iterations.
-    TissueBoundaryDiffusionTestingDistance = 2;
+    TissueBoundaryDiffusionTestingDistance = 14;
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %
@@ -319,8 +319,8 @@ if structure_tensor
     DataOutput = src_dir + '/binary/';
 
     % Set the derivative and smoothing template voxel widths
-    DerivativeTemplateWidth = 3;
-    SmoothingTemplateWidth = 3;
+    DerivativeTemplateWidth = 5;
+    SmoothingTemplateWidth = 5;
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %
@@ -481,27 +481,27 @@ if structure_tensor
     t1 = etime(clock,t0); fprintf(' Fourth level smoothing time: %0.2f sec\n',t1);
     fprintf('... Fourth level data dimensions: (%d,%d,%d)\n',size(SI4));
 
-    % Smooth to fifth level using multigrid binomial averaging
-    fprintf('... Fifth level smoothing ...\n');
-    t0 = clock;
-    [Sii5,SI5,SJ5,SK5] = MultigridAveraging(Sii4,SI4,SJ4,SK4,SmoothingTemplateWidth);
-    [Sij5,SI5,SJ5,SK5] = MultigridAveraging(Sij4,SI4,SJ4,SK4,SmoothingTemplateWidth);
-    [Sik5,SI5,SJ5,SK5] = MultigridAveraging(Sik4,SI4,SJ4,SK4,SmoothingTemplateWidth);
-    [Sjj5,SI5,SJ5,SK5] = MultigridAveraging(Sjj4,SI4,SJ4,SK4,SmoothingTemplateWidth);
-    [Sjk5,SI5,SJ5,SK5] = MultigridAveraging(Sjk4,SI4,SJ4,SK4,SmoothingTemplateWidth);
-    [Skk5,SI5,SJ5,SK5] = MultigridAveraging(Skk4,SI4,SJ4,SK4,SmoothingTemplateWidth);
-    t1 = etime(clock,t0); fprintf(' Fifth level smoothing time: %0.2f sec\n',t1);
-    fprintf('... Fifth level data dimensions: (%d,%d,%d)\n',size(SI5));
-
-    % Smooth to sixth level using multigrid binomial averaging
-    fprintf('... Sixth level smoothing ...\n');
-    t0 = clock;
-    [Sii6,SI6,SJ6,SK6] = MultigridAveraging(Sii5,SI5,SJ5,SK5,SmoothingTemplateWidth);
-    [Sij6,SI6,SJ6,SK6] = MultigridAveraging(Sij5,SI5,SJ5,SK5,SmoothingTemplateWidth);
-    [Sik6,SI6,SJ6,SK6] = MultigridAveraging(Sik5,SI5,SJ5,SK5,SmoothingTemplateWidth);
-    [Sjj6,SI6,SJ6,SK6] = MultigridAveraging(Sjj5,SI5,SJ5,SK5,SmoothingTemplateWidth);
-    [Sjk6,SI6,SJ6,SK6] = MultigridAveraging(Sjk5,SI5,SJ5,SK5,SmoothingTemplateWidth);
-    [Skk6,SI6,SJ6,SK6] = MultigridAveraging(Skk5,SI5,SJ5,SK5,SmoothingTemplateWidth);
+%     % Smooth to fifth level using multigrid binomial averaging
+%     fprintf('... Fifth level smoothing ...\n');
+%     t0 = clock;
+%     [Sii5,SI5,SJ5,SK5] = MultigridAveraging(Sii4,SI4,SJ4,SK4,SmoothingTemplateWidth);
+%     [Sij5,SI5,SJ5,SK5] = MultigridAveraging(Sij4,SI4,SJ4,SK4,SmoothingTemplateWidth);
+%     [Sik5,SI5,SJ5,SK5] = MultigridAveraging(Sik4,SI4,SJ4,SK4,SmoothingTemplateWidth);
+%     [Sjj5,SI5,SJ5,SK5] = MultigridAveraging(Sjj4,SI4,SJ4,SK4,SmoothingTemplateWidth);
+%     [Sjk5,SI5,SJ5,SK5] = MultigridAveraging(Sjk4,SI4,SJ4,SK4,SmoothingTemplateWidth);
+%     [Skk5,SI5,SJ5,SK5] = MultigridAveraging(Skk4,SI4,SJ4,SK4,SmoothingTemplateWidth);
+%     t1 = etime(clock,t0); fprintf(' Fifth level smoothing time: %0.2f sec\n',t1);
+%     fprintf('... Fifth level data dimensions: (%d,%d,%d)\n',size(SI5));
+% 
+%     % Smooth to sixth level using multigrid binomial averaging
+%     fprintf('... Sixth level smoothing ...\n');
+%     t0 = clock;
+%     [Sii6,SI6,SJ6,SK6] = MultigridAveraging(Sii5,SI5,SJ5,SK5,SmoothingTemplateWidth);
+%     [Sij6,SI6,SJ6,SK6] = MultigridAveraging(Sij5,SI5,SJ5,SK5,SmoothingTemplateWidth);
+%     [Sik6,SI6,SJ6,SK6] = MultigridAveraging(Sik5,SI5,SJ5,SK5,SmoothingTemplateWidth);
+%     [Sjj6,SI6,SJ6,SK6] = MultigridAveraging(Sjj5,SI5,SJ5,SK5,SmoothingTemplateWidth);
+%     [Sjk6,SI6,SJ6,SK6] = MultigridAveraging(Sjk5,SI5,SJ5,SK5,SmoothingTemplateWidth);
+%     [Skk6,SI6,SJ6,SK6] = MultigridAveraging(Skk5,SI5,SJ5,SK5,SmoothingTemplateWidth);
 
     % Smooth to seventh level using multigrid binomial averaging
     % fprintf('... Seventh level smoothing ...\n');
@@ -554,25 +554,25 @@ if structure_tensor
     fwrite(fid,reshape(Skk4,numel(Skk4),1),'double');
     fclose(fid);
 
-    fid = fopen(sprintf('%sS5.bin',DataOutput),'wb');
-    fwrite(fid,[size(Sii5,1),size(Sii5,2),size(Sii5,3)],'uint16');
-    fwrite(fid,reshape(Sii5,numel(Sii5),1),'double');
-    fwrite(fid,reshape(Sij5,numel(Sij5),1),'double');
-    fwrite(fid,reshape(Sik5,numel(Sik5),1),'double');
-    fwrite(fid,reshape(Sjj5,numel(Sjj5),1),'double');
-    fwrite(fid,reshape(Sjk5,numel(Sjk5),1),'double');
-    fwrite(fid,reshape(Skk5,numel(Skk5),1),'double');
-    fclose(fid);
-
-    fid = fopen(sprintf('%sS6.bin',DataOutput),'wb');
-    fwrite(fid,[size(Sii6,1),size(Sii6,2),size(Sii6,3)],'uint16');
-    fwrite(fid,reshape(Sii6,numel(Sii6),1),'double');
-    fwrite(fid,reshape(Sij6,numel(Sij6),1),'double');
-    fwrite(fid,reshape(Sik6,numel(Sik6),1),'double');
-    fwrite(fid,reshape(Sjj6,numel(Sjj6),1),'double');
-    fwrite(fid,reshape(Sjk6,numel(Sjk6),1),'double');
-    fwrite(fid,reshape(Skk6,numel(Skk6),1),'double');
-    fclose(fid);
+%     fid = fopen(sprintf('%sS5.bin',DataOutput),'wb');
+%     fwrite(fid,[size(Sii5,1),size(Sii5,2),size(Sii5,3)],'uint16');
+%     fwrite(fid,reshape(Sii5,numel(Sii5),1),'double');
+%     fwrite(fid,reshape(Sij5,numel(Sij5),1),'double');
+%     fwrite(fid,reshape(Sik5,numel(Sik5),1),'double');
+%     fwrite(fid,reshape(Sjj5,numel(Sjj5),1),'double');
+%     fwrite(fid,reshape(Sjk5,numel(Sjk5),1),'double');
+%     fwrite(fid,reshape(Skk5,numel(Skk5),1),'double');
+%     fclose(fid);
+% 
+%     fid = fopen(sprintf('%sS6.bin',DataOutput),'wb');
+%     fwrite(fid,[size(Sii6,1),size(Sii6,2),size(Sii6,3)],'uint16');
+%     fwrite(fid,reshape(Sii6,numel(Sii6),1),'double');
+%     fwrite(fid,reshape(Sij6,numel(Sij6),1),'double');
+%     fwrite(fid,reshape(Sik6,numel(Sik6),1),'double');
+%     fwrite(fid,reshape(Sjj6,numel(Sjj6),1),'double');
+%     fwrite(fid,reshape(Sjk6,numel(Sjk6),1),'double');
+%     fwrite(fid,reshape(Skk6,numel(Skk6),1),'double');
+%     fclose(fid);
 
     % fid = fopen(sprintf('%sS7.bin',DataOutput),'wb');
     % fwrite(fid,[size(Sii7,1),size(Sii7,2),size(Sii7,3)],'uint16');
@@ -606,19 +606,19 @@ if structure_tensor
     fwrite(fid,reshape(SK4,numel(SK4),1),'uint16');
     fclose(fid);
 
-    fid = fopen(sprintf('%sIJK5.bin',DataOutput),'wb');
-    fwrite(fid,[size(SI5,1),size(SI5,2),size(SI5,3)],'uint16');
-    fwrite(fid,reshape(SI5,numel(SI5),1),'uint16');
-    fwrite(fid,reshape(SJ5,numel(SJ5),1),'uint16');
-    fwrite(fid,reshape(SK5,numel(SK5),1),'uint16');
-    fclose(fid);
-
-    fid = fopen(sprintf('%sIJK6.bin',DataOutput),'wb');
-    fwrite(fid,[size(SI6,1),size(SI6,2),size(SI6,3)],'uint16');
-    fwrite(fid,reshape(SI6,numel(SI6),1),'uint16');
-    fwrite(fid,reshape(SJ6,numel(SJ6),1),'uint16');
-    fwrite(fid,reshape(SK6,numel(SK6),1),'uint16');
-    fclose(fid);
+%     fid = fopen(sprintf('%sIJK5.bin',DataOutput),'wb');
+%     fwrite(fid,[size(SI5,1),size(SI5,2),size(SI5,3)],'uint16');
+%     fwrite(fid,reshape(SI5,numel(SI5),1),'uint16');
+%     fwrite(fid,reshape(SJ5,numel(SJ5),1),'uint16');
+%     fwrite(fid,reshape(SK5,numel(SK5),1),'uint16');
+%     fclose(fid);
+% 
+%     fid = fopen(sprintf('%sIJK6.bin',DataOutput),'wb');
+%     fwrite(fid,[size(SI6,1),size(SI6,2),size(SI6,3)],'uint16');
+%     fwrite(fid,reshape(SI6,numel(SI6),1),'uint16');
+%     fwrite(fid,reshape(SJ6,numel(SJ6),1),'uint16');
+%     fwrite(fid,reshape(SK6,numel(SK6),1),'uint16');
+%     fclose(fid);
 
     % fid = fopen(sprintf('%sIJK7.bin',DataOutput),'wb');
     % fwrite(fid,[size(SI7,1),size(SI7,2),size(SI7,3)],'uint16');
@@ -648,8 +648,11 @@ if streamlines
     % Set parameters and paths
     %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    Level = 5; % frequency resolution of ST/Hessian data to use
-
+    Level = 4; % frequency resolution of ST/Hessian data to use
+    % Index step size
+    DJ = 3;
+    DI = 3;
+    DK = 3;
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %
     % Data and path locations
@@ -657,13 +660,14 @@ if streamlines
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%
     InputPath = src_dir + '/binary/';
-    OutputPath = src_dir + '/binary/';
+    OutputPath = src_dir + '/binary';
     MaskPath = src_dir + '/mask/';
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %
     % Load data
     %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    fprintf("... Level " + Level + " ...\n");
     fprintf(' ... loading in data ... \n');
 
     fid = fopen(sprintf('%sS%1d.bin',InputPath,Level),'r');
@@ -675,7 +679,7 @@ if streamlines
     d2Ys = double(fread(fid,prod(N),'double'));
     dYZs = double(fread(fid,prod(N),'double'));
     d2Zs = double(fread(fid,prod(N),'double'));
-    fclose(fid);
+    fclose(fid);    
 
     fid = fopen(sprintf('%sIJK%1d.bin',InputPath,Level),'r');
     N = fread(fid,3,'uint16');
@@ -690,6 +694,13 @@ if streamlines
     I3D = loadImageStack(mask_paths);
     [Nj, Ni, Nk] = size(I3D);
 
+    try
+        % Try to read the centreline file if it exists
+        centreline = load(MaskPath +  "/centreline.mat");
+        centreline = centreline.centreline;
+    catch
+        centreline = [];
+    end
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %
@@ -712,10 +723,62 @@ if streamlines
     J = J(MaskGD);
     K = K(MaskGD);
 
-    % Index step sizes
-    DJ = J(1+N(1))-J(1); DK = 225; %DK = K(1+N(1)*N(2))-K(1);
-    DI = 32; % fix to this value regardless of data level.
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %
+    % Eigenanalysis
+    %
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    fprintf(' ... finding ethings ... \n');
+    FA= zeros(length(d2Xs),1);
+    Fibre = zeros(length(d2Xs),3);
+    angle = zeros(length(d2Xs), 1);
 
+    for i=1:length(d2Xs)
+        if ~mod(i,100000) fprintf(' entry: %d\n',i); end
+        % local structure tensor
+        ST = [d2Xs(i),dXYs(i),dXZs(i);dXYs(i),d2Ys(i),dYZs(i);dXZs(i),dYZs(i),d2Zs(i)];
+        [V,D] = eig(ST); % evect/eval in largest to smallest
+        [~,idx]=sort(diag(D));
+        L1 = D(idx(3),idx(3));
+        L2 = D(idx(2),idx(2));
+        L3 = D(idx(1),idx(1));
+        Fibre(i,:) = V(:,idx(1))';
+        angle(i) = ComputeFibreAngle(Fibre(i, :), centreline, I(i), K(i)); % Store the orientation angle
+
+        Trace = (L1+L2+L3)/3;
+        Denom = sqrt(L1.^2+L2.^2+L3.^3+1e-6);
+        FA(i) = sqrt(3/2)*(sqrt((L1-Trace).^2+(L2-Trace).^2+(L3-Trace).^2))./Denom;
+    end
+
+    angle(angle > 90) = 180 - angle(angle > 90); % Make sure angles are between 0 and 90 deg
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %
+    % Write exdata file
+    %
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    fprintf(' ... Writing exdata file ... \n');
+
+    % output file name
+    exfname = OutputPath + '/data_points_level_' + Level;
+
+    DataSLabels = {'FA', 'Angles'};
+    DataVLabels = {'Fibre'};
+    DataS = zeros(length(I),2);
+    DataS(:,1) = FA;
+    DataS(:, 2) = angle;
+    DataV = cell(1);
+    DataV{1} = Fibre;
+    GName = sprintf('DataPoints');
+    WriteGeneralExdataFile(I,J,K,(1:length(I))',DataS,DataV,exfname,GName,DataSLabels,DataVLabels);
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %
+    % Manipulate loaded data
+    %
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    % Index step sizes
+    % Manually set earlier
     fprintf('DI: %d, DJ: %d, DK: %d\n',DI,DJ,DK);
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -755,7 +818,9 @@ if streamlines
     %MaxTrackLength = 500; % sheet tracks
     parfor i=1:length(IdxS)
         if ~mod(i,10) fprintf('Path: %d\n',i); end
-        Paths{i} = FiberTrack([SI(IdxS(i)),SJ(IdxS(i)),SK(IdxS(i))],DS,I,J,K,Fd2Xs,FdXYs,FdXZs,Fd2Ys,FdYZs,Fd2Zs,I3D,[Ni,Nj,Nk],FiberIndex,MaxTrackLength);
+        Paths{i} = FiberTrack([SI(IdxS(i)),SJ(IdxS(i)),SK(IdxS(i))], ...
+            DS,I,J,K,Fd2Xs,FdXYs,FdXZs,Fd2Ys,FdYZs,Fd2Zs ...
+            ,I3D,[Ni,Nj,Nk],FiberIndex,MaxTrackLength, centreline);
 
     end
 

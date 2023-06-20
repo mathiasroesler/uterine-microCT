@@ -6,7 +6,6 @@
 # Last modified: 06/23
 
 import sys
-import sys
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -59,17 +58,17 @@ def plotMuscleThickness(muscle_thickness, errors):
 			label="{} horn".format(horn.capitalize()), linewidth=4, 
 			color=colors[horn])
 
-	ax.tick_params(length=12, width=4, labelsize=22)
+	ax.tick_params(length=12, width=4, labelsize=21)
 	
 	# Reset x-axis ticks
 	plt.xticks(ticks=[0, 0.2, 0.6, 1], 
 		labels=["Cervix", "Cervical end", "Centre", "Ovarian end"])
 
-	plt.ylim([0, 1])
+	plt.ylim([0, 0.75])
 	plt.xlim([0, 1])
-	plt.xlabel("Locations", fontsize=22)
-	plt.ylabel("Muscle thickness (in mm)", fontsize=22)
-	plt.legend(fontsize=22)
+	plt.xlabel("Locations", fontsize=21)
+	plt.ylabel("Muscle thickness (in mm)", fontsize=21)
+	plt.legend(fontsize=21)
 
 	plt.show()
 
@@ -109,11 +108,11 @@ def plotAngularThickness(slice_thickness):
 		ax[i].plot(x_values, y_values[:, 2],
 			linestyle='dotted', color=colors[horn],
 			label="Ovarian end", linewidth=4)
-		ax[i].set_title("{} horn".format(horn.capitalize()), fontsize=22)
+		ax[i].set_title("{} horn".format(horn.capitalize()), fontsize=21)
 
 		# Change tick parameters
-		ax[i].tick_params(length=12, width=4, labelsize=22)
-		ax[i].legend(fontsize=22)
+		ax[i].tick_params(length=12, width=4, labelsize=21)
+		ax[i].legend(fontsize=21)
 
 	plt.xticks(ticks=
 		[nb_points // 4, nb_points // 2,  3*nb_points // 4, nb_points-1],
@@ -121,9 +120,9 @@ def plotAngularThickness(slice_thickness):
 
 	# Set labels and legends
 	fig.text(0.06, 0.5, 'Muscle thickness (in mm)', ha='center', va='center', 
-		rotation='vertical', fontsize=22)
-	plt.xlabel(r"Angle $\theta$ (in rad)", fontsize=22)
+		rotation='vertical', fontsize=21)
+	plt.xlabel(r"Angle $\theta$ (in rad)", fontsize=21)
 
-	plt.ylim([0, 0.65])
+	plt.ylim([0, 0.80])
 	plt.xlim([0, nb_points-1])
 	plt.show()

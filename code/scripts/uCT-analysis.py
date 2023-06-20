@@ -6,13 +6,13 @@
 # Last modified: 06/23
 
 import os
-import utils
-import plots
 import pickle
 import argparse
 import scipy.io
-import projection
 import numpy as np
+import utils.utils as utils
+import thickness_analysis.projection as projection
+import thickness_analysis.plots as plots
 
 
 if __name__ == "__main__":
@@ -60,7 +60,7 @@ if __name__ == "__main__":
 	
 		# Window sizes for different moving averages
 		muscle_win_size = round(0.05 * nb_imgs)
-		circular_win_size = round(0.10 * args.points)
+		circular_win_size = round(0.04 * args.points)
 
 		print("   Finding centreline")
 		centreline_dict = scipy.io.loadmat(full_path + 

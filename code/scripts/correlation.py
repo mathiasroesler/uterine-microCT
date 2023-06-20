@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# s_correlation.py: Script to estimate correlation between histology and uCT
+# correlation.py: Script to estimate correlation between histology and uCT
 # Author: Mathias Roesler
 # Last modified: 06/23
 
 import os
-import utils
+import sys
 import argparse
 import scipy.io
-import projection
 import numpy as np
+import utils.utils as utils
+import thickness_analysis.projection as projection
 
 
 if __name__ == "__main__":
@@ -36,10 +37,10 @@ if __name__ == "__main__":
 	horn = args.horn
 
 	# Read data 
-	uCT_data = np.load(uCT_path + "/angular_thickness.pkl".format(
-		horn), allow_pickle=True)[horn]
-	histo_data = np.load(histo_path + "/{}/angular_thickness.pkl".format(
-		horn), allow_pickle=True)[horn]
+	uCT_data = np.load(uCT_path + "/angular_thickness.pkl", 
+		allow_pickle=True)[horn]
+	histo_data = np.load(histo_path + "/angular_thickness.pkl",
+		 allow_pickle=True)[horn]
 
 	try:
 		assert(uCT_data.shape == histo_data.shape)

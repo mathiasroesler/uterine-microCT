@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# s_projection.py: Script to generate the projection point figure
+# projection_fig_gen.py: Script to generate the projection point figure
 # Author: Mathias Roesler
-# Last modified: 03/23
+# Last modified: 06/23
 
 import os
-import utils
-import plots
 import argparse
-import projection
 import numpy as np
+import utils.utils as utils
 import matplotlib.pyplot as plt
+import thickness_analysis.plots as plots
+import thickness_analysis.projection as projection
 
 
 if __name__ == "__main__":

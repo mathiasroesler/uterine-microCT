@@ -7,7 +7,7 @@ function centrepoints = findCentrepoints(mask, region)
 %
 %   Input:
 %    - mask, binary mask.
-%    - region, either left or right and used to sort the centrepoints. 
+%    - region, either left, right or both, used to sort the centrepoints. 
 %   Return:
 %    - centrepoints, coordinates of the centrepoints,
 %    centrepoints(1, 2) or centrepoints(3, 2).
@@ -16,23 +16,15 @@ if ~islogical(mask)
     mask = imbinarize(mask);
 end
 
+proper_size = 300; % Define how big a region is to be considered
 filled_mask = imfill(mask, "holes");
 centre_regions = and(not(mask), filled_mask);
 
 filled_props = regionprops(filled_mask, 'Area', 'Centroid');
-nb_regions = length(filled_props);
-proper_region = 0;
+proper_region = sum([filled_props.Area] > proper_size);
 
 centre_props = regionprops(centre_regions, 'Area', 'Centroid');
-nb_holes = length(centre_props);
-
-% Go through regions to filter out the abherent regions
-for k = 1:nb_regions
-    if filled_props(k).Area > 250
-        proper_region = proper_region + 1;
-        region_idx = k; % Only care about this if there is 1 proper region
-    end
-end
+nb_holes = sum([centre_props.Area] > proper_size);
 
 if proper_region == 1
     % No clear separation between left and right horn, need 3 points
@@ -42,23 +34,29 @@ if proper_region == 1
     if nb_holes > 1
         % In the body
         centrepoints = zeros(3, 2);
-        centrepoints(2, :) = filled_props(region_idx).Centroid; 
+        centrepoints(2, :) = filled_props( ...
+            [filled_props.Area] > proper_size).Centroid; 
 
     else
         % Single horn and can exit early
-        centrepoints = filled_props(region_idx).Centroid;
+        centrepoints = filled_props( ...
+            [filled_props.Area] > proper_size).Centroid;
         return;
     end
 
+elseif strcmp(region, "both")
+    centrepoints = zeros(3, 2);
+
 else
     centrepoints = zeros(1, 2);
+
 end
 
 % Create arrays to recuperate region properties if not exited early
-areas = zeros(nb_holes, 1);
-centroids = zeros(nb_holes, 2);
+areas = zeros(length(centre_props), 1);
+centroids = zeros(length(centre_props), 2);
 
-for k = 1:nb_holes
+for k = 1:length(centre_props)
     areas(k) = centre_props(k).Area;
     centroids(k, :) = centre_props(k).Centroid;
 end
@@ -76,7 +74,7 @@ for k = 1:size(centroids, 1)
     centroids(k, :) = [idx_x(min_idx), idx_y(min_idx)];
 end
 
-if size(centrepoints, 1) == 3
+if size(centrepoints, 1) == 3 
     % Find the left and right centroids and sort them
     if centroids(1, 1) > centroids(2, 1)
         centrepoints(1, :) = centroids(2, :);
