@@ -1,7 +1,25 @@
-% dir_name = "histology/muscle_segmentation/";
-dir_name = "microCT/data/AWA015_PTA_1_Rec_Trans/downsampled/muscle_segmentation/";
-extension = "png";
-regions = ["left", "right"];
+function uCTCentreline(dir_name, regions, extension)
+%UCTCENTRELINE Computes the centreline of the images found in the provided
+%directory based on the selected regions.
+%
+%   The base directory is $HOME/Documents/phd
+%
+%   Input:
+%    - dir_name, path to the dataset from the base directory, should end 
+%    with a /.
+%    - regions, name of the regions that are going to be processed, either
+%    left, right of [left, right], default value is [left, right].
+%    - extension, extension of the image, default value is png
+%
+%   Return:
+if nargin < 3
+    extension = "png";
+end
+
+if nargin < 2
+    regions = ['left', 'right'];
+end
+
 base_dir = join([getenv("HOME"), "Documents/phd/", dir_name], '/');
 
 for k = 1:length(regions)
@@ -29,4 +47,5 @@ for k = 1:length(regions)
 
     save(base_dir + region + "/centreline.mat", "centreline");
     clear centreline
+end
 end
