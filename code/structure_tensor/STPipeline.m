@@ -818,7 +818,9 @@ if streamlines
     %MaxTrackLength = 500; % sheet tracks
     parfor i=1:length(IdxS)
         if ~mod(i,10) fprintf('Path: %d\n',i); end
-        Paths{i} = FiberTrack([SI(IdxS(i)),SJ(IdxS(i)),SK(IdxS(i))],DS,I,J,K,Fd2Xs,FdXYs,FdXZs,Fd2Ys,FdYZs,Fd2Zs,I3D,[Ni,Nj,Nk],FiberIndex,MaxTrackLength);
+        Paths{i} = FiberTrack([SI(IdxS(i)),SJ(IdxS(i)),SK(IdxS(i))], ...
+            DS,I,J,K,Fd2Xs,FdXYs,FdXZs,Fd2Ys,FdYZs,Fd2Zs ...
+            ,I3D,[Ni,Nj,Nk],FiberIndex,MaxTrackLength, centreline);
 
     end
 
