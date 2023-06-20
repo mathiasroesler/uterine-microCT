@@ -45,6 +45,7 @@ else
         next_centrepoint = centrepoints(cur_idx:cur_idx+1, cur_Z + 5);
         z_vector = next_centrepoint - cur_centrepoint;
     end
+    z_vector = [z_vector; 5]; % Append the z component
 end
 
 angle = rad2deg(acos(fibre * z_vector));
