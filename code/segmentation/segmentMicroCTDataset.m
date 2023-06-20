@@ -61,17 +61,8 @@ for k = 1:length(stack_cell)
     disp('Processing stack ' + string(k))
     if preprocess ~= 0
         disp('    Preprocessing image stack')
-        if preprocess == 4
-            mask_paths = getImagePaths(load_directory + "/tissue_segmentation", ...
-                extenstion);
-            mask_stack = loadImageStack(mask_paths);
-            img_stack = preprocessImageStack(img_stack, preprocess, sigma, ...
-                mask_stack);
-            clear mask_paths mask_stack;
-        else
-            img_stack = preprocessImageStack(img_stack, preprocess, ...
-                morph_size);
-        end
+        img_stack = preprocessImageStack(img_stack, preprocess, ...
+            morph_size);
     end
 
     disp('    Segmenting image stack')
