@@ -694,6 +694,13 @@ if streamlines
     I3D = loadImageStack(mask_paths);
     [Nj, Ni, Nk] = size(I3D);
 
+    try
+        % Try to read the centreline file if it exists
+        centreline = load(MaskPath +  "/centreline.mat");
+        centreline = centreline.centreline;
+    catch
+        centreline = [];
+    end
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %
@@ -736,7 +743,7 @@ if streamlines
         L2 = D(idx(2),idx(2));
         L3 = D(idx(1),idx(1));
         Fibre(i,:) = V(:,idx(1))';
-        angle(i) = rad2deg(acos(Fibre(i, :) * [0; 0; 1])); % Store the orientation angle
+        angle(i) = ComputeFibreAngle(Fibre(i, :), centreline, I(i), K(i)); % Store the orientation angle
 
         Trace = (L1+L2+L3)/3;
         Denom = sqrt(L1.^2+L2.^2+L3.^3+1e-6);
@@ -811,7 +818,9 @@ if streamlines
     %MaxTrackLength = 500; % sheet tracks
     parfor i=1:length(IdxS)
         if ~mod(i,10) fprintf('Path: %d\n',i); end
-        Paths{i} = FiberTrack([SI(IdxS(i)),SJ(IdxS(i)),SK(IdxS(i))],DS,I,J,K,Fd2Xs,FdXYs,FdXZs,Fd2Ys,FdYZs,Fd2Zs,I3D,[Ni,Nj,Nk],FiberIndex,MaxTrackLength);
+        Paths{i} = FiberTrack([SI(IdxS(i)),SJ(IdxS(i)),SK(IdxS(i))], ...
+            DS,I,J,K,Fd2Xs,FdXYs,FdXZs,Fd2Ys,FdYZs,Fd2Zs ...
+            ,I3D,[Ni,Nj,Nk],FiberIndex,MaxTrackLength, centreline);
 
     end
 

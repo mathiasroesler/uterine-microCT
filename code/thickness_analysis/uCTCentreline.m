@@ -1,31 +1,55 @@
-function uCTCentreline(dir_name, regions, extension)
-%UCTCENTRELINE Computes the centreline of the images found in the provided
-%directory based on the selected regions.
-%
-%   The base directory is $HOME/Documents/phd
+function uCTCentreline(dir_path, base_name, regions, downsampled, ST, ...
+    extension)
+%UCTCENTRELINE Computes the centreline for the dataset provided by
+%base_name given the selected regions.
+%   
+%   base_dir is $HOME/Documents/phd/
 %
 %   Input:
-%    - dir_name, path to the dataset from the base directory, should end 
-%    with a /.
-%    - regions, name of the regions that are going to be processed, either
-%    left, right of [left, right], default value is [left, right].
-%    - extension, extension of the image, default value is png
+%    - dir_path, path to the directory containing the dataset from base_dir
+%    - base_name, name of the dataset.
+%    - region, either left, right or both, used to sort the centrepoints. 
+%    - downsampled, true if the dataset has been downsampled, default value
+%    is true.
+%    - ST, true if the dataset is located in the ST folder, otherwise
+%    located in the muscle_segmentation folder, default value is true.
+%    - extension, extension of the images to load, default value is png.
 %
-%   Return:
-if nargin < 3
+%   Return: 
+if nargin < 6
     extension = "png";
 end
-
-if nargin < 2
-    regions = ['left', 'right'];
+if nargin < 5
+    ST = true;
+end
+if nargin < 4
+    downsampled = true;
 end
 
-base_dir = join([getenv("HOME"), "Documents/phd/", dir_name], '/');
+base_dir = join([getenv("HOME"), "Documents/phd/", dir_path, base_name], '/');
+
+if downsampled
+    % Deal with downsampled dataset
+    base_dir = join([base_dir, "downsampled"], '/');
+end
+
+if ST
+    % Deal with final location
+    base_dir = join([base_dir, "ST/mask"], '/');
+else
+    base_dir = join([base_dir, "muscle_segmentation"], '/');
+end
 
 for k = 1:length(regions)
     region = regions(k);
     disp("Processing region: " + region)
-    mask_paths = getImagePaths(base_dir + region, extension);
+
+    if strcmp(region, "both")
+        mask_paths = getImagePaths(base_dir, extension);
+    else
+        mask_paths = getImagePaths(base_dir + region, extension);
+    end
+
     mask_stack = loadImageStack(mask_paths);
 
     nb_slices = size(mask_stack, 3);
@@ -37,15 +61,14 @@ for k = 1:length(regions)
         if size(centre_points, 1) == 3
             centreline(:, m) = reshape(centre_points', [6, 1]);
         else
-            if matches(region, "left")
-                centreline(1:2, m) = centre_points;
-            elseif matches(region, "right")
-                centreline(1:2, m) = centre_points;
-            end
+            centreline(1:2, m) = centre_points;
         end
     end
 
-    save(base_dir + region + "/centreline.mat", "centreline");
+    if strcmp(region, "both")
+        save(base_dir + "/centreline.mat", "centreline");
+    else
+        save(base_dir + region + "/centreline.mat", "centreline");
+    end
     clear centreline
-end
 end

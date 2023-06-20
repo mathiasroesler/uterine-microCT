@@ -7,7 +7,7 @@ function centrepoints = findCentrepoints(mask, region)
 %
 %   Input:
 %    - mask, binary mask.
-%    - region, either left or right and used to sort the centrepoints. 
+%    - region, either left, right or both, used to sort the centrepoints. 
 %   Return:
 %    - centrepoints, coordinates of the centrepoints,
 %    centrepoints(1, 2) or centrepoints(3, 2).
@@ -44,8 +44,12 @@ if proper_region == 1
         return;
     end
 
+elseif strcmp(region, "both")
+    centrepoints = zeros(3, 2);
+
 else
     centrepoints = zeros(1, 2);
+
 end
 
 % Create arrays to recuperate region properties if not exited early
@@ -70,7 +74,7 @@ for k = 1:size(centroids, 1)
     centroids(k, :) = [idx_x(min_idx), idx_y(min_idx)];
 end
 
-if size(centrepoints, 1) == 3
+if size(centrepoints, 1) == 3 
     % Find the left and right centroids and sort them
     if centroids(1, 1) > centroids(2, 1)
         centrepoints(1, :) = centroids(2, :);
