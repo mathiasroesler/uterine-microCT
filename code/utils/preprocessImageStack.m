@@ -13,6 +13,7 @@ narginchk(2, 4);
 
 if nargin == 3
     img_strel = strel('disk', varargin{1});
+end
 
 processed_img_stack = uint8(zeros(size(img_stack)));
 
