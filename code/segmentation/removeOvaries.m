@@ -1,40 +1,30 @@
-function removeOvaries(dir_name, left_start_nb, right_start_nb, ...
-    params_file, extension, start_nb)
+function removeOvaries(dir_path, base_name, extension, start_nb)
 %REMOVEOVARIES Removes the ovaries from the segmentation masks of a uCT
 %dataset.
 %
+%   base_dir is $HOME/Documents/phd/
+%
 %   Input:
-%    - dir_name, name of the uCT dataset directory.
-%    - left_start_nb, image in the stack after which to remove the left
-%    ovary.
-%    - right_start_nb, image in the stack after which to remove the right
-%    ovary.
-%    - params_file, name of the parameters file to read from, default
-%    preprocess.params.
+%    - dir_path, path to the directory containing the dataset from base_dir
+%    - base_name, name of the dataset.
 %    - extension, extension of the segmentation masks, default png.
 %    - start_nb, number at which to start saving images, default 1.
 %   Return:
-if nargin < 6
+if nargin < 5
     start_nb = 1;
 end
 
-if nargin < 5
+if nargin < 4
     extension = "png";
 end
 
-if nargin < 4
-    params_file = "preprocess.params";
-else
-    [~, ~, extension] = fileparts(params_file);
 
-    % Add the file name if not provided
-    if extension ~= ".params"
-        params_file = params_file + ".params";
-    end
-end
+load_directory = join([getenv("HOME"), "Documents/phd", dir_path, base_name], '/');
+img_paths = getImagePaths(load_directory, extension);
 
-dir_path = join([getenv("HOME"), "Documents/phd", dir_name], '/');
-img_paths = getImagePaths(dir_path, extension);
+% Load parameters
+toml_map = toml.read(join([load_directory, base_name + ".toml"], '/'));
+params = toml.map_to_struct(toml_map);
 
 disp('Loading image stack')
 img_stack = loadImageStack(img_paths);
@@ -44,7 +34,7 @@ middle_pixel = floor(max(size(img_stack)) / 2);
 nb_img = size(img_stack, 3);
 
 disp('Removing left ovary')
-for k = left_start_nb:nb_img
+for k = params.downsampled.left_ovary:nb_img
     % Remove ovary on the left side of the image
     switch largest_dim
         case 1
@@ -56,7 +46,7 @@ for k = left_start_nb:nb_img
 end
 
 disp('Removing right ovary')
-for k = right_start_nb:nb_img
+for k = params.downsampled.right_ovary:nb_img
     % Remove ovary on the right side of the image
     switch largest_dim
         case 1
@@ -68,7 +58,7 @@ for k = right_start_nb:nb_img
 end
 
 disp('Saving image stack')
-img_prefix = loadParams(dir_path + '/' + params_file);
-saveImageStack(img_stack, dir_path, img_prefix, start_nb, extension);
+img_prefix = loadParams(load_directory + '/' + params_file);
+saveImageStack(img_stack, load_directory, img_prefix, start_nb, extension);
 
 end
