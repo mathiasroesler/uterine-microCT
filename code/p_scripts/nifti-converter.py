@@ -23,6 +23,8 @@ if __name__ == "__main__":
 		help="name of the dataset")
 	parser.add_argument("-e", "--extension", type=str, 
 		help="extension of the images", default="png")
+	parser.add_argument("--segmentation", type=str, default='',
+		help="name of the segmentation folder, default ''")
 	parser.add_argument("--not-d", action='store_true', 
 		help="flag used if the dataset is not downsampled")
 
@@ -36,6 +38,9 @@ if __name__ == "__main__":
 		# If the dataset is downsampled
 		load_directory = os.path.join(load_directory, "downsampled")
 	
+	# Add the segmentation folder if provided
+	load_directory = os.path.join(load_directory, args.segmentation)
+
 	# Get the paths of the images in the load directory
 	img_path = os.path.join(load_directory, "*." + args.extension)
 
@@ -53,7 +58,11 @@ if __name__ == "__main__":
 		exit()
 
 	# Add the .nii.gz extension to the base name
-	save_name = args.base_name + ".nii.gz"
+	if len(args.segmentation) > 0:
+		save_name = args.base_name + "_" + args.segmentation + ".nii.gz"
+
+	else:
+		save_name = args.base_name + ".nii.gz"
 
 	# Read in all the images
 	reader = sitk.ImageSeriesReader()

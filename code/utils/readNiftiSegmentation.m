@@ -1,5 +1,5 @@
 function [img_stack, mask_stack] = readNiftiSegmentation(dir_path, ...
-    base_name, downsampled)
+    base_name, type, downsampled)
 %READNIFTISEGMENTATION Reads the segmentation and images from the nifti
 %files. The masks are applied to the images.
 %   
@@ -8,6 +8,8 @@ function [img_stack, mask_stack] = readNiftiSegmentation(dir_path, ...
 %   Input:
 %    - dir_path, path to the directory containing the dataset from base_dir
 %    - base_name, name of the dataset.
+%    - type, segmentation type, {fat, tissue, shape, muscle}, default value
+%    is muscle.
 %    - downsampled, true if the dataset has been downsampled, default value
 %    is true.
 %
@@ -16,6 +18,9 @@ function [img_stack, mask_stack] = readNiftiSegmentation(dir_path, ...
 %    segmentation masks have been applied.
 %    - mask_stack, logical, stack of segmentation masks.
 if nargin < 3
+    type = "muscle";
+end
+if nargin < 4
     downsampled = true;
 end
 
@@ -27,7 +32,7 @@ if downsampled
     load_directory = join([load_directory, "downsampled"], '/');
 end
 
-mask_file = base_name + "_segmentation.nii.gz";
+mask_file = base_name + '_' + type + "_segmentation.nii.gz";
 img_file = base_name + ".nii.gz";
 
 mask_stack = niftiread(join([load_directory, mask_file], '/'));
