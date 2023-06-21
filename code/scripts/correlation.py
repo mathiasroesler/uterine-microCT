@@ -18,28 +18,40 @@ if __name__ == "__main__":
 	parser = argparse.ArgumentParser(description=
 		"Specific script to estimate the correlation between histology and uCT")
 
-	parser.add_argument("uCT_folder", type=str, metavar="uCT-folder",
-		help="name of the folder containing the uCT data")
-	parser.add_argument("histo_folder", type=str, metavar="histo-folder",
-		help="name of the folder containing the histology data")
+	parser.add_argument("uCT_path", type=str, metavar="uCT-path",
+		help="path from BASE to the uCT data")
+	parser.add_argument("histo_path", type=str, metavar="histo-path",
+		help="path from BASE to the histology data")
+	parser.add_argument("base_name", type=str, metavar="base-name",
+		help="name of the dataset")
 	parser.add_argument("--horn", type=str, choices={"left", "right"},
 		help="horn to process", default="right")
+	parser.add_argument("--not-d", action='store_true',
+		help="flag used if the uCT dataset is not downsampled")
 
 	# Parse input arguments
 	args = parser.parse_args()
 
 	# Set up variables
-	uCT_path = os.path.join(utils.HOME, utils.BASE, args.uCT_folder, 
-		utils.DATA_FOLDER)
-	histo_path = os.path.join(utils.HOME, utils.BASE, args.histo_folder, 
-		"muscle_segmentation")
+	uCT_directory = os.path.join(utils.HOME, utils.BASE, args.uCT_path, 
+		args.base_name)
+	histo_directory = os.path.join(utils.HOME, utils.BASE, args.histo_path, 
+		args.base_name)
 	regions = ["cervical", "central", "ovarian"]
 	horn = args.horn
 
+	if not args.not_d:
+		# If the dataset is downsampled
+		uCT_directory = os.path.join(uCT_directory, "downsampled")
+
+	# Add the muscle segmentation to the directory paths
+	uCT_directory = os.path.join(uCT_directory, "muscle_segmentation")
+	histo_directory = os.path.join(histo_directory, "muscle_segmentation")
+
 	# Read data 
-	uCT_data = np.load(uCT_path + "/angular_thickness.pkl", 
+	uCT_data = np.load(uCT_directory + "/angular_thickness.pkl", 
 		allow_pickle=True)[horn]
-	histo_data = np.load(histo_path + "/angular_thickness.pkl",
+	histo_data = np.load(histo_directory + "/angular_thickness.pkl",
 		 allow_pickle=True)[horn]
 
 	try:
