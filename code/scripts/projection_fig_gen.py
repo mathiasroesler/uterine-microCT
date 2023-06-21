@@ -40,13 +40,18 @@ if __name__ == "__main__":
 	load_directory = os.path.join(utils.HOME, utils.BASE, args.dir_path,
 		args.base_name)
 
-	# Get parameters
-	param_file = os.path.join(load_directory, args.base_name + ".toml")
-	params = utils.parseTOML(param_file)
-
 	if not args.not_d:
 		# If the dataset is downsampled
 		load_directory = os.path.join(load_directory, "downsampled")
+		param_file = os.path.join(load_directory, 
+			args.base_name + "_downsampled.toml")
+
+	else:
+		# If not use top-level parameter file
+		param_file = os.path.join(load_directory, args.base_name + ".toml")
+
+	# Load parameters
+	params = utils.parseTOML(param_file)
 
 	# Add the muscle segmentation to the load directory
 	load_directory = os.path.join(load_directory, "muscle_segmentation", 

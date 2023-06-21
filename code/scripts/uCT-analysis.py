@@ -40,13 +40,20 @@ if __name__ == "__main__":
 	load_directory = os.path.join(utils.HOME, utils.BASE, args.dir_path, 
 		args.base_name)
 
-	param_file = os.path.join(load_directory, args.base_name + ".toml")
-	params = utils.parseTOML(param_file)
-	params = params['thickness'] # Extract the thickness parameters
-
 	if not args.not_d:
 		# If the dataset is downsampled
 		load_directory = os.path.join(load_directory, "downsampled")
+		param_file = os.path.join(load_directory, 
+			args.base_name + "_downsampled.toml")
+
+	else:
+		# If not use top-level parameter file
+		param_file = os.path.join(load_directory, args.base_name + ".toml")
+
+	# Load parameters
+	params = utils.parseTOML(param_file)
+	scaling_factor = params['scaling_factor']
+	params = params['thickness'] # Extract the thickness parameters
 
 	# Add the muscle segmentation to the load directory
 	load_directory = os.path.join(load_directory, "muscle_segmentation")
@@ -87,8 +94,8 @@ if __name__ == "__main__":
 			horn)
 
 		# Rescale the thickness to mm
-		muscle_thickness *= params["scaling_factor"]
-		slice_thickness *= params["scaling_factor"]
+		muscle_thickness *= scaling_factor
+		slice_thickness *= scaling_factor
 
 		print(u"{} horn muscle thickness: {:.2f} \u00B1 {:.2f}".format(horn, 
 			np.mean(muscle_thickness), np.std(muscle_thickness)))
