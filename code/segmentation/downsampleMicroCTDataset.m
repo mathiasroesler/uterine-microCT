@@ -53,7 +53,7 @@ toml_map = toml.read(join([load_directory, base_name + ".toml"], '/'));
 params = toml.map_to_struct(toml_map);
 stack_size = params.end_nb - params.start_nb + 1;
 
-log_file = join([save_directory, params.img_prefix + "_downsampled.log"], '/');
+log_file = join([save_directory, params.prefix + "_downsampled.log"], '/');
 
 if sum(size(new_resolution)) == 4
     % The input is the new resolution vector with 3 components

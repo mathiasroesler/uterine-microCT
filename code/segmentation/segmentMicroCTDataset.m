@@ -1,5 +1,5 @@
 function segmentMicroCTDataset(dir_path, base_name, segmentation_type, ...
-    split_nb, downsampled, extension, start_nb)
+    downsampled, extension, start_nb)
 %SEGMENTMICROCTDATASET Segments a uCT dataset based on the segmentation 
 %type. 
 %
@@ -13,7 +13,6 @@ function segmentMicroCTDataset(dir_path, base_name, segmentation_type, ...
 %      2 is muscle layer segmentation
 %      3 is fat segmentation
 %      4 is shape segmentation
-%    - split_nb, slice at which to split into left and right horn.
 %    - downsampled, true if the dataset has been downsampled, default value
 %    is true.
 %    - extension, extension of the segmentation masks, default png.
@@ -32,26 +31,29 @@ end
 load_directory = join([getenv("HOME"), "Documents/phd", dir_path, base_name], ...
     '/'); % Directory where images are located
 
+if downsampled
+    % If using the downsampled dataset
+    load_directory = join([load_directory, "downsampled"], '/');
+    toml_map = toml.read(join([load_directory, ...
+        base_name + "_downsampled.toml"], '/'));
+else
+    % Use the non-downsampled TOML file
+    toml_map = toml.read(join([load_directory, base_name + ".toml"], '/'));
+end
+
 % Load parameters
-toml_map = toml.read(join([load_directory, base_name + ".toml"], '/'));
 params = toml.map_to_struct(toml_map);
 preprocess = params.preprocess;
 morph_size = params.morph_size;
 
-if downsampled
-    % If using the downsampled dataset
-    load_directory = join([load_directory, "downsampled"], '/');
-    preprocess = params.downsampled.preprocess;
-    morph_size = params.downsampled.morph_size;
-end
-
+% Get image paths
 img_paths = getImagePaths(load_directory, extension);
 
 disp('Loading image stack')
 img_stack = loadImageStack(img_paths);
 
 disp('Spliting image stack')
-stack_cell = splitImageStack(img_stack, split_nb);
+stack_cell = splitImageStack(img_stack, params.split_nb);
 mask_cell = cell(size(stack_cell)); % Empty cell array for the masks
 
 for k = 1:length(stack_cell)

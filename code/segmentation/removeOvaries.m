@@ -1,4 +1,4 @@
-function removeOvaries(dir_path, base_name, extension, start_nb)
+function removeOvaries(dir_path, base_name, downsampled, extension, start_nb)
 %REMOVEOVARIES Removes the ovaries from the segmentation masks of a uCT
 %dataset.
 %
@@ -7,23 +7,37 @@ function removeOvaries(dir_path, base_name, extension, start_nb)
 %   Input:
 %    - dir_path, path to the directory containing the dataset from base_dir
 %    - base_name, name of the dataset.
+%    - downsampled, true if the dataset has been downsampled, default value
+%    is true.
 %    - extension, extension of the segmentation masks, default png.
 %    - start_nb, number at which to start saving images, default 1.
 %   Return:
-if nargin < 5
+if nargin < 6
     start_nb = 1;
 end
-
-if nargin < 4
+if nargin < 5
     extension = "png";
 end
+if nargin < 4
+    downsampled = true;
+end
 
-load_directory = join([getenv("HOME"), "Documents/phd", dir_path, base_name], '/');
-img_paths = getImagePaths(load_directory, extension);
+load_directory = join([getenv("HOME"), "Documents/phd", dir_path, base_name], ...
+    '/'); % Directory where images are located
+
+if downsampled
+    % If using the downsampled dataset
+    load_directory = join([load_directory, "downsampled"], '/');
+    toml_map = toml.read(join([load_directory, base_name + "_downsampled.toml"], '/'));
+else
+    % Use the non-downsampled TOML file
+    toml_map = toml.read(join([load_directory, base_name + ".toml"], '/'));
+end
 
 % Load parameters
-toml_map = toml.read(join([load_directory, base_name + ".toml"], '/'));
 params = toml.map_to_struct(toml_map);
+
+img_paths = getImagePaths(load_directory, extension);
 
 disp('Loading image stack')
 img_stack = loadImageStack(img_paths);
