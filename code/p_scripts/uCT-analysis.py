@@ -52,7 +52,6 @@ if __name__ == "__main__":
 
 	# Load parameters
 	params = utils.parseTOML(param_file)
-	scaling_factor = params['scaling_factor']
 	params = params['thickness'] # Extract the thickness parameters
 
 	# Add the muscle segmentation to the load directory
@@ -94,8 +93,8 @@ if __name__ == "__main__":
 			horn)
 
 		# Rescale the thickness to mm
-		muscle_thickness *= scaling_factor
-		slice_thickness *= scaling_factor
+		muscle_thickness *= params['scaling_factor']
+		slice_thickness *= params['scaling_factor']
 
 		print(u"{} horn muscle thickness: {:.2f} \u00B1 {:.2f}".format(horn, 
 			np.mean(muscle_thickness), np.std(muscle_thickness)))
