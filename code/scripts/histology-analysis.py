@@ -36,7 +36,7 @@ if __name__ == "__main__":
 	load_directory = os.path.join(utils.HOME, utils.BASE, args.dir_path, 
 		args.base_name)
 
-	param_file = load_directory + ".toml"
+	param_file = os.path.join(load_directory, args.base_name + ".toml")
 	params = utils.parseTOML(param_file)
 	params = params['thickness'] # Extract the thickness parameters
 
