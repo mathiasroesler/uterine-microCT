@@ -27,8 +27,6 @@ if __name__ == "__main__":
 		help="extension for the saved images", default="png")
 	parser.add_argument("--points", type=int, 
 		help="number of points to use for the projection", default=128)
-	parser.add_argument("--not-d", action='store_true',
-		help="flag used if the dataset is not downsampled")
 
 	# Parse input arguments
 	args = parser.parse_args()
@@ -39,10 +37,6 @@ if __name__ == "__main__":
 	param_file = os.path.join(load_directory, args.base_name + ".toml")
 	params = utils.parseTOML(param_file)
 	params = params['thickness'] # Extract the thickness parameters
-
-	if not args.not_d:
-		# If the dataset is downsampled
-		load_directory = os.path.join(load_directory, "downsampled")
 
 	# Add the muscle segmentation to the load directory
 	load_directory = os.path.join(load_directory, "muscle_segmentation")
