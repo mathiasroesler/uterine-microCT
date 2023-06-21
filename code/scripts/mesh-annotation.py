@@ -17,34 +17,44 @@ if __name__ == "__main__":
 		"Annotates a .vtu mesh with the thickness values of each slice")
 
 	# Parse input arguments
-	parser.add_argument("dataset", type=str, metavar="dataset",
-		help="name of the dataset that will be used")
+	parser.add_argument("base_name", type=str, metavar="base-name",
+		help="name of the dataset")
 	parser.add_argument("--mesh-dir", type=str, default="mesh/",
-		help="path to the directory containing the mesh")
+		help="path from BASE to the mesh")
 	parser.add_argument("--data-dir", type=str, default="microCT/data",
-		help="path to the directory containing the thickness")
+		help="path form BASE to the thickness data")
 	parser.add_argument("--horn", type=str, choices={"left", "right", "both"},
 		help="horn to annotate", default="both")
+	parser.add_argument("--not-d", action='store_true',
+		help="flag used if the dataset is not downsampled")
 
 	args = parser.parse_args()
 
 	# Set arguments
-	mesh_name = args.dataset + "_volumetric_mesh"
-	mesh_path = os.path.join(utils.HOME, utils.BASE, args.mesh_dir)
-	thickness_dir = os.path.join(utils.HOME, utils.BASE, args.data_dir, 
-		args.dataset)	
-	thickness_dir = thickness_dir + "_Rec_Trans/downsampled/muscle_segmentation"
+	mesh_directory = os.path.join(utils.HOME, utils.BASE, args.mesh_dir)
+	thickness_directory = os.path.join(utils.HOME, utils.BASE, args.data_dir, 
+		args.base_name)	
+	mesh_name = os.path.join(mesh_directory, 
+		args.base_name + "_volumetric_mesh")
+	
+	if not args.not_d:
+		# If the dataset is downsampled
+		thickness_directory = os.path.join(thickness_directory, "downsampled")
+
+	# Add the muscle segmentation to the load directory
+	thickness_directory = os.path.join(thickness_directory, 
+		"muscle_segmentation")
 	horns = ["left", "right"]
 	
 	# Read the mesh file
-	mesh = meshio.read(mesh_path + '/' + mesh_name + ".vtu")
+	mesh = meshio.read(mesh_name + ".vtu")
 	z_coords = mesh.points[:, 2]
 	y_coords = mesh.points[:, 0]
 	nb_points = len(z_coords)
 	nb_slices = round(z_coords.max())
 	
 	# Read thickness data
-	thickness_data = np.load(thickness_dir + "/muscle_thickness.pkl",
+	thickness_data = np.load(thickness_directory + "/muscle_thickness.pkl",
 		allow_pickle=True)
 	left_thickness = thickness_data['left']
 	right_thickness = thickness_data['right']
@@ -104,4 +114,4 @@ if __name__ == "__main__":
 	mesh.point_data = point_data_dict
 	
 	# Save new mesh
-	mesh.write(mesh_path + '/' + mesh_name + "_annotated.vtu")
+	mesh.write(mesh_name + "_annotated.vtu")
