@@ -41,7 +41,7 @@ if __name__ == "__main__":
 
 	if not os.path.exists(load_directory):
 		sys.stderr.write("\nError: the input folder {} does not exist \
-			\n".format(args.dir_path))
+			\n".format(args.load_directory))
 		exit()
 
 	# Sort the images
@@ -49,7 +49,7 @@ if __name__ == "__main__":
 
 	if len(img_list) == 0:
 		sys.stderr.write("Error: the folder {} does not contain any images \
-			\n".format(args.dir_path))
+			\n".format(args.load_directory))
 		exit()
 
 	# Add the .nii.gz extension to the base name
@@ -61,3 +61,4 @@ if __name__ == "__main__":
 	volume = reader.Execute()
 
 	sitk.WriteImage(volume, os.path.join(load_directory, save_name))
+
