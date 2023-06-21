@@ -75,7 +75,7 @@ if __name__ == "__main__":
 		muscle_win_size = round(0.05 * nb_imgs)
 		circular_win_size = round(0.04 * args.points)
 
-		print("   Finding centreline")
+		print("   Loading centreline")
 		centreline_dict = scipy.io.loadmat(load_directory + 
 			"/{}/centreline.mat".format(horn))
 		centreline = np.transpose(centreline_dict["centreline"])
