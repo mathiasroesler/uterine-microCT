@@ -21,11 +21,9 @@ if __name__ == "__main__":
 		help="path from BASE to the dataset")
 	parser.add_argument("base_name", type=str, metavar="base-name",
 		help="name of the dataset")
-	parser.add_argument("save_name", type=str, metavar="save-name",
-		help="name of the nifti file to save to")
 	parser.add_argument("-e", "--extension", type=str, 
 		help="extension of the images", default="png")
-	parser.add_argument("--not-d", action=store_true, 
+	parser.add_argument("--not-d", action='store_true', 
 		help="flag used if the dataset is not downsampled")
 
 	# Parse input arguments
@@ -54,12 +52,8 @@ if __name__ == "__main__":
 			\n".format(args.dir_path))
 		exit()
 
-	if len(args.save_name.split('.')) == 1:
-		# Add the .nii.gz extension if it does not exist
-		save_name = args.save_name + ".nii.gz"	
-
-	else:
-		save_name = args.save_name
+	# Add the .nii.gz extension to the base name
+	save_name = args.base_name + ".nii.gz"
 
 	# Read in all the images
 	reader = sitk.ImageSeriesReader()
