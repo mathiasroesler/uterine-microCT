@@ -28,15 +28,18 @@ end
 
 load_directory = join([getenv("HOME"), "Documents/phd/", dir_path, base_name], '/');
 
-% Load parameters
-toml_map = toml.read(join([load_directory, base_name + ".toml"], '/'));
-params = toml.map_to_struct(toml_map);
-start_nb = params.thickness.start_nb;
-
 if downsampled
-    % Deal with downsampled dataset
+    % If using the downsampled dataset
     load_directory = join([load_directory, "downsampled"], '/');
+    toml_map = toml.read(join([load_directory, ...
+        base_name + "_downsampled.toml"], '/'));
+else
+    % Use the non-downsampled TOML file
+    toml_map = toml.read(join([load_directory, base_name + ".toml"], '/'));
 end
+
+% Load parameters
+params = toml.map_to_struct(toml_map);
 
 mask_paths = getImagePaths(load_directory, extension);
 mask_stack = loadImageStack(mask_paths);
