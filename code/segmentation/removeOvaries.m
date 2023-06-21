@@ -2,7 +2,7 @@ function removeOvaries(dir_path, base_name, downsampled, extension, start_nb)
 %REMOVEOVARIES Removes the ovaries from the segmentation masks of a uCT
 %dataset.
 %
-%   base_dir is $HOME/Documents/phd/
+%   base_dir is $HOME/Documents/phd/ and set in utils/baseDir()
 %
 %   Input:
 %    - dir_path, path to the directory containing the dataset from base_dir
@@ -22,8 +22,8 @@ if nargin < 4
     downsampled = true;
 end
 
-load_directory = join([getenv("HOME"), "Documents/phd", dir_path, base_name], ...
-    '/'); % Directory where images are located
+% Directory where images are located
+load_directory = join([baseDir(), dir_path, base_name], '/');
 
 if downsampled
     % If using the downsampled dataset

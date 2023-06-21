@@ -3,7 +3,7 @@ function [img_stack, mask_stack] = readNiftiSegmentation(dir_path, ...
 %READNIFTISEGMENTATION Reads the segmentation and images from the nifti
 %files. The masks are applied to the images.
 %   
-%   base_dir is $HOME/Documents/phd/
+%   base_dir is $HOME/Documents/phd/ and set in utils/baseDir()
 %
 %   Input:
 %    - dir_path, path to the directory containing the dataset from base_dir
@@ -19,9 +19,11 @@ if nargin < 3
     downsampled = true;
 end
 
-load_directory = join([getenv("HOME"), "Documents/phd", dir_path, base_name], '/');
+% Directory where images are located
+load_directory = join([baseDir(), dir_path, base_name], '/');
 
 if downsampled
+    % If using the downsampled dataset
     load_directory = join([load_directory, "downsampled"], '/');
 end
 

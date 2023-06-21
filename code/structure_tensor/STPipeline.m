@@ -1,7 +1,7 @@
 function STPipeline(dir_path, base_name, mask, diffusion, structure_tensor, streamlines, downsampled)
 %STPipeline Runs the structure tensor analysis pipeline.
 %
-%   base_dir is $HOME/Documents/phd/
+%   base_dir is $HOME/Documents/phd/ and set in utils/baseDir()
 %
 %   Input:
 %    - dir_path, path to the directory containing the dataset from base_dir
@@ -40,19 +40,22 @@ if nargin < 3
 end
 
 %% General parameters
-load_directory = join([getenv("HOME"), ...
-    "Documents/phd", dir_path, base_name], ...
-    '/'); % Directory where images are located
+% Directory where images are located
+load_directory = join([baseDir(), dir_path, base_name], '/');
+
+if downsampled
+    % If using the downsampled dataset
+    load_directory = join([load_directory, "downsampled"], '/');
+    toml_map = toml.read(join([load_directory, base_name + "_downsampled.toml"], '/'));
+else
+    % Use the non-downsampled TOML file
+    toml_map = toml.read(join([load_directory, base_name + ".toml"], '/'));
+end
 
 % Load parameters 
-toml_map = toml.read(join([load_directory, base_name + ".toml"], '/'));
 params = toml.map_to_struct(toml_map);
 file_template = params.prefix;
 extension = params.extension;
-
-if downsampled
-    load_directory = join([load_directory, "downsampled"], '/');
-end
 
 orig_img_dir = load_directory;
 src_dir = join([load_directory, "ST"], '/');

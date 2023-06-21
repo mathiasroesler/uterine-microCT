@@ -3,7 +3,7 @@ function uCTCentreline(dir_path, base_name, regions, downsampled, ST, ...
 %UCTCENTRELINE Computes the centreline for the dataset provided by
 %base_name given the selected regions.
 %   
-%   base_dir is $HOME/Documents/phd/
+%   base_dir is $HOME/Documents/phd/ and set in utils/baseDir()
 %
 %   Input:
 %    - dir_path, path to the directory containing the dataset from base_dir
@@ -26,10 +26,11 @@ if nargin < 4
     downsampled = true;
 end
 
-load_directory = join([getenv("HOME"), "Documents/phd/", dir_path, base_name], '/');
+% Directory where images are located
+load_directory = join([baseDir(), dir_path, base_name], '/');
 
 if downsampled
-    % Deal with downsampled dataset
+    % If using the downsampled dataset
     load_directory = join([load_directory, "downsampled"], '/');
 end
 

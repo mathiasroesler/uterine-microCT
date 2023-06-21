@@ -3,7 +3,7 @@ function segmentMicroCTDataset(dir_path, base_name, segmentation_type, ...
 %SEGMENTMICROCTDATASET Segments a uCT dataset based on the segmentation 
 %type. 
 %
-%   base_dir is $HOME/Documents/phd/
+%   base_dir is $HOME/Documents/phd/ and set in utils/baseDir()
 %
 %   Input:
 %    - dir_path, path to the directory containing the dataset from base_dir
@@ -28,8 +28,8 @@ if nargin < 5
     downsampled = true;
 end
 
-load_directory = join([getenv("HOME"), "Documents/phd", dir_path, base_name], ...
-    '/'); % Directory where images are located
+% Directory where images are located
+load_directory = join([baseDir(), dir_path, base_name], '/'); 
 
 if downsampled
     % If using the downsampled dataset

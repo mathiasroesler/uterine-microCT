@@ -1,7 +1,7 @@
 function downsampleMicroCTDataset(dir_path, base_name, varargin)
 %DOWNSAMPLEMICROCTDATASET Downsamples a uCT dataset. 
 %
-%   base_dir is $HOME/Documents/phd/
+%   base_dir is $HOME/Documents/phd/ and set in utils/baseDir()
 %
 %   Input:
 %    - dir_path, path to the directory containing the dataset from base_dir
@@ -42,9 +42,9 @@ else
     batch_size = varargin{2};
 end
 
-load_directory = join([getenv("HOME"), ...
-    "Documents/phd", dir_path, base_name], ...
-    '/'); % Directory where images are located
+% Directory where images are located
+load_directory = join([baseDir(), dir_path, base_name], '/');
+
 save_directory = join([load_directory, "downsampled"], '/');
 
 %% Load and set parameters
