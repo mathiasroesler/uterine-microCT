@@ -15,8 +15,8 @@ def plotProjectionPoints(img, centre, projection_points):
 
 	Arguments:
 	img -- ndarray, image to display.
-	centre -- ndarray, coordinates of the centre point.
-	projection_points -- ndarray, coordinates of the projection points.
+	centre -- ndarray, coordinates of the centre point (XY).
+	projection_points -- ndarray, coordinates of the projection points (XY).
 
 	Return:
 	
@@ -24,10 +24,10 @@ def plotProjectionPoints(img, centre, projection_points):
 	fig, ax = plt.subplots()
 
 	plt.imshow(img, cmap='gray') # Plot image
-	ax.plot(centre[1], centre[0], '.r', markersize=18) # Plot centre
+	ax.plot(centre[0], centre[1], '.r', markersize=18) # Plot centre
 
 	for point in projection_points:
-		ax.plot(point[1], point[0], '.b', markersize=18)
+		ax.plot(point[0], point[1], '.b', markersize=18)
 	
 	plt.show()
 	
