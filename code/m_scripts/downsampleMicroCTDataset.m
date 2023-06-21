@@ -79,21 +79,24 @@ new_resolution_z = (stack_size/new_stack_size)*params.resolution; % um/pixel z-d
 
 nb_runs = ceil(stack_size/batch_size); % Number of times to run loop
 img_paths = getImagePaths(load_directory, img_extension);
-img_save_index = 0;
+img_paths = img_paths(params.start_nb:params.end_nb);
+img_save_index = 1;
 
 %% Main resizing loop
 for run = 1:nb_runs
     disp("Running batch number " + num2str(run) + "/" + num2str(nb_runs));
     first_image_nb = (run-1) * batch_size + 1;
-    last_image_nb = run * batch_size + 1;
+    last_image_nb = run * batch_size;
 
-    if last_image_nb > params.end_nb
-        last_image_nb = params.end_nb;
+    if last_image_nb > stack_size
+        last_image_nb = stack_size;
     end
 
-    batch_stack_size = last_image_nb - first_image_nb;
+    batch_stack_size = last_image_nb - first_image_nb + 1;
     new_batch_stack_size = round(batch_stack_size / z_factor);
-
+    if run == 4
+        disp(run)
+    end
     % Load all images in current batch
     disp("Loading " + num2str(batch_stack_size) + " images in batch");
     img_stack = loadImageStack(img_paths(first_image_nb:last_image_nb));
