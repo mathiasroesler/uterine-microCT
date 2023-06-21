@@ -47,7 +47,7 @@ middle_pixel = floor(max(size(img_stack)) / 2);
 nb_img = size(img_stack, 3);
 
 disp('Removing left ovary')
-for k = params.downsampled.left_ovary:nb_img
+for k = params.left_ovary:nb_img
     % Remove ovary on the left side of the image
     switch largest_dim
         case 1
@@ -59,7 +59,7 @@ for k = params.downsampled.left_ovary:nb_img
 end
 
 disp('Removing right ovary')
-for k = params.downsampled.right_ovary:nb_img
+for k = params.right_ovary:nb_img
     % Remove ovary on the right side of the image
     switch largest_dim
         case 1
