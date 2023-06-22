@@ -200,3 +200,130 @@ def movingStd(array, window_size):
 		std_array[i*window_size + window_size // 5] = np.std(window)
 
 	return std_array
+	
+
+def writeExElem(file_path, elements):
+	""" Writes out the data from a mesh to a exnode file
+
+	Arguments:
+	file_path -- str, path to the file to save to.
+	elements -- ndarray, list of nodes associated with each tetrahedra,
+		size = Nx4
+
+	Return:
+
+	"""
+	try:
+		assert(elements.shape[1] == 4)
+
+	except AssertionError:
+		sys.stderr.write("Error: elements should contain 4 nodes\n")
+
+	with open(file_path, "w") as f:
+		# Write the exnode file header
+		f.write("Group name: uterus\n")
+		f.write("Shape.  Dimension=1\n")
+		f.write("#Scale factor sets=1\n")
+		f.write("l.lagrange, #Scale factors=2\n")
+		f.write("#Nodes=4\n")
+		f.write("#Fields=1\n")
+		f.write("1) coordinates, coordinate, rectangular cartesian, #Components=3\n")
+		f.write(" x. l.Lagrange, no modify, standard node based.\n")
+		f.write("  #Nodes=4\n")
+		f.write("  1. #Values=1\n")
+		f.write("	Value indices: 1\n")
+		f.write("	Scale factor indices: 1\n")
+		f.write("  2. #Values=1\n")
+		f.write("	Value indices: 1\n")
+		f.write("	Scale factor indices: 2\n")
+		f.write("  3. #Values=1\n")
+		f.write("	Value indices: 1\n")
+		f.write("	Scale factor indices: 3\n")
+		f.write("  4. #Values=1\n")
+		f.write("	Value indices: 1\n")
+		f.write("	Scale factor indices: 4\n")
+		f.write(" y. l.Lagrange, no modify, standard node based.\n")
+		f.write("  #Nodes=4\n")
+		f.write("  1. #Values=1\n")
+		f.write("	Value indices: 1\n")
+		f.write("	Scale factor indices: 1\n")
+		f.write("  2. #Values=1\n")
+		f.write("	Value indices: 1\n")
+		f.write("	Scale factor indices: 2\n")
+		f.write("  3. #Values=1\n")
+		f.write("	Value indices: 1\n")
+		f.write("	Scale factor indices: 3\n")
+		f.write("  4. #Values=1\n")
+		f.write("	Value indices: 1\n")
+		f.write("	Scale factor indices: 4\n")
+		f.write(" z. l.Lagrange, no modify, standard node based.\n")
+		f.write("  #Nodes=4\n")
+		f.write("  1. #Values=1\n")
+		f.write("	Value indices: 1\n")
+		f.write("	Scale factor indices: 1\n")
+		f.write("  2. #Values=1\n")
+		f.write("	Value indices: 1\n")
+		f.write("	Scale factor indices: 2\n")
+		f.write("  3. #Values=1\n")
+		f.write("	Value indices: 1\n")
+		f.write("	Scale factor indices: 3\n")
+		f.write("  4. #Values=1\n")
+		f.write("	Value indices: 1\n")
+		f.write("	Scale factor indices: 4\n")
+
+		for i, nodes in enumerate(elements):
+			f.write("Element: {} 0 0\n".format(i))
+			f.write(" Nodes: \n")
+			f.write("  {} {} {} {}\n".format(
+				nodes[0], nodes[1], nodes[2], nodes[3])) 
+			f.write(" Scale factor: \n")
+			f.write("  1 1 1 1\n")
+
+
+def writeExNode(file_path, nodes, thickness):
+	""" Writes out the nodes and the thickness from a mesh 
+		to a exnode file
+
+	Arguments:
+	file_path -- str, path to the file to save to.
+	nodes -- ndarray, list of coordinates for each node.
+		size = Nx3
+	thickness -- ndarray, list of thickness value for each node.
+		size = Nx1
+
+	Return:
+
+	"""
+	try:
+		# Check for number of coordinates
+		assert(nodes.shape[1] == 3)
+
+	except AssertionError:
+		sys.stderr.write("Error: nodes should have three coordinates\n")
+		exit()
+
+	try:
+		# Check that thickness and nodes have the same dimension
+		assert(nodes.shape[0] == thickness.shape[0])
+
+	except AssertionError:
+		sys.stderr.write("Error: nodes and thickness should have the same " \
+		"number of elements\n")
+		exit()
+
+	with open(file_path, "w") as f:
+		# Write exnode file header
+		f.write("Group name: uterus\n")
+		f.write("#Fields=2\n")
+		f.write("1) coordinates, coordinate, rectangular cartesian, #Components=3\n")
+		f.write(" x. Value index=1, #Derivatives=0\n")
+		f.write(" y. Value index=2, #Derivatives=0\n")
+		f.write(" z. Value index=3, #Derivatives=0\n")
+		f.write("2) thickness, field, rectangular cartesian, #Components=1\n")
+		f.write(" t. Value index=4, #Derivatives=0\n") 
+
+		for i in range(len(nodes)):
+			f.write("Node: {}\n".format(i))
+			f.write(" {} {} {}\n".format(
+				nodes[i][0], nodes[i][1], nodes[i][2]))
+			f.write(" {}\n".format(thickness[i, 0]))
