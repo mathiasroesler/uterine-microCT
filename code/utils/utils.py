@@ -272,7 +272,7 @@ def writeExElem(file_path, elements):
 		f.write("	Scale factor indices: 4\n")
 
 		for i, nodes in enumerate(elements):
-			f.write("Element: {} 0 0\n".format(i))
+			f.write("Element: {} 0 0\n".format(i+1))
 			f.write(" Nodes: \n")
 			f.write("  {} {} {} {}\n".format(
 				nodes[0], nodes[1], nodes[2], nodes[3])) 
@@ -323,7 +323,7 @@ def writeExNode(file_path, nodes, thickness):
 		f.write(" t. Value index=4, #Derivatives=0\n") 
 
 		for i in range(len(nodes)):
-			f.write("Node: {}\n".format(i))
+			f.write("Node: {}\n".format(i+1))
 			f.write(" {} {} {}\n".format(
 				nodes[i][0], nodes[i][1], nodes[i][2]))
 			f.write(" {}\n".format(thickness[i, 0]))
