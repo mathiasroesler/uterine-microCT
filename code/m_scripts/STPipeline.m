@@ -171,7 +171,7 @@ if mask
 end
 
 % Clear everything except general parameters and input arguments
-clearvars -EXCEPT base_dir src_dir extension file_template data_folder mask diffusion structure_tensor streamlines
+clearvars -EXCEPT params base_dir src_dir extension file_template data_folder mask diffusion structure_tensor streamlines
 
 
 if diffusion
@@ -201,13 +201,13 @@ if diffusion
     img_output_dir = src_dir + '/extrapolated/';
 
     % Tissue mask erosion threshold and radius
-    TissueMaskErosionThreshold = 20;
-    TissueMaskErosionRadius = 4;
+    TissueMaskErosionThreshold = params.ST.diffusion.erosion_threshold;
+    TissueMaskErosionRadius = params.ST.diffusion.erosion_radius;
 
     % Set the tissue boundary diffusion testing distance (voxels) - points
     % at this distance from the tissue will be used to assess the stopping
     % criteria for the diffusion iterations.
-    TissueBoundaryDiffusionTestingDistance = 14;
+    TissueBoundaryDiffusionTestingDistance = params.ST.diffusion.diffusion_distance;
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %
@@ -315,7 +315,7 @@ if diffusion
 end
 
 % Clear everything except general parameters and input arguments
-clearvars -EXCEPT base_dir src_dir extension file_template data_folder mask diffusion structure_tensor streamlines
+clearvars -EXCEPT params base_dir src_dir extension file_template data_folder mask diffusion structure_tensor streamlines
 
 if structure_tensor
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -342,8 +342,8 @@ if structure_tensor
     DataOutput = src_dir + '/binary/';
 
     % Set the derivative and smoothing template voxel widths
-    DerivativeTemplateWidth = 5;
-    SmoothingTemplateWidth = 5;
+    DerivativeTemplateWidth = params.ST.structure_tensor.derivative_template_width;
+    SmoothingTemplateWidth = params.ST.structure_tensor.smoothing_template_width;
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %
@@ -653,7 +653,7 @@ if structure_tensor
 end
 
 % Clear everything except general parameters and input arguments
-clearvars -EXCEPT base_dir src_dir extension file_template data_folder mask diffusion structure_tensor streamlines
+clearvars -EXCEPT params base_dir src_dir extension file_template data_folder mask diffusion structure_tensor streamlines
 
 if streamlines
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -671,11 +671,11 @@ if streamlines
     % Set parameters and paths
     %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    Level = 4; % frequency resolution of ST/Hessian data to use
+    Level = params.ST.streamlines.level; % frequency resolution of ST/Hessian data to use
     % Index step size
-    DJ = 3;
-    DI = 3;
-    DK = 3;
+    DJ = params.ST.streamlines.DJ;
+    DI = params.ST.streamlines.DI;
+    DK = params.ST.streamlines.DK;
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %
     % Data and path locations
