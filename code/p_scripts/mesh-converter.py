@@ -35,7 +35,7 @@ if __name__ == "__main__":
 	nodes = mesh.points
 	thickness = mesh.point_data["thickness"]
 	elements = mesh.cells_dict["tetra"]
-	breakpoint()
+
 	# Write EX files
 	print("Writing exnode file")
 	utils.writeExNode(mesh_file + ".exnode", nodes, thickness)
