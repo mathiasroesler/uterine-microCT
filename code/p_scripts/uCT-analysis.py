@@ -19,8 +19,10 @@ if __name__ == "__main__":
 	parser = argparse.ArgumentParser(description=
 		"Determines the thickness of the muscle layers from a uCT dataset")
 
-	parser.add_argument("input_folder", type=str, metavar="input-folder",
-		help="name of the folder containing the images")
+	parser.add_argument("dir_path", type=str, metavar="dir-path",
+		help="path from BASE to the dataset")
+	parser.add_argument("base_name", type=str, metavar="base-name",
+		help="name of the dataset")
 	parser.add_argument("-e", "--extension", type=str, metavar="extension",
 		help="extension for the saved images", default="png")
 	parser.add_argument("--horn", type=str, choices={"left", "right", "both"},
@@ -29,16 +31,33 @@ if __name__ == "__main__":
 		help="number of points to use for the projection", default=128)
 	parser.add_argument("-s", "--switch", action='store_true',
 		help="switches the labels of the left and right horn")
+	parser.add_argument("--not-d", action='store_true',
+		help="flag used if the dataset is not downsampled")
 
 	# Parse input arguments
 	args = parser.parse_args()
 
-	full_path = os.path.join(utils.HOME, utils.BASE, args.input_folder, 
-		utils.DATA_FOLDER)
+	load_directory = os.path.join(utils.HOME, utils.BASE, args.dir_path, 
+		args.base_name)
 
-	param_file = full_path + "/analysis.toml"
+	if not args.not_d:
+		# If the dataset is downsampled
+		load_directory = os.path.join(load_directory, "downsampled")
+		param_file = os.path.join(load_directory, 
+			args.base_name + "_downsampled.toml")
+
+	else:
+		# If not use top-level parameter file
+		param_file = os.path.join(load_directory, args.base_name + ".toml")
+
+	# Load parameters
 	params = utils.parseTOML(param_file)
+	params = params['thickness'] # Extract the thickness parameters
 
+	# Add the muscle segmentation to the load directory
+	load_directory = os.path.join(load_directory, "muscle_segmentation")
+
+	# Convert both to left and right
 	if args.horn == "both":
 		horns = ["left", "right"]
 
@@ -54,7 +73,7 @@ if __name__ == "__main__":
 		print("Processing {} horn".format(horn))
 		print("   Loading mask stack")
 		mask_stack = utils.loadImageStack(os.path.join(
-			full_path, "{}".format(horn)), extension=args.extension)
+			load_directory, "{}".format(horn)), extension=args.extension)
 
 		nb_imgs = len(mask_stack)
 	
@@ -62,8 +81,8 @@ if __name__ == "__main__":
 		muscle_win_size = round(0.05 * nb_imgs)
 		circular_win_size = round(0.04 * args.points)
 
-		print("   Finding centreline")
-		centreline_dict = scipy.io.loadmat(full_path + 
+		print("   Loading centreline")
+		centreline_dict = scipy.io.loadmat(load_directory + 
 			"/{}/centreline.mat".format(horn))
 		centreline = np.transpose(centreline_dict["centreline"])
 		centreline = np.round(centreline).astype(int) # Round and convert to int
@@ -74,8 +93,8 @@ if __name__ == "__main__":
 			horn)
 
 		# Rescale the thickness to mm
-		muscle_thickness *= params["scaling_factor"]
-		slice_thickness *= params["scaling_factor"]
+		muscle_thickness *= params['scaling_factor']
+		slice_thickness *= params['scaling_factor']
 
 		print(u"{} horn muscle thickness: {:.2f} \u00B1 {:.2f}".format(horn, 
 			np.mean(muscle_thickness), np.std(muscle_thickness)))
@@ -95,11 +114,11 @@ if __name__ == "__main__":
 			errors[horn] = utils.movingStd(muscle_thickness, muscle_win_size)
 
 	# Save angular thickness 
-	with open(full_path + "/angular_thickness.pkl", 'wb') as f:
+	with open(load_directory + "/angular_thickness.pkl", 'wb') as f:
 		pickle.dump(avg_slice_thickness, f)
 
 	# Save muscle thickness
-	with open(full_path + "/muscle_thickness.pkl", 'wb') as f:
+	with open(load_directory + "/muscle_thickness.pkl", 'wb') as f:
 		pickle.dump(avg_thickness, f)
 
 	# Plot everything

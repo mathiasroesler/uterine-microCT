@@ -19,8 +19,10 @@ if __name__ == "__main__":
 	parser = argparse.ArgumentParser(description=
 		"Specific script to generate the thickness plot based on histology")
 
-	parser.add_argument("input_folder", type=str, metavar="input-folder",
-		help="name of the folder containing the images")
+	parser.add_argument("dir_path", type=str, metavar="dir-path",
+		help="path from BASE to the dataset")
+	parser.add_argument("base_name", type=str, metavar="base-name",
+		help="name of the dataset")
 	parser.add_argument("-e", "--extension", type=str, metavar="extension",
 		help="extension for the saved images", default="png")
 	parser.add_argument("--points", type=int, 
@@ -29,11 +31,15 @@ if __name__ == "__main__":
 	# Parse input arguments
 	args = parser.parse_args()
 	
-	full_path = os.path.join(utils.HOME, utils.BASE, args.input_folder, 
-		"muscle_segmentation")
+	load_directory = os.path.join(utils.HOME, utils.BASE, args.dir_path, 
+		args.base_name)
 
-	param_file = full_path + "/analysis.toml"
+	param_file = os.path.join(load_directory, args.base_name + ".toml")
 	params = utils.parseTOML(param_file)
+	params = params['thickness'] # Extract the thickness parameters
+
+	# Add the muscle segmentation to the load directory
+	load_directory = os.path.join(load_directory, "muscle_segmentation")
 
 	# Dicts for results of both horns
 	avg_thickness = dict()
@@ -46,12 +52,12 @@ if __name__ == "__main__":
 	print("Processing {} horn".format(horn))
 	print("   Loading mask stack")
 	mask_stack = utils.loadImageStack(os.path.join(
-		full_path, "{}".format(horn)), extension=args.extension)
+		load_directory, "{}".format(horn)), extension=args.extension)
 
 	circular_win_size = round(0.04 * args.points)
 
-	print("   Finding centreline")
-	centreline_dict = scipy.io.loadmat(full_path + 
+	print("   Loading centreline")
+	centreline_dict = scipy.io.loadmat(load_directory + 
 		"/{}/centreline.mat".format(horn))
 	centreline = np.transpose(centreline_dict["centreline"])
 
@@ -74,6 +80,6 @@ if __name__ == "__main__":
 
 
 	# Save angular thickness
-	with open(full_path + "/angular_thickness.pkl".format(
+	with open(load_directory + "/angular_thickness.pkl".format(
 		horn), 'wb') as f:
 		pickle.dump(avg_slice_thickness, f)

@@ -3,7 +3,7 @@ function uCTCentreline(dir_path, base_name, regions, downsampled, ST, ...
 %UCTCENTRELINE Computes the centreline for the dataset provided by
 %base_name given the selected regions.
 %   
-%   base_dir is $HOME/Documents/phd/
+%   base_dir is $HOME/Documents/phd/ and set in utils/baseDir()
 %
 %   Input:
 %    - dir_path, path to the directory containing the dataset from base_dir
@@ -26,28 +26,32 @@ if nargin < 4
     downsampled = true;
 end
 
-base_dir = join([getenv("HOME"), "Documents/phd/", dir_path, base_name], '/');
+% Directory where images are located
+load_directory = join([baseDir(), dir_path, base_name], '/');
 
 if downsampled
-    % Deal with downsampled dataset
-    base_dir = join([base_dir, "downsampled"], '/');
+    % If using the downsampled dataset
+    load_directory = join([load_directory, "downsampled"], '/');
 end
 
 if ST
     % Deal with final location
-    base_dir = join([base_dir, "ST/mask"], '/');
+    load_directory = join([load_directory, "ST/mask"], '/');
 else
-    base_dir = join([base_dir, "muscle_segmentation"], '/');
+    load_directory = join([load_directory, "muscle_segmentation"], '/');
 end
 
 for k = 1:length(regions)
     region = regions(k);
     disp("Processing region: " + region)
 
+    tmp_load_directory = load_directory;
+
     if strcmp(region, "both")
-        mask_paths = getImagePaths(base_dir, extension);
+        mask_paths = getImagePaths(tmp_load_directory, extension);
     else
-        mask_paths = getImagePaths(base_dir + region, extension);
+        tmp_load_directory = join([load_directory, region], '/');
+        mask_paths = getImagePaths(tmp_load_directory, extension);
     end
 
     mask_stack = loadImageStack(mask_paths);
@@ -65,10 +69,8 @@ for k = 1:length(regions)
         end
     end
 
-    if strcmp(region, "both")
-        save(base_dir + "/centreline.mat", "centreline");
-    else
-        save(base_dir + region + "/centreline.mat", "centreline");
-    end
+    disp("Saving centreline")
+    save(tmp_load_directory + "/centreline.mat", "centreline");
+    
     clear centreline
 end
