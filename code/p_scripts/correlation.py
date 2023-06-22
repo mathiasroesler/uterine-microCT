@@ -36,7 +36,7 @@ if __name__ == "__main__":
 	uCT_directory = os.path.join(utils.HOME, utils.BASE, args.uCT_path, 
 		args.base_name)
 	histo_directory = os.path.join(utils.HOME, utils.BASE, args.histo_path, 
-		args.base_name)
+		args.base_name + "_histology")
 	regions = ["cervical", "central", "ovarian"]
 	horn = args.horn
 
