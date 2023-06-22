@@ -1,5 +1,5 @@
 function uCTRotation(dir_path, base_name, regions, nb_used_slices, ...
-    downsampled, extension)
+    type, downsampled, extension)
 %UCTROTATION Computes the centreline for the dataset provided by
 %base_name given the selected regions.
 %   
@@ -11,16 +11,21 @@ function uCTRotation(dir_path, base_name, regions, nb_used_slices, ...
 %    - region, either left, right or both, used to sort the centrepoints. 
 %    - nb_used_slices, number of slices to use to determine centre vector,
 %    default value 5.
+%    - type, segmentation type, {fat, tissue, shape, muscle}, default value
+%    is muscle.
 %    - downsampled, true if the dataset has been downsampled, default value
 %    is true.
 %    - extension, extension of the images to load, default value is png.
 %
 %   Return: 
-if nargin < 6
+if nargin < 7
     extension = "png";
 end
-if nargin < 5
+if nargin < 6
     downsampled = true;
+end
+if nargin < 5
+    type = "muscle";
 end
 if nargin < 4
     nb_used_slices = 5;
@@ -39,8 +44,12 @@ else
     toml_map = toml.read(join([load_directory, base_name + ".toml"], '/'));
 end
 
+% Add the segmentation type 
+load_directory = join([load_directory, type + "_segmentation/"], '/');
+
 % Load parameters
 params = toml.map_to_struct(toml_map);
+start_nb = params.thickness.start_nb;
 
 mask_paths = getImagePaths(load_directory, extension);
 mask_stack = loadImageStack(mask_paths);
@@ -52,7 +61,7 @@ for k = 1:length(regions)
         end_nb = params.thickness.left.end_nb;
     elseif strcmp(region, "right")
         end_nb = params.thickness.right.end_nb;
-
+    else
         error("Error: invalid horn selection.");
     end
 
@@ -61,7 +70,8 @@ for k = 1:length(regions)
         mask_stack(:, :, start_nb:end_nb), region, nb_used_slices); 
 
     disp("Saving region: " + region);
-    saveImageStack(rotated_stack, load_directory + region, ...
+    save_directory = join([load_directory, region], '/');
+    saveImageStack(rotated_stack, save_directory, ...
         params.prefix, start_nb, extension);
 
     clear rotated_stack % Save memory

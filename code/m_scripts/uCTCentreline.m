@@ -45,10 +45,13 @@ for k = 1:length(regions)
     region = regions(k);
     disp("Processing region: " + region)
 
+    tmp_load_directory = load_directory;
+
     if strcmp(region, "both")
-        mask_paths = getImagePaths(load_directory, extension);
+        mask_paths = getImagePaths(tmp_load_directory, extension);
     else
-        mask_paths = getImagePaths(load_directory + region, extension);
+        tmp_load_directory = join([load_directory, region], '/');
+        mask_paths = getImagePaths(tmp_load_directory, extension);
     end
 
     mask_stack = loadImageStack(mask_paths);
@@ -66,10 +69,8 @@ for k = 1:length(regions)
         end
     end
 
-    if strcmp(region, "both")
-        save(load_directory + "/centreline.mat", "centreline");
-    else
-        save(load_directory + region + "/centreline.mat", "centreline");
-    end
+    disp("Saving centreline")
+    save(tmp_load_directory + "/centreline.mat", "centreline");
+    
     clear centreline
 end
