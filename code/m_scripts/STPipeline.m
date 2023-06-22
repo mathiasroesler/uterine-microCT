@@ -673,9 +673,9 @@ if streamlines
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     Level = params.ST.streamlines.level; % frequency resolution of ST/Hessian data to use
     % Index step size
-    DJ = params.ST.streamlines.DJ;
-    DI = params.ST.streamlines.DI;
-    DK = params.ST.streamlines.DK;
+    DJ = double(params.ST.streamlines.DJ);
+    DI = double(params.ST.streamlines.DI);
+    DK = double(params.ST.streamlines.DK);
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %
     % Data and path locations
