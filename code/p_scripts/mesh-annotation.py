@@ -20,13 +20,13 @@ if __name__ == "__main__":
 	parser.add_argument("base_name", type=str, metavar="base-name",
 		help="name of the dataset")
 	parser.add_argument("--mesh-dir", type=str, default="mesh/",
-		help="path from BASE to the mesh")
+		help="path from BASE to the mesh, default mesh/")
 	parser.add_argument("--data-dir", type=str, default="microCT/data",
-		help="path form BASE to the thickness data")
+		help="path form BASE to the thickness data, default microCT/data")
 	parser.add_argument("--horn", type=str, choices={"left", "right", "both"},
-		help="horn to annotate", default="both")
+		help="horn to annotate, default both", default="both")
 	parser.add_argument("--not-d", action='store_true',
-		help="flag used if the dataset is not downsampled")
+		help="flag used if the dataset is not downsampled, default False")
 
 	args = parser.parse_args()
 

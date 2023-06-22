@@ -24,9 +24,9 @@ if __name__ == "__main__":
 	parser.add_argument("base_name", type=str, metavar="base-name",
 		help="name of the dataset")
 	parser.add_argument("-e", "--extension", type=str, metavar="extension",
-		help="extension for the saved images", default="png")
+		help="extension for the saved images, default png", default="png")
 	parser.add_argument("--points", type=int, 
-		help="number of points to use for the projection", default=128)
+		help="number of points to use for the projection, default 128", default=128)
 
 	# Parse input arguments
 	args = parser.parse_args()

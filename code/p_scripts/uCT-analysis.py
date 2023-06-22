@@ -24,15 +24,15 @@ if __name__ == "__main__":
 	parser.add_argument("base_name", type=str, metavar="base-name",
 		help="name of the dataset")
 	parser.add_argument("-e", "--extension", type=str, metavar="extension",
-		help="extension for the saved images", default="png")
+		help="extension for the saved images, default png", default="png")
 	parser.add_argument("--horn", type=str, choices={"left", "right", "both"},
 		help="horn to process", default="both")
 	parser.add_argument("-p", "--points", type=int, metavar="points",
-		help="number of points to use for the projection", default=128)
+		help="number of points to use for the projection, default 128", default=128)
 	parser.add_argument("-s", "--switch", action='store_true',
-		help="switches the labels of the left and right horn")
+		help="switches the labels of the left and right horn, default False")
 	parser.add_argument("--not-d", action='store_true',
-		help="flag used if the dataset is not downsampled")
+		help="flag used if the dataset is not downsampled, default False")
 
 	# Parse input arguments
 	args = parser.parse_args()

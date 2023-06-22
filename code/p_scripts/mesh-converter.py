@@ -20,7 +20,7 @@ if __name__ == "__main__":
 	parser.add_argument("mesh_name", type=str, metavar="mesh-name",
 		help="name of the mesh to convert")
 	parser.add_argument("--mesh-dir", type=str, default="mesh/",
-		help="path to the directory containing the mesh")
+		help="path from BASE to the mesh, default mesh/")
 
 	args = parser.parse_args()
 

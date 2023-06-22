@@ -25,9 +25,9 @@ if __name__ == "__main__":
 	parser.add_argument("base_name", type=str, metavar="base-name",
 		help="name of the dataset")
 	parser.add_argument("--horn", type=str, choices={"left", "right"},
-		help="horn to process", default="right")
+		help="horn to process, default right", default="right")
 	parser.add_argument("--not-d", action='store_true',
-		help="flag used if the uCT dataset is not downsampled")
+		help="flag used if the uCT dataset is not downsampled, default False")
 
 	# Parse input arguments
 	args = parser.parse_args()
