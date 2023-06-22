@@ -1,0 +1,12 @@
+# Top level parameters
+prefix="AWA015_PTA_2_Ova"
+extension="png"
+
+# Dataset image parameters
+nb_pixel_x=2071
+nb_pixel_y=3012
+resolution=6.008106
+
+# Downsampling parameters
+start_nb=1000
+end_nb=2300
