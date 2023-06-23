@@ -1,6 +1,6 @@
-# $\mu$CT analysis
+# uCT analysis
 ## General information
-This repository contains code to analyse $\mu$CT datasets of rat uteri. 
+This repository contains code to analyse uCT datasets of rat uteri. 
 
 ## Requirements
 The code was run on Linux Ubuntu 22.01 using MATLAB (Mathworks) version 2022a and Python version 3.9
@@ -37,5 +37,5 @@ data
 ```
 
 ## Data availability
-The $\mu$CT data that has been used is available [here](https://figshare.com/) TODO add link when finished
+The uCT data that has been used is available [here](https://figshare.com/) TODO add link when finished
 
