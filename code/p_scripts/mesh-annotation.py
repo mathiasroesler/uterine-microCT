@@ -28,7 +28,7 @@ if __name__ == "__main__":
 	parser.add_argument("--not-d", action='store_true',
 		help="flag used if the dataset is not downsampled")
 	parser.add_argument("-e", "--extension", choices={"vtu", "vtk"},
-		help="mesh extesion", default="vtk")
+		help="mesh extesion, default value vtk", default="vtk")
 
 	args = parser.parse_args()
 
@@ -52,6 +52,9 @@ if __name__ == "__main__":
 	mesh = meshio.read(mesh_name + "." + args.extension)
 	z_coords = mesh.points[:, 2]
 	y_coords = mesh.points[:, 0]
+
+	# Re-centre z to 0
+	z_coords = z_coords - min(z_coords)
 	nb_points = len(z_coords)
 	nb_slices = round(z_coords.max())
 	
@@ -65,7 +68,7 @@ if __name__ == "__main__":
 	point_data_dict = dict()
 	point_data_array = np.zeros((nb_points, 1))
 	point_data_name = "thickness"
-
+	
 	for i in range(nb_slices):
 		# Get the indices of the points on the slice
 		slice_idx_list = np.where((z_coords >= i) * (z_coords < (i+1)))[0]
@@ -94,9 +97,6 @@ if __name__ == "__main__":
 
 		# If two horns
 		if thickness_array.shape[0] == 2:
-			if len(slice_idx_list) == 0:
-				breakpoint()
-
 			slice_y_points = y_coords[slice_idx_list]
 
 			# Find the middle of the slice
@@ -119,4 +119,4 @@ if __name__ == "__main__":
 	mesh.point_data = point_data_dict
 	
 	# Save new mesh
-	mesh.write(mesh_name + "_annotated.vtu")
+	mesh.write(mesh_name + "_annotated." + args.extension)
