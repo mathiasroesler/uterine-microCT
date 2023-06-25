@@ -34,8 +34,8 @@ split_nb=0 # Slice number after which horns are independant
 	neighborhood_size=3
 
 [segmentation.fat]
-	# Untested
 	morph_size=2
+	# Untested
 	neighborhood_size=3
 
 [segmentation.shape]
@@ -61,17 +61,17 @@ split_nb=0 # Slice number after which horns are independant
 [ST]
 
 [ST.diffusion]
-	erosion_threshold=10
-	erosion_radius=4
-	diffusion_distance=7
+	erosion_threshold=5
+	erosion_radius=3
+	diffusion_distance=5
 	
 [ST.structure_tensor]
-	derivative_template_width=5
-	smoothing_template_width=5
+	derivative_template_width=3
+	smoothing_template_width=3
 	
 [ST.streamlines]
 	level=4
-	DJ=4
-	DI=4
-	DK=4
+	DJ=3
+	DI=3
+	DK=3
 
