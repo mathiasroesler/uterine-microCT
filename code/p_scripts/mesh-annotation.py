@@ -14,7 +14,7 @@ import utils.utils as utils
 
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser(description=
-		"Annotates a .vtu mesh with the thickness values of each slice")
+		"Annotates a vtu or vtk mesh with the thickness values of each slice")
 
 	# Parse input arguments
 	parser.add_argument("base_name", type=str, metavar="base-name",
@@ -27,6 +27,8 @@ if __name__ == "__main__":
 		help="horn to annotate, default both", default="both")
 	parser.add_argument("--not-d", action='store_true',
 		help="flag used if the dataset is not downsampled, default False")
+	parser.add_argument("-e", "--extension", choices={"vtu", "vtk"},
+		help="mesh extesion, default value vtk", default="vtk")
 
 	args = parser.parse_args()
 
@@ -47,9 +49,12 @@ if __name__ == "__main__":
 	horns = ["left", "right"]
 	
 	# Read the mesh file
-	mesh = meshio.read(mesh_name + ".vtu")
+	mesh = meshio.read(mesh_name + "." + args.extension)
 	z_coords = mesh.points[:, 2]
 	y_coords = mesh.points[:, 0]
+
+	# Re-centre z to 0
+	z_coords = z_coords - min(z_coords)
 	nb_points = len(z_coords)
 	nb_slices = round(z_coords.max())
 	
@@ -63,7 +68,7 @@ if __name__ == "__main__":
 	point_data_dict = dict()
 	point_data_array = np.zeros((nb_points, 1))
 	point_data_name = "thickness"
-
+	
 	for i in range(nb_slices):
 		# Get the indices of the points on the slice
 		slice_idx_list = np.where((z_coords >= i) * (z_coords < (i+1)))[0]
@@ -114,4 +119,4 @@ if __name__ == "__main__":
 	mesh.point_data = point_data_dict
 	
 	# Save new mesh
-	mesh.write(mesh_name + "_annotated.vtu")
+	mesh.write(mesh_name + "_annotated." + args.extension)
