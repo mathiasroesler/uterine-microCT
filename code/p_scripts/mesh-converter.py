@@ -14,11 +14,11 @@ import utils.utils as utils
 
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser(description=
-		"Converts an annotated vtu mesh to a cmgui format")
+		"Converts an annotated vtu or vtk mesh to a cmgui format")
 
 	# Parse input arguments
 	parser.add_argument("mesh_name", type=str, metavar="mesh-name",
-		help="name of the mesh to convert")
+		help="name of the mesh to convert with extension")
 	parser.add_argument("--mesh-dir", type=str, default="mesh/",
 		help="path to the directory containing the mesh")
 
@@ -29,7 +29,7 @@ if __name__ == "__main__":
 	mesh_file = mesh_path + '/' + args.mesh_name
 	
 	# Read the mesh file
-	mesh = meshio.read(mesh_file + ".vtu")
+	mesh = meshio.read(mesh_file)
 	
 	# Extract information
 	nodes = mesh.points
