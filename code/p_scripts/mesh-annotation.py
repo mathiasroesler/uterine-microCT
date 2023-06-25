@@ -14,7 +14,7 @@ import utils.utils as utils
 
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser(description=
-		"Annotates a .vtu mesh with the thickness values of each slice")
+		"Annotates a vtu or vtk mesh with the thickness values of each slice")
 
 	# Parse input arguments
 	parser.add_argument("base_name", type=str, metavar="base-name",
@@ -27,6 +27,8 @@ if __name__ == "__main__":
 		help="horn to annotate", default="both")
 	parser.add_argument("--not-d", action='store_true',
 		help="flag used if the dataset is not downsampled")
+	parser.add_argument("-e", "--extension", choices={"vtu", "vtk"},
+		help="mesh extesion", default="vtk")
 
 	args = parser.parse_args()
 
@@ -47,7 +49,7 @@ if __name__ == "__main__":
 	horns = ["left", "right"]
 	
 	# Read the mesh file
-	mesh = meshio.read(mesh_name + ".vtu")
+	mesh = meshio.read(mesh_name + "." + args.extension)
 	z_coords = mesh.points[:, 2]
 	y_coords = mesh.points[:, 0]
 	nb_points = len(z_coords)
@@ -92,6 +94,9 @@ if __name__ == "__main__":
 
 		# If two horns
 		if thickness_array.shape[0] == 2:
+			if len(slice_idx_list) == 0:
+				breakpoint()
+
 			slice_y_points = y_coords[slice_idx_list]
 
 			# Find the middle of the slice
