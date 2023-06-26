@@ -857,7 +857,8 @@ if streamlines
         exfname = sprintf('%s/Streamlines_L%1d_FB',OutputPath,Level);
     end
     groupname = 'Streamlines';
-    ExportStreamlines(Paths,[],exfname,groupname,1,1, origin_offset);
+    region = '/streamlines'; % Start with a /
+    ExportStreamlines(Paths,[],exfname,groupname, region, 1,1, origin_offset);
 end
 
 end
