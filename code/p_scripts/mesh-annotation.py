@@ -49,6 +49,7 @@ if __name__ == "__main__":
 	horns = ["left", "right"]
 	
 	# Read the mesh file
+	print("Loading mesh {}".format(mesh_name + '.' + args.extension))
 	mesh = meshio.read(mesh_name + "." + args.extension)
 	x_coords = mesh.points[:, 1]
 	y_coords = mesh.points[:, 0]
@@ -73,6 +74,7 @@ if __name__ == "__main__":
 	point_data_array = np.zeros((nb_points, 1))
 	point_data_name = "thickness"
 	
+	print("Annotating mesh")
 	for i in range(nb_slices):
 		# Get the indices of the points on the slice
 		slice_idx_list = np.where((z_coords >= i) * (z_coords < (i+1)))[0]
@@ -126,4 +128,5 @@ if __name__ == "__main__":
 	mesh.points[:, 2] = z_coords
 	
 	# Save new mesh
+	print("Saving mesh {}".format(mesh_name + "_annotated." + args.extension))
 	mesh.write(mesh_name + "_annotated." + args.extension)
