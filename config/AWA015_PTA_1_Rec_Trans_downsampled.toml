@@ -61,9 +61,9 @@ split_nb=137 # Slice number after which horns are independant
 [ST]
 
 [ST.diffusion]
-	erosion_threshold=10
-	erosion_radius=4
-	diffusion_distance=7
+	erosion_threshold=1
+	erosion_radius=1
+	diffusion_distance=3
 	
 [ST.structure_tensor]
 	derivative_template_width=5
