@@ -221,7 +221,8 @@ def writeExElem(file_path, elements):
 
 	with open(file_path, "w") as f:
 		# Write the exnode file header
-		f.write("Group name: uterus\n")
+		f.write("Group name: mesh\n")
+		f.write("Region: /uterus\n")
 		f.write("Shape.  Dimension=3 simplex(2;3)*simplex*simplex\n")
 		f.write("#Scale factor sets=0\n")
 		f.write("#Nodes=4\n")
@@ -316,7 +317,8 @@ def writeExNode(file_path, nodes, thickness):
 
 	with open(file_path, "w") as f:
 		# Write exnode file header
-		f.write("Group name: uterus\n")
+		f.write("Group name: mesh\n")
+		f.write("Region: /uterus\n")
 		f.write("#Fields=2\n")
 		f.write("1) coordinates, coordinate, rectangular cartesian, #Components=3\n")
 		f.write(" x. Value index=1, #Derivatives=0\n")
