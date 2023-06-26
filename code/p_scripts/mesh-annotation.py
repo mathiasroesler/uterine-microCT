@@ -50,11 +50,15 @@ if __name__ == "__main__":
 	
 	# Read the mesh file
 	mesh = meshio.read(mesh_name + "." + args.extension)
-	z_coords = mesh.points[:, 2]
+	x_coords = mesh.points[:, 1]
 	y_coords = mesh.points[:, 0]
+	z_coords = mesh.points[:, 2]
 
-	# Re-centre z to 0
+	# Re-centre the mesh to origin
 	z_coords = z_coords - min(z_coords)
+	y_coords = y_coords - min(y_coords)
+	x_coords = x_coords - min(x_coords)
+	
 	nb_points = len(z_coords)
 	nb_slices = round(z_coords.max())
 	
@@ -117,6 +121,9 @@ if __name__ == "__main__":
 	# Add the data dictionary to the mesh
 	point_data_dict[point_data_name] = point_data_array
 	mesh.point_data = point_data_dict
+	mesh.points[:, 1] = x_coords
+	mesh.points[:, 0] = y_coords
+	mesh.points[:, 2] = z_coords
 	
 	# Save new mesh
 	mesh.write(mesh_name + "_annotated." + args.extension)
