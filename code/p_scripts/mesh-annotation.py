@@ -123,10 +123,10 @@ if __name__ == "__main__":
 	# Add the data dictionary to the mesh
 	point_data_dict[point_data_name] = point_data_array
 	mesh.point_data = point_data_dict
-	mesh.points[:, 1] = x_coords
-	mesh.points[:, 0] = y_coords
+	mesh.points[:, 1] = -x_coords
+	mesh.points[:, 0] = -y_coords
 	mesh.points[:, 2] = z_coords
-	
+
 	# Save new mesh
 	print("Saving mesh {}".format(mesh_name + "_annotated." + args.extension))
 	mesh.write(mesh_name + "_annotated." + args.extension)
