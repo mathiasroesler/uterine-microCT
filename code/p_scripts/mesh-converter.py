@@ -18,9 +18,11 @@ if __name__ == "__main__":
 
 	# Parse input arguments
 	parser.add_argument("mesh_name", type=str, metavar="mesh-name",
-		help="name of the mesh to convert with extension")
+		help="name of the mesh to convert")
 	parser.add_argument("--mesh-dir", type=str, default="mesh/",
 		help="path from BASE to the mesh, default mesh/")
+	parser.add_argument("-e", "--extension", choices={"vtu", "vtk"},
+		help="mesh extesion, default value vtk", default="vtk")
 
 	args = parser.parse_args()
 
@@ -29,7 +31,8 @@ if __name__ == "__main__":
 	mesh_file = mesh_path + '/' + args.mesh_name
 	
 	# Read the mesh file
-	mesh = meshio.read(mesh_file)
+	print("Loading mesh {}".format(mesh_file + '.' + args.extension))
+	mesh = meshio.read(mesh_file + '.' + args.extension)
 	
 	# Extract information
 	nodes = mesh.points
