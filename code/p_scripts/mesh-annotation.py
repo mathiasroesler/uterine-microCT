@@ -55,9 +55,7 @@ if __name__ == "__main__":
 	y_coords = mesh.points[:, 0]
 	z_coords = mesh.points[:, 2]
 
-	# Re-centre the mesh with origin
-	x_coords = x_coords - min(x_coords)
-	y_coords = y_coords - min(y_coords)
+	# Re-centre z coordinates of the mesh with origin
 	z_coords = z_coords - min(z_coords)
 	
 	nb_points = len(z_coords)

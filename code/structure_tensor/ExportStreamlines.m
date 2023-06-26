@@ -1,4 +1,4 @@
-function ExportStreamlines(Paths,EField,Fname,GroupName, Region,NodeOffset,ElementOffset, origin_offset)
+function ExportStreamlines(Paths,EField,Fname,GroupName, Region,NodeOffset,ElementOffset)
 
 % Write exnode and exelem file headers
 fidn = fopen(sprintf('%s.exnode',Fname),'w');
@@ -17,7 +17,6 @@ for p=1:length(Paths)
     if ~isempty(Paths{p})
         % Loop over foward and back in path
         for d = 1:1 % just go one way with streamlines for now.
-            Paths{p}{d} = Paths{p}{d} - origin_offset;
 
             % Loop over path nodes - treat forward and backward path
             % independently

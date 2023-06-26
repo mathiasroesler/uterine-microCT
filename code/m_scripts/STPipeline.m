@@ -839,7 +839,6 @@ if streamlines
     FiberIndex = 1; % fiber - otherwise use 1 for smallest eigenvalue/fiber
     MaxTrackLength = 10000; % Fiber tracks
     %MaxTrackLength = 500; % sheet tracks
-    origin_offset = [min(SI(IdxS)), min(SJ(IdxS)), min(SK(IdxS))];
 
     parfor i=1:length(IdxS)
         if ~mod(i,10) fprintf('Path: %d\n',i); end
@@ -858,7 +857,7 @@ if streamlines
     end
     groupname = 'Streamlines';
     region = '/streamlines'; % Start with a /
-    ExportStreamlines(Paths,[],exfname,groupname, region, 1,1, origin_offset);
+    ExportStreamlines(Paths,[],exfname,groupname, region, 1,1);
 end
 
 end
