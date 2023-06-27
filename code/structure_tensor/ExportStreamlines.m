@@ -27,7 +27,7 @@ for p=1:length(Paths)
             angle = Paths{p}{3}(1, 4);
 
             fprintf(fidn,' Node: %d\n',NodeNumber);
-            fprintf(fidn,'  %e %e %e %e %e\n',Paths{p}{d}(1,1),Paths{p}{d}(1,2),Paths{p}{d}(1,3),FA1, angle);
+            fprintf(fidn,'  %e %e %e %e %e\n',-Paths{p}{d}(1,1),-Paths{p}{d}(1,2),Paths{p}{d}(1,3),FA1, angle);
             NodeNumber = NodeNumber+1;
             for n=2:size(Paths{p}{d},1)
                 L3 = Paths{p}{d}(n,1); L2 = Paths{p}{d}(n,2); L1 = Paths{p}{d}(n,3);
@@ -37,7 +37,7 @@ for p=1:length(Paths)
                 angle = Paths{p}{3}(n, 4);
 
                 fprintf(fidn,' Node: %d\n',NodeNumber);
-                fprintf(fidn,'  %e %e %e %e %e\n',Paths{p}{d}(n,1),Paths{p}{d}(n,2),Paths{p}{d}(n,3),FA1, angle);
+                fprintf(fidn,'  %e %e %e %e %e\n',-Paths{p}{d}(n,1),-Paths{p}{d}(n,2),Paths{p}{d}(n,3),FA1, angle);
                 NodeNumber = NodeNumber+1;
 
                 fprintf(fide,' Element: %d 0 0\n',ElementNumber);
