@@ -71,7 +71,7 @@ split_nb=137 # Slice number after which horns are independant
 	
 [ST.streamlines]
 	level=4
-	DJ=4
-	DI=4
-	DK=4
+	DJ=2
+	DI=2
+	DK=2
 
