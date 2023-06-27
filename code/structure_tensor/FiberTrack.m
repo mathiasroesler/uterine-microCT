@@ -71,6 +71,12 @@ for i=1:2
               CurrentPoint = TestPoint;
               OldFiber = NewFiber;
 
+              % Calculate fibre angle
+              angle = ComputeFibreAngle(NewFiber, centre_points, CurrentPoint(1), CurrentPoint(3));
+
+              if angle > 90
+                  angle = 180 - angle;
+              end
               Paths{i} = [Paths{i};CurrentPoint];
               Length(i) = Length(i)+DS;
               Paths{i+2} = [Paths{i+2};[L3,L2,L1, angle]];
