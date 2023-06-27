@@ -53,24 +53,43 @@ if __name__ == "__main__":
 	# Load parameters
 	params = utils.parseTOML(param_file)
 
-	# Add the muscle segmentation to the load directory
-	load_directory = os.path.join(load_directory, "muscle_segmentation", 
-		args.horn)
+	# Get the original image
+	original_img_name = os.path.join(load_directory,
+		params["prefix"] + '_' + args.img_nb + '.' + args.extension)
 
+	# Add the muscle segmentation to the load directory
+	load_directory = os.path.join(load_directory, "muscle_segmentation")
+
+	# Get the original mask
+	original_mask_name = os.path.join(load_directory, 
+		params["prefix"] + '_' + args.img_nb + '.' + args.extension)
+
+	load_directory = os.path.join(load_directory, args.horn)
+		
 	# Load the centreline
 	centreline_dict = scipy.io.loadmat(load_directory + "/centreline.mat")
 	centreline = np.transpose(centreline_dict["centreline"])
 	centreline = np.round(centreline).astype(int) # Round and convert to int
 
 	# Image to use for projection
-	img_name = os.path.join(load_directory, 
+	rotated_mask_name = os.path.join(load_directory, 
 		params["prefix"] + '_' + args.img_nb + '.' + args.extension)
-	img = plt.imread(img_name) # Load image
+
+	# Load all the images
+	original_img = plt.imread(original_img_name)
+	original_mask = plt.imread(original_mask_name)
+	rotated_mask = plt.imread(rotated_mask_name)
 
 	# Rectify image number because index starts at 0
-	projection_points = projection.findProjectionPoints(img, 
+	projection_points = projection.findProjectionPoints(rotated_mask, 
 		centreline[int(args.img_nb)-1], args.points, args.horn)
 
 	# Plot everything
-	plots.plotProjectionPoints(img, centreline[int(args.img_nb)-1], 
+	fig, ax = plt.subplots()
+	plt.imshow(original_img, cmap='gray')
+	fig, ax = plt.subplots()
+	plt.imshow(original_mask, cmap='gray')
+	fig, ax = plt.subplots()
+	plt.imshow(rotated_mask, cmap='gray')
+	plots.plotProjectionPoints(rotated_mask, centreline[int(args.img_nb)-1], 
 		projection_points)
