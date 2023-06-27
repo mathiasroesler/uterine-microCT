@@ -12,6 +12,8 @@ function angle = ComputeFibreAngle(fibre, centrepoints, cur_X, cur_Z)
 %
 %   Return:
 %    - angle, angle between the fibre and the current plane in degrees.
+nb_used_slices = 5;
+
 if isempty(centrepoints)
     z_vector = [0; 0; 1];
 
@@ -28,28 +30,28 @@ else
 
     elseif ~all(centrepoints(5:6, cur_Z))
         % If there is only one centre point found
-                cur_idx = 5;
+        cur_idx = 5;
         cur_centrepoint = centrepoints(cur_idx:cur_idx+1, cur_Z);
 
     else
-        % If there are left and right centre points find the neares to
+        % If there are left and right centre points find the nearest to
         % cur_X
         [~, cur_idx] = min(abs(centrepoints(1:2:end, cur_Z) - cur_X));
         cur_centrepoint = centrepoints(cur_idx:cur_idx+1, cur_Z);
 
     end
 
-    if cur_Z + 5 > size(centrepoints, 2)
+    if cur_Z + nb_used_slices > size(centrepoints, 2)
         % If there are not enough slices use the previous slices
         % instead
-        next_centrepoint = centrepoints(cur_idx:cur_idx+1, cur_Z - 5);
+        next_centrepoint = centrepoints(cur_idx:cur_idx+1, cur_Z - nb_used_slices);
         z_vector = cur_centrepoint - next_centrepoint;
     else
-        next_centrepoint = centrepoints(cur_idx:cur_idx+1, cur_Z + 5);
+        next_centrepoint = centrepoints(cur_idx:cur_idx+1, cur_Z + nb_used_slices);
         z_vector = next_centrepoint - cur_centrepoint;
     end
-    z_vector = [z_vector; 5]; % Append the z component
+    z_vector = [z_vector; nb_used_slices]; % Append the z component
 end
 
-angle = rad2deg(acos(fibre * z_vector));
+angle = rad2deg(acos(fibre * (z_vector/norm(z_vector))));
 end
