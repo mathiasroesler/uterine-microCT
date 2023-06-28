@@ -9,6 +9,9 @@ code/thickness_analysis/__pycache__
 code/utils/*.swp
 code/utils/__pycache__
 
+# Ignore com swp files
+com/*.swp
+
 # Ignore asv files
 code/m_scripts/*.asv
 code/segmentation/*.asv
