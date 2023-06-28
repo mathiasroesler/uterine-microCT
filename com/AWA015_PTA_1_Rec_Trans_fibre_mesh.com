@@ -1,9 +1,9 @@
 # Directory to the mesh
 set dir /home/mroe734/Documents/phd/mesh/
 
-# Read elements and nodes of the volumetric mesh
-gfx read node AWA015_PTA_1_Rec_Trans_volumetric_mesh_annotated.exnode 
-gfx read elem AWA015_PTA_1_Rec_Trans_volumetric_mesh_annotated.exelem
+# Read elements and nodes of the surface mesh
+gfx read node AWA015_PTA_1_Rec_Trans_surface_mesh.exnode 
+gfx read elem AWA015_PTA_1_Rec_Trans_surface_mesh.exelem
 gfx def faces egroup uterus
 
 # Directory to the fibres
