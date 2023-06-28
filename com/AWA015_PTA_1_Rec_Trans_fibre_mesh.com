@@ -14,6 +14,7 @@ gfx read elem Streamlines_L4_FB
 # Create scene and spectrum
 gfx create win
 gfx create spectrum angle linear reverse range 0 90
+gfx define font large "21 decorative normal bold"
 
 # Create uterus mesh and colour it
 gfx modify g_element /uterus surfaces material tissue
@@ -23,7 +24,7 @@ gfx modify material tissue alpha 0.5
 gfx modify g_element /streamlines lines data angle spectrum angle line_width 2
 
 # Create colour bar
-gfx create colour_bar spectrum angle number_format %.1e divisions 9
+gfx create colour_bar spectrum angle number_format %.1e divisions 9 font large
 gfx modify g_element /streamlines point glyph colour_bar spectrum angle LOCAL NORMALISED_WINDOW_FIT_LEFT
 
 # Display everything

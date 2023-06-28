@@ -9,13 +9,14 @@ gfx def faces egroup uterus
 # Create scene and spectrum
 gfx create win
 gfx create spectrum thickness
+gfx define font large "21 decorative normal bold"
 
 # Create uterus mesh and colour it
 gfx modify g_element /uterus surfaces data thickness spectrum thickness
 gfx modify spectrum thickness autorange
 
 # Create colour bar
-gfx create colour_bar spectrum thickness number_format %.1e
+gfx create colour_bar spectrum thickness number_format %.1e font large
 gfx modify g_element /uterus point glyph colour_bar spectrum thickness LOCAL NORMALISED_WINDOW_FIT_LEFT
 
 gfx modify window 1 image view_all
