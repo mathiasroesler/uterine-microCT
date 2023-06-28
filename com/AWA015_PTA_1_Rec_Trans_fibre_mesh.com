@@ -23,9 +23,10 @@ gfx modify material tissue alpha 0.5
 gfx modify g_element /streamlines lines data angle spectrum angle line_width 2
 
 # Create colour bar
-gfx create colour_bar spectrum angle
+gfx create colour_bar spectrum angle number_format %.1e divisions 9
 gfx modify g_element /streamlines point glyph colour_bar spectrum angle LOCAL NORMALISED_WINDOW_FIT_LEFT
 
 # Display everything
 gfx modify window 1 set slow_transparency
 gfx modify window 1 image view_all
+gfx modify window 1 layout front_side

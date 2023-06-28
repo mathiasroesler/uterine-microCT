@@ -17,10 +17,15 @@ gfx modify g_element /streamlines lines data angle spectrum angle line_width 2
 gfx create colour_bar spectrum angle
 gfx modify g_element /streamlines point glyph colour_bar spectrum angle LOCAL NORMALISED_WINDOW_FIT_LEFT
 
-# Rotate the image
-gfx modify window 1 image rotate 1 0 0 90
-gfx modify window 1 image rotate 0 1 0 45
-gfx modify window 1 image rotate 0 0 1 -90
-
 # Display everything
 gfx modify window 1 image view_all
+
+# Rotate the image
+gfx modify window 1 image rotate 1 0 0 -90
+gfx modify window 1 image rotate 0 1 0 45
+#gfx modify window 1 image rotate 0 0 1 -180
+
+gfx modify window 1 layout two_free
+gfx modify window 1 image rotate 0 0 1 90
+gfx modify window 1 image rotate 1 0 0 180
+
