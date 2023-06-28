@@ -16,8 +16,8 @@ gfx modify g_element /uterus surfaces data thickness spectrum thickness
 gfx modify spectrum thickness autorange
 
 # Create colour bar
-gfx create colour_bar spectrum thickness number_format %.1e font large
-gfx modify g_element /uterus point glyph colour_bar spectrum thickness LOCAL NORMALISED_WINDOW_FIT_LEFT
+gfx create colour_bar spectrum thickness number_format %.1e font large centre -1.8 0 0.5
+gfx modify g_element /uterus point glyph colour_bar spectrum thickness LOCAL NORMALISED_WINDOW_FIT_LEFT scale_factors 0.5
 
 gfx modify window 1 image view_all
 
