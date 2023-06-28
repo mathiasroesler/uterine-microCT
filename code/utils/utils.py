@@ -202,13 +202,15 @@ def movingStd(array, window_size):
 	return std_array
 	
 
-def writeExElemVol(file_path, elements):
+def writeExElemVol(file_path, elements, thickness=True):
 	""" Writes out the data from a volumetric mesh to a exnode file
 
 	Arguments:
 	file_path -- str, path to the file to save to.
 	elements -- ndarray, list of nodes associated with each tetrahedra,
-		size = Nx4
+		size = Nx4.
+	thickness -- bool, flag used if thickness has been provided to the
+		exnode file, default True.
 
 	Return:
 
@@ -226,7 +228,14 @@ def writeExElemVol(file_path, elements):
 		f.write("Shape.  Dimension=3 simplex(2;3)*simplex*simplex\n")
 		f.write("#Scale factor sets=0\n")
 		f.write("#Nodes=4\n")
-		f.write("#Fields=2\n")
+
+		if thickness:
+			f.write("#Fields=2\n")
+
+		else:
+			# If no thickness is provided there is only one field
+			f.write("#Fields=1\n")
+
 		f.write("1) coordinates, coordinate, rectangular cartesian, #Components=3\n")
 		f.write(" x. l.simplex(2;3)*l.simplex*l.simplex, no modify, standard node based.\n")
 		f.write("  #Nodes=4\n")
@@ -270,12 +279,14 @@ def writeExElemVol(file_path, elements):
 		f.write("  4. #Values=1\n")
 		f.write("	Value indices: 1\n")
 		f.write("	Scale factor indices: 0\n")
-		f.write("2) thickness, field, rectangular cartesian, #Components=1\n")
-		f.write(" t. constant, no modify, standard node based.\n")
-		f.write("  #Nodes=1\n")
-		f.write("  1. #Values=1\n")
-		f.write("	Value indices: 1\n")
-		f.write("	Scale factor indices: 0\n")
+
+		if thickness:
+			f.write("2) thickness, field, rectangular cartesian, #Components=1\n")
+			f.write(" thickness. constant, no modify, standard node based.\n")
+			f.write("  #Nodes=1\n")
+			f.write("  1. #Values=1\n")
+			f.write("	Value indices: 1\n")
+			f.write("	Scale factor indices: 0\n")
 
 		for i, nodes in enumerate(elements):
 			f.write("Element: {} 0 0\n".format(i+1))
@@ -355,7 +366,7 @@ def writeExElemSurf(file_path, elements, thickness=True):
 
 		if thickness:
 			f.write("2) thickness, field, rectangular cartesian, #Components=1\n")
-			f.write(" t. constant, no modify, standard node based.\n")
+			f.write(" thickness. constant, no modify, standard node based.\n")
 			f.write("  #Nodes=1\n")
 			f.write("  1. #Values=1\n")
 			f.write("	Value indices: 1\n")
