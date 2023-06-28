@@ -21,7 +21,7 @@ if __name__ == "__main__":
 		help="name of the mesh to convert")
 	parser.add_argument("--mesh-dir", type=str, default="mesh/",
 		help="path from BASE to the mesh, default mesh/")
-	parser.add_argument("-e", "--extension", choices={"vtu", "vtk"},
+	parser.add_argument("-e", "--extension", choices={"vtu", "vtk", "stl"},
 		help="mesh extesion, default value vtk", default="vtk")
 
 	args = parser.parse_args()
@@ -36,13 +36,32 @@ if __name__ == "__main__":
 	
 	# Extract information
 	nodes = mesh.points
-	thickness = mesh.point_data["thickness"]
-	elements = mesh.cells_dict["tetra"]
+
+	try:
+		thickness = mesh.point_data["thickness"]
+		thickness_flag = True
+
+	except KeyError:
+		sys.stderr.write("Warning: no thickness data found\n")
+		thickness = None
+		thickness_flag = False
+
+
+	try:
+		elements = mesh.cells_dict["tetra"]
+		vol_flag = True
+
+	except KeyError:
+		elements = mesh.cells_dict["triangle"]
+		vol_flag = False
 
 	# Write EX files
 	print("Writing exnode file")
 	utils.writeExNode(mesh_file + ".exnode", nodes, thickness)
 
 	print("Writing exelem file")
-	utils.writeExElem(mesh_file + ".exelem", elements)
+	if vol_flag:
+		utils.writeExElemVol(mesh_file + ".exelem", elements, thickness_flag)
 
+	else:
+		utils.writeExElemSurf(mesh_file + ".exelem", elements, thickness_flag)
