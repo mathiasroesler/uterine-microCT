@@ -22,11 +22,6 @@ gfx modify g_element /streamlines point glyph colour_bar spectrum angle LOCAL NO
 gfx modify window 1 image view_all
 
 # Rotate the image
-gfx modify window 1 image rotate 1 0 0 -90
-gfx modify window 1 image rotate 0 1 0 45
-#gfx modify window 1 image rotate 0 0 1 -180
-
 gfx modify window 1 layout two_free
-gfx modify window 1 image rotate 0 0 1 90
-gfx modify window 1 image rotate 1 0 0 180
-
+gfx modify window 1 image rotate 1 0 0 90
+gfx modify window 1 image rotate 0 0 1 -90
