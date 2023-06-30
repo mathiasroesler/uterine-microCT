@@ -61,12 +61,7 @@ for k = 1:length(regions)
 
     for m = 1:nb_slices
         centre_points = findCentrepoints(mask_stack(:, :, m), region);
-
-        if size(centre_points, 1) == 3
-            centreline(:, m) = reshape(centre_points', [6, 1]);
-        else
-            centreline(1:2, m) = centre_points;
-        end
+        centreline(:, m) = reshape(centre_points', [6, 1]);
     end
 
     disp("Saving centreline")

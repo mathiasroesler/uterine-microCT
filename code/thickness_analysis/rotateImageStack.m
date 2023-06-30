@@ -4,7 +4,7 @@ function rotated_stack = rotateImageStack(img_stack, region, nb_used_slices)
 %
 %   Input:
 %    - img_stack, stack of N MxP images to rotate, img_stack(MxPxN).
-%    - region, selects which region to rotate, either left, right or body.
+%    - region, selects which region to rotate, either left, right.
 %    - nb_used_slices, number of slices to take to estimate the centre
 %    vector.
 %
@@ -46,15 +46,9 @@ for k = 1:nb_slices
     cur_centrepoints = findCentrepoints(cur_mask, region);
     next_centrepoints = findCentrepoints(next_mask, region);
 
-    if size(cur_centrepoints, 1) == 3
-        % Get correct centre point if several are returned
-        cur_centrepoints = cur_centrepoints(region_nb, :);
-    end
-
-    if size(next_centrepoints, 1) == 3
-        % Get correct centre point if several are returned
-        next_centrepoints = next_centrepoints(region_nb, :);
-    end
+    % Get correct centre point
+    cur_centrepoints = cur_centrepoints(region_nb, :);
+    next_centrepoints = next_centrepoints(region_nb, :);
 
     % Get the normalised centre vector in 3D
     centre_vector = [next_centrepoints - cur_centrepoints, nb_used_slices];
