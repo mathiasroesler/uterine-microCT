@@ -2,21 +2,25 @@ function centrepoints = findCentrepoints(mask, region)
 %FINDCENTREPOINTS Finds the centrepoint of a mask given the region.
 %
 %   If there is no clear separation between the left and right horn, three
-%   points are given: left, centre, and right. Otherwise a single point
-%   corresponding to the desired region is returned.
+%   points are given: left, centre, and right.
 %
 %   Input:
 %    - mask, binary mask.
-%    - region, either left, right or both, used to sort the centrepoints. 
+%    - region, place the centrepoint in the corresponding region if only
+%    one centrepoint is found.
+%
 %   Return:
-%    - centrepoints, coordinates of the centrepoints,
-%    centrepoints(1, 2) or centrepoints(3, 2).
+%    - centrepoints, coordinates of the centrepoints, the first pair of
+%    is the left point, the second pair the middle point, the third pair
+%    the right point, centrepoints(3, 2).
 if ~islogical(mask)
     % Convert to logical if not because regionprops only works on logical
     mask = imbinarize(mask);
 end
 
 proper_size = 300; % Define how big a region is to be considered
+centrepoints = zeros(3, 2); % Placeholder for the centrepoints
+
 filled_mask = imfill(mask, "holes");
 centre_regions = and(not(mask), filled_mask);
 
@@ -33,23 +37,25 @@ if proper_region == 1
     % then in the body, if there is 1 then single horn
     if nb_holes > 1
         % In the body
-        centrepoints = zeros(3, 2);
         centrepoints(2, :) = filled_props( ...
             [filled_props.Area] > proper_size).Centroid; 
 
     else
         % Single horn and can exit early
-        centrepoints = filled_props( ...
+        centrepoint = filled_props( ...
             [filled_props.Area] > proper_size).Centroid;
+
+        if strcmp(region, "left")
+            % Left horn
+            centrepoints(1, :) = centrepoint;
+
+        else
+            % Right horn
+            centrepoints(3, :) = centrepoint;
+        end
+
         return;
     end
-
-elseif strcmp(region, "both")
-    centrepoints = zeros(3, 2);
-
-else
-    centrepoints = zeros(1, 2);
-
 end
 
 % Create arrays to recuperate region properties if not exited early
@@ -74,28 +80,14 @@ for k = 1:size(centroids, 1)
     centroids(k, :) = [idx_x(min_idx), idx_y(min_idx)];
 end
 
-if size(centrepoints, 1) == 3 
-    % Find the left and right centroids and sort them
-    if centroids(1, 1) > centroids(2, 1)
-        centrepoints(1, :) = centroids(2, :);
-        centrepoints(3, :) = centroids(1, :);
-
-    else
-        centrepoints(1, :) = centroids(1, :);
-        centrepoints(3, :) = centroids(2, :);
-    end
+% Find the left and right centroids and sort them
+if centroids(1, 1) > centroids(2, 1)
+    centrepoints(1, :) = centroids(2, :);
+    centrepoints(3, :) = centroids(1, :);
 
 else
-    if strcmp(region, "left")
-        % Get the left most centre point
-        [~, idx] = min(centroids(:, 1));
-        centrepoints(1, :) = centroids(idx, :);
-
-    elseif strcmp(region, "right")
-        % Get the right most centre point
-        [~, idx] = max(centroids(:, 1));
-        centrepoints(1, :) = centroids(idx, :);
-    end
+    centrepoints(1, :) = centroids(1, :);
+    centrepoints(3, :) = centroids(2, :);
 end
 
 end
