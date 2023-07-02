@@ -401,7 +401,7 @@ def writeExNode(file_path, nodes, thickness=None):
 		sys.stderr.write("Error: nodes should have three coordinates\n")
 		exit()
 
-	if thickness != None:
+	if type(thickness) != type(None):
 		try:
 			# Check that thickness and nodes have the same dimension
 			assert(nodes.shape[0] == thickness.shape[0])
@@ -416,7 +416,7 @@ def writeExNode(file_path, nodes, thickness=None):
 		f.write("Group name: mesh\n")
 		f.write("Region: /uterus\n")
 		
-		if thickness != None:
+		if type(thickness) != type(None):
 			f.write("#Fields=2\n")
 
 		else:
@@ -428,7 +428,7 @@ def writeExNode(file_path, nodes, thickness=None):
 		f.write(" y. Value index=2, #Derivatives=0\n")
 		f.write(" z. Value index=3, #Derivatives=0\n")
 
-		if thickness != None:
+		if type(thickness) != type(None):
 			f.write("2) thickness, field, rectangular cartesian, #Components=1\n")
 			f.write(" thickness. Value index=4, #Derivatives=0\n") 
 
@@ -437,5 +437,5 @@ def writeExNode(file_path, nodes, thickness=None):
 			f.write(" {} {} {}\n".format(
 				nodes[i][0], nodes[i][1], nodes[i][2]))
 			
-			if thickness != None:
+			if type(thickness) != type(None):
 				f.write(" {}\n".format(thickness[i]))
