@@ -78,7 +78,8 @@ if __name__ == "__main__":
 		nb_imgs = len(mask_stack)
 	
 		# Window sizes for different moving averages
-		muscle_win_size = round(0.05 * nb_imgs)
+		muscle_win_size = round(0.10 * nb_imgs)
+		std_win_size = 20
 		circular_win_size = round(0.04 * args.points)
 
 		print("   Loading centreline")
@@ -104,14 +105,14 @@ if __name__ == "__main__":
 				muscle_thickness, muscle_win_size).round(3)
 			avg_slice_thickness[horns[i-1]] = utils.circularAverage(
 				slice_thickness, circular_win_size).round(3)
-			errors[horns[i-1]] = utils.movingStd(muscle_thickness, muscle_win_size)
+			errors[horns[i-1]] = utils.movingStd(muscle_thickness, std_win_size)
 
 		else:
 			avg_thickness[horn] = utils.movingAverage(muscle_thickness, 
 				muscle_win_size).round(3)
 			avg_slice_thickness[horn] = utils.circularAverage(slice_thickness, 
 				circular_win_size).round(3)
-			errors[horn] = utils.movingStd(muscle_thickness, muscle_win_size)
+			errors[horn] = utils.movingStd(muscle_thickness, std_win_size)
 
 
 	# Save angular thickness 
