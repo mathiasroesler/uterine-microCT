@@ -32,7 +32,6 @@ if __name__ == "__main__":
 		help="mesh extesion, default value vtk", default="vtk")
 
 	args = parser.parse_args()
-	nb_used_slices = 5
 
 	# Set arguments
 	mesh_directory = os.path.join(utils.HOME, utils.BASE, args.mesh_dir)
@@ -44,6 +43,15 @@ if __name__ == "__main__":
 	if not args.not_d:
 		# If the dataset is downsampled
 		thickness_directory = os.path.join(thickness_directory, "downsampled")
+		param_file = os.path.join(thickness_directory, 
+			args.base_name + "_downsampled.toml")
+
+	else:
+		param_file = os.path.join(thickness_directory, args.base_name + ".toml")
+
+	# Load parameters
+	params = utils.parseTOML(param_file)
+	nb_used_slices = params["nb_used_slices"] # Get number of slices to use
 
 	# Add the muscle segmentation to the load directory
 	thickness_directory = os.path.join(thickness_directory, 

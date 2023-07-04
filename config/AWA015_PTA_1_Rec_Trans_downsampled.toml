@@ -20,6 +20,8 @@ preprocess=1
 morph_size=3
 split_nb=137 # Slice number after which horns are independant
 
+nb_used_slices=5 # Number of slices for finding centre vectors
+
 # Segmentation parameters
 [segmentation]
 

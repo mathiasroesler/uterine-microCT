@@ -20,6 +20,8 @@ preprocess=1
 strel_size=2
 split_nb=0 # Slice number after which horns are independant
 
+nb_used_slices=5 # Number of slices for finding centre vectors
+
 # Segmentation parameters (unused)
 [segmentation]
 

@@ -1,5 +1,5 @@
-function uCTRotation(dir_path, base_name, regions, nb_used_slices, ...
-    type, downsampled, extension)
+function uCTRotation(dir_path, base_name, regions, type, downsampled, ...
+    extension)
 %UCTROTATION Computes the centreline for the dataset provided by
 %base_name given the selected regions.
 %   
@@ -9,8 +9,6 @@ function uCTRotation(dir_path, base_name, regions, nb_used_slices, ...
 %    - dir_path, path to the directory containing the dataset from base_dir
 %    - base_name, name of the dataset.
 %    - region, either left, right or both, used to sort the centrepoints. 
-%    - nb_used_slices, number of slices to use to determine centre vector,
-%    default value 5.
 %    - type, segmentation type, {fat, tissue, shape, muscle}, default value
 %    is muscle.
 %    - downsampled, true if the dataset has been downsampled, default value
@@ -18,17 +16,14 @@ function uCTRotation(dir_path, base_name, regions, nb_used_slices, ...
 %    - extension, extension of the images to load, default value is png.
 %
 %   Return: 
-if nargin < 7
+if nargin < 6
     extension = "png";
 end
-if nargin < 6
+if nargin < 5
     downsampled = true;
 end
-if nargin < 5
-    type = "muscle";
-end
 if nargin < 4
-    nb_used_slices = 5;
+    type = "muscle";
 end
 
 % Directory where images are located
@@ -50,6 +45,7 @@ load_directory = join([load_directory, type + "_segmentation/"], '/');
 % Load parameters
 params = toml.map_to_struct(toml_map);
 start_nb = params.thickness.start_nb;
+nb_used_slices = double(params.nb_used_slices);
 
 mask_paths = getImagePaths(load_directory, extension);
 mask_stack = loadImageStack(mask_paths);
