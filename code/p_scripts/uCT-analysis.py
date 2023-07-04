@@ -101,17 +101,18 @@ if __name__ == "__main__":
 		
 		if args.switch:
 			avg_thickness[horns[i-1]] = utils.movingAverage(
-				muscle_thickness, muscle_win_size)
+				muscle_thickness, muscle_win_size).round(3)
 			avg_slice_thickness[horns[i-1]] = utils.circularAverage(
-				slice_thickness, circular_win_size)
+				slice_thickness, circular_win_size).round(3)
 			errors[horns[i-1]] = utils.movingStd(muscle_thickness, muscle_win_size)
 
 		else:
 			avg_thickness[horn] = utils.movingAverage(muscle_thickness, 
-				muscle_win_size)
+				muscle_win_size).round(3)
 			avg_slice_thickness[horn] = utils.circularAverage(slice_thickness, 
-				circular_win_size)
+				circular_win_size).round(3)
 			errors[horn] = utils.movingStd(muscle_thickness, muscle_win_size)
+
 
 	# Save angular thickness 
 	with open(load_directory + "/angular_thickness.pkl", 'wb') as f:
