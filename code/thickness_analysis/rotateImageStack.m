@@ -38,10 +38,13 @@ for k = 1:nb_slices
     % Next mask for finding rotation axis
     if k < nb_slices-nb_used_slices
         next_mask = img_stack(:, :, k+nb_used_slices);
+        z_centre = nb_used_slices;
     else
-        % Use the previous slices to get rotation vector
-        next_mask = img_stack(:, :, k-nb_used_slices);
+        % Use less slices to get rotation vector
+        next_mask = img_stack(:, :, nb_slices);
+        z_centre = nb_slices - k + 1;
     end
+
     % Find centre points
     cur_centrepoints = findCentrepoints(cur_mask, region);
     next_centrepoints = findCentrepoints(next_mask, region);
@@ -50,8 +53,18 @@ for k = 1:nb_slices
     cur_centrepoints = cur_centrepoints(region_nb, :);
     next_centrepoints = next_centrepoints(region_nb, :);
 
-    % Get the normalised centre vector in 3D
-    centre_vector = [next_centrepoints - cur_centrepoints, nb_used_slices];
+    % Add the z component
+    centre_vector = [next_centrepoints - cur_centrepoints, z_centre];
+
+    % Ensure consistent x direction
+    condition_1 = centre_vector(1) < 0 && strcmp(region, 'right');
+    condition_2 = centre_vector(1) > 0 && strcmp(region, 'left');
+
+    if condition_1 || condition_2
+        centre_vector(1) = -centre_vector(1);
+    end
+
+    % Normalise the centre vector
     centre_vector = centre_vector ./ norm(centre_vector);
 
     if isequal(centre_vector, [0, 0, 1])
