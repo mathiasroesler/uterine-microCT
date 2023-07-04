@@ -80,14 +80,27 @@ for k = 1:size(centroids, 1)
     centroids(k, :) = [idx_x(min_idx), idx_y(min_idx)];
 end
 
-% Find the left and right centroids and sort them
-if centroids(1, 1) > centroids(2, 1)
-    centrepoints(1, :) = centroids(2, :);
-    centrepoints(3, :) = centroids(1, :);
+if size(centroids, 1) == 1
+    % If only on centroid sort it based on region
+    if strcmp(region, "left")
+        % Left horn
+        centrepoints(1, :) = centroids;
+
+    else
+        % Right horn
+        centrepoints(3, :) = centroids;
+    end
 
 else
-    centrepoints(1, :) = centroids(1, :);
-    centrepoints(3, :) = centroids(2, :);
+    % Find the left and right centroids and sort them
+    if centroids(1, 1) > centroids(2, 1)
+        centrepoints(1, :) = centroids(2, :);
+        centrepoints(3, :) = centroids(1, :);
+
+    else
+        centrepoints(1, :) = centroids(1, :);
+        centrepoints(3, :) = centroids(2, :);
+    end
 end
 
 end
