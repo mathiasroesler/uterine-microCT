@@ -52,6 +52,7 @@ if __name__ == "__main__":
 	# Load parameters
 	params = utils.parseTOML(param_file)
 	nb_used_slices = params["nb_used_slices"] # Get number of slices to use
+	start_nb = params["thickness"]["start_nb"] # Number of slices not rotated
 
 	# Add the muscle segmentation to the load directory
 	thickness_directory = os.path.join(thickness_directory, 
@@ -106,36 +107,38 @@ if __name__ == "__main__":
 
 		for k in range(len(thickness)):
 			# Find the centre vector
-			if k >= len(thickness) - nb_used_slices:
-				# Use less slices to get centre vector
-				next_centrepoint = centrepoints[len(thickness)-1]
-				z_centre = len(thickness) - k
+			if k <= start_nb:
+				# Unrotated slices
+				centre_vector = np.array([0, 0, 1])
+
 			else:
-				next_centrepoint = centrepoints[k+nb_used_slices]
-				z_centre = nb_used_slices
-			
-			centre_vector = next_centrepoint - centrepoints[k]
+				if k >= len(thickness) - nb_used_slices:
+					# Use less slices to get centre vector
+					next_centrepoint = centrepoints[len(thickness)-1]
+					z_centre = len(thickness) - k
+				else:
+					next_centrepoint = centrepoints[k+nb_used_slices]
+					z_centre = nb_used_slices
+				
+				centre_vector = next_centrepoint - centrepoints[k]
 
-			# Add z component
-			centre_vector = np.append(centre_vector, z_centre)
+				# Add z component
+				centre_vector = np.append(centre_vector, z_centre)
 
-			# Ensure that the direction of centre vector is consistent
-			condition_1 = centre_vector[0] < 0 and horns[i] == "right"
-			condition_2 = centre_vector[0] > 0 and horns[i] == "left"
+				# Ensure that the direction of centre vector is consistent
+				condition_1 = centre_vector[0] < 0 and horns[i] == "right"
+				condition_2 = centre_vector[0] > 0 and horns[i] == "left"
 
-			if condition_1 or condition_2:
-				centre_vector[0] = -centre_vector[0]
+				if condition_1 or condition_2:
+					centre_vector[0] = -centre_vector[0]
 
 			# Slice plane normal vector and origin point
 			plane_normal = centre_vector / np.linalg.norm(centre_vector)
-			plane_origin = np.array([centrepoints[k, 0], centrepoints[k, 1], k])
-
-			if k == 0:
-				# Ensure that first centre vector is aligned with z
-				plane_normal = np.array([0, 0, 1])
+			plane_origin = np.array([
+				centrepoints[k, 0], centrepoints[k, 1], k])
 
 			norms = np.dot(elements-plane_origin, plane_normal)
-			idx_list = element_idx[(norms <= 10) & (norms >= 0)]
+			idx_list = element_idx[(norms <= 20) & (norms >= 0)]
 			point_data_array[idx_list] = round(thickness[k], 3)
 
 	# Add the data dictionary to the mesh
