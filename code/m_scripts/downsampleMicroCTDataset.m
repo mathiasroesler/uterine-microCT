@@ -51,7 +51,7 @@ save_directory = join([load_directory, "downsampled"], '/');
 % Load properties of the original images that dont change
 toml_map = toml.read(join([load_directory, base_name + ".toml"], '/'));
 params = toml.map_to_struct(toml_map);
-stack_size = params.end_nb - params.start_nb + 1;
+stack_size = params.end_nb - params.start_nb;
 
 log_file = join([save_directory, params.prefix + "_downsampled.log"], '/');
 
@@ -94,9 +94,7 @@ for run = 1:nb_runs
 
     batch_stack_size = last_image_nb - first_image_nb + 1;
     new_batch_stack_size = round(batch_stack_size / z_factor);
-    if run == 4
-        disp(run)
-    end
+
     % Load all images in current batch
     disp("Loading " + num2str(batch_stack_size) + " images in batch");
     img_stack = loadImageStack(img_paths(first_image_nb:last_image_nb));
