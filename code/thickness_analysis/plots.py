@@ -115,7 +115,7 @@ def plotAngularThickness(slice_thickness):
 
 		# Change tick parameters
 		ax[i].tick_params(length=12, width=4, labelsize=24)
-		ax[i].legend(fontsize=24)
+		ax[i].legend(fontsize=24, loc="upper center")
 
 	plt.xticks(ticks=
 		[nb_points // 4, nb_points // 2,  3*nb_points // 4, nb_points-1],
