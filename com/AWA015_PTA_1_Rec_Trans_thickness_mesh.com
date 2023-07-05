@@ -23,7 +23,9 @@ gfx modify window 1 image view_all
 
 # For clipped view of the mesh
 gfx modify window 1 image rotate 1 0 0 12
-gfx modify window 1 view near_clipping_plane 1540
+gfx modify window 1 image rotate 0 1 0 2
+gfx modify window 1 image rotate 0 0 1 2
+gfx modify window 1 view near_clipping_plane 1545
 
 # For full mesh views
 #gfx modify window 1 layout front_side
