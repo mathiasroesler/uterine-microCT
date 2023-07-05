@@ -13,5 +13,5 @@ extension="png"
 
 [thickness.right]
 	end_nb = 453 # Slice to end rotation (unused)
-	slice_nbs = [1, 2, 3] # Python index starts at 0
+	slice_nbs = [0, 1, 2, 3] # Python index starts at 0
 

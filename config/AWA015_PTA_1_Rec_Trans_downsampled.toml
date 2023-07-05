@@ -53,11 +53,11 @@ nb_used_slices=5 # Number of slices for finding centre vectors
 	
 [thickness.left]
 	end_nb = 305 # Slice to end rotation
-	slice_nbs = [131, 205, 274] # Python index starts at 0
+	slice_nbs = [10, 131, 205, 274] # Python index starts at 0
 
 [thickness.right]
 	end_nb = 455 # Slice to end rotation
-	slice_nbs = [128, 246, 406] # Python index starts at 0
+	slice_nbs = [10, 128, 246, 406] # Python index starts at 0
 
 # Structure tensor parameters
 [ST]
