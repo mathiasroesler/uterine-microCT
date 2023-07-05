@@ -46,6 +46,9 @@ if __name__ == "__main__":
 		thickness = None
 		thickness_flag = False
 
+	if len(thickness.shape) == 2:
+		# Using a vtu format that needs to be reshaped
+		thickness = thickness.reshape(thickness.shape[0])
 
 	try:
 		elements = mesh.cells_dict["tetra"]
