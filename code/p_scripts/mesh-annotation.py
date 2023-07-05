@@ -138,8 +138,8 @@ if __name__ == "__main__":
 				centrepoints[k, 0], centrepoints[k, 1], k])
 
 			norms = np.dot(elements-plane_origin, plane_normal)
-			idx_list = element_idx[(norms <= 20) & (norms >= 0)]
-			point_data_array[idx_list] = round(thickness[k], 3)
+			idx_list = element_idx[(norms <= 15) & (norms >= 0)]
+			point_data_array[idx_list] = round(thickness[k], 5)
 
 	# Add the data dictionary to the mesh
 	point_data_dict[point_data_name] = point_data_array
