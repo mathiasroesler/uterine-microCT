@@ -79,7 +79,7 @@ def plotAngularThickness(slice_thickness):
 
 	Arguments:
 	slice_thickness -- dict(ndarray), array containing the angluar thickness
-		of three slices for each horn.
+		of four slices for each horn.
 
 	Return:
 	
@@ -100,12 +100,15 @@ def plotAngularThickness(slice_thickness):
 		x_values = np.arange(nb_points)
 
 		ax[i].plot(x_values, y_values[:, 0], 
+			linestyle='dashdot', color=colors[horn],
+			label="Cervix", linewidth=4)
+		ax[i].plot(x_values, y_values[:, 1], 
 			linestyle='solid', color=colors[horn],
 			label="Cervical end", linewidth=4)
-		ax[i].plot(x_values, y_values[:, 1],
+		ax[i].plot(x_values, y_values[:, 2],
 			linestyle='dashed', color=colors[horn],
 			label="Centre",	linewidth=4)
-		ax[i].plot(x_values, y_values[:, 2],
+		ax[i].plot(x_values, y_values[:, 3],
 			linestyle='dotted', color=colors[horn],
 			label="Ovarian end", linewidth=4)
 		ax[i].set_title("{} horn".format(horn.capitalize()), fontsize=21)
@@ -123,6 +126,6 @@ def plotAngularThickness(slice_thickness):
 		rotation='vertical', fontsize=21)
 	plt.xlabel(r"Angle $\theta$ (in rad)", fontsize=21)
 
-	plt.ylim([0, 0.80])
+	plt.ylim([0, 1.2])
 	plt.xlim([0, nb_points-1])
 	plt.show()

@@ -37,7 +37,7 @@ if __name__ == "__main__":
 		args.base_name)
 	histo_directory = os.path.join(utils.HOME, utils.BASE, args.histo_path, 
 		args.base_name + "_histology")
-	regions = ["cervical", "central", "ovarian"]
+	regions = ["cervix", "cervical", "central", "ovarian"]
 	horn = args.horn
 
 	if not args.not_d:
