@@ -9,11 +9,11 @@ resolution=44.000000
 
 # Downsampling parameters (from the full dataset) 
 start_nb=310
-end_nb=2110
+end_nb=2130
 
 # Parameters for removing ovaries
-left_ovary=302
-right_ovary=451
+left_ovary=306
+right_ovary=456
 
 # Preprocessing parameters for segmentation
 preprocess=1
@@ -52,11 +52,11 @@ nb_used_slices=5 # Number of slices for finding centre vectors
 	scaling_factor = 0.043773012 # in mm
 	
 [thickness.left]
-	end_nb = 301 # Slice to end rotation
-	slice_nbs = [131, 205, 264] # Python index starts at 0
+	end_nb = 305 # Slice to end rotation
+	slice_nbs = [131, 205, 274] # Python index starts at 0
 
 [thickness.right]
-	end_nb = 450 # Slice to end rotation
+	end_nb = 455 # Slice to end rotation
 	slice_nbs = [128, 246, 406] # Python index starts at 0
 
 # Structure tensor parameters
@@ -73,7 +73,7 @@ nb_used_slices=5 # Number of slices for finding centre vectors
 	
 [ST.streamlines]
 	level=4
-	DJ=2
-	DI=2
-	DK=2
+	DJ=3
+	DI=3
+	DK=3
 
