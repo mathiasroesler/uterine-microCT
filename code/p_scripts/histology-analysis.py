@@ -73,7 +73,7 @@ if __name__ == "__main__":
 		np.mean(muscle_thickness), np.std(muscle_thickness)))
 	
 	avg_slice_thickness[horn] = utils.circularAverage(slice_thickness,
-		circular_win_size).round(3)
+		circular_win_size).round(5)
 
 	# Plot everything
 	plots.plotAngularThickness(avg_slice_thickness)

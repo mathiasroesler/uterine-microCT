@@ -102,16 +102,16 @@ if __name__ == "__main__":
 		
 		if args.switch:
 			avg_thickness[horns[i-1]] = utils.movingAverage(
-				muscle_thickness, muscle_win_size).round(3)
+				muscle_thickness, muscle_win_size).round(5)
 			avg_slice_thickness[horns[i-1]] = utils.circularAverage(
-				slice_thickness, circular_win_size).round(3)
+				slice_thickness, circular_win_size).round(5)
 			errors[horns[i-1]] = utils.movingStd(muscle_thickness, std_win_size)
 
 		else:
 			avg_thickness[horn] = utils.movingAverage(muscle_thickness, 
-				muscle_win_size).round(3)
+				muscle_win_size).round(5)
 			avg_slice_thickness[horn] = utils.circularAverage(slice_thickness, 
-				circular_win_size).round(3)
+				circular_win_size).round(5)
 			errors[horn] = utils.movingStd(muscle_thickness, std_win_size)
 
 
