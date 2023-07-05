@@ -41,8 +41,8 @@ for k = 1:nb_slices
         z_centre = nb_used_slices;
     else
         % Use less slices to get rotation vector
-        next_mask = img_stack(:, :, nb_slices);
-        z_centre = nb_slices - k + 1;
+        next_mask = img_stack(:, :, k-nb_used_slices);
+        z_centre = nb_used_slices;
     end
 
     % Find centre points
