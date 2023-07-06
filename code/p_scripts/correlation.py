@@ -62,5 +62,5 @@ if __name__ == "__main__":
 
 	for i in range(uCT_data.shape[1]):
 		correl_matrix = np.corrcoef(uCT_data[:, i], histo_data[:, i])
-		print(u"{} section correlation factor: {:.2f}".format(
+		print(u"{} section Pearson correlation coefficient: {:.2f}".format(
 			regions[i].capitalize(), correl_matrix[0, 1]))
