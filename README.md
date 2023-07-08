@@ -150,8 +150,8 @@ be visualised in cmgui. The mesh can be annotated with the thickness information
 To see the arguments and options of the script, use the --help flag:
 ```bash
 python3 mesh-converter.py --help
-The supported file types for the mesh are .vtk, and .vtu. \
 ```
+The supported file types for the mesh are .vtk, and .vtu. \
 
 ### Visualisation
 To visualise the meshes and fibres in cmgui, com files are located in the com folder. 
