@@ -8,7 +8,7 @@ function uCTRotation(dir_path, base_name, regions, type, downsampled, ...
 %   Input:
 %    - dir_path, path to the directory containing the dataset from base_dir
 %    - base_name, name of the dataset.
-%    - region, either left, right or both, used to sort the centrepoints. 
+%    - region, either left, right or ["left", "right"], used to sort the centrepoints. 
 %    - type, segmentation type, {fat, tissue, shape, muscle}, default value
 %    is muscle.
 %    - downsampled, true if the dataset has been downsampled, default value
