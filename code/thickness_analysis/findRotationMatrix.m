@@ -5,6 +5,7 @@ function T = findRotationMatrix(u, v, origin)
 %   Input:
 %    - u, first vector u(3x1).
 %    - v, second vector v(3x1).
+%    - origin, origin of the translation.
 %
 %   Return:
 %    - T, transformation matrix in homogeneous coordinates T(4x4)

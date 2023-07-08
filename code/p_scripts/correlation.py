@@ -25,9 +25,9 @@ if __name__ == "__main__":
 	parser.add_argument("base_name", type=str, metavar="base-name",
 		help="name of the dataset")
 	parser.add_argument("--horn", type=str, choices={"left", "right"},
-		help="horn to process", default="right")
+		help="horn to process, default right", default="right")
 	parser.add_argument("--not-d", action='store_true',
-		help="flag used if the uCT dataset is not downsampled")
+		help="flag used if the uCT dataset is not downsampled, default False")
 
 	# Parse input arguments
 	args = parser.parse_args()
@@ -37,7 +37,7 @@ if __name__ == "__main__":
 		args.base_name)
 	histo_directory = os.path.join(utils.HOME, utils.BASE, args.histo_path, 
 		args.base_name + "_histology")
-	regions = ["cervical", "central", "ovarian"]
+	regions = ["cervix", "cervical", "central", "ovarian"]
 	horn = args.horn
 
 	if not args.not_d:
@@ -62,5 +62,5 @@ if __name__ == "__main__":
 
 	for i in range(uCT_data.shape[1]):
 		correl_matrix = np.corrcoef(uCT_data[:, i], histo_data[:, i])
-		print(u"{} section correlation factor: {:.2f}".format(
+		print(u"{} section Pearson correlation coefficient: {:.2f}".format(
 			regions[i].capitalize(), correl_matrix[0, 1]))

@@ -6,7 +6,7 @@
 
 
 # Export the path to code folder in bashrc
-CURRENT_DIR=$(pwd)
+CURRENT_DIR=$(pwd)/code
 echo export PYTHONPATH=${CURRENT_DIR}:${PYTHONPATH} >> ~/.bashrc
 source ~/.bashrc
 

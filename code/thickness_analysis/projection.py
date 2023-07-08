@@ -102,15 +102,12 @@ def findProjectionPoints(img, centre_point, nb_points, horn):
 			elif horn == "right":
 				img[i, :line_x[i]] = 0;
 
-		# Select the correct centre point based on the horn
-		if horn == "left":
-			centre_point = centre_point[0:2]
-
-		elif horn == "right":
-			centre_point = centre_point[4:6]
-
-	else:
+	# Select the correct centre point based on the horn
+	if horn == "left":
 		centre_point = centre_point[0:2]
+
+	elif horn == "right":
+		centre_point = centre_point[4:6]
 
 	for i, theta in enumerate(angles):
 		# Find the line for the given angle

@@ -24,15 +24,15 @@ if __name__ == "__main__":
 	parser.add_argument("base_name", type=str, metavar="base-name",
 		help="name of the dataset")
 	parser.add_argument("-e", "--extension", type=str, metavar="extension",
-		help="extension for the saved images", default="png")
+		help="extension for the saved images, default png", default="png")
 	parser.add_argument("--horn", type=str, choices={"left", "right", "both"},
 		help="horn to process", default="both")
 	parser.add_argument("-p", "--points", type=int, metavar="points",
-		help="number of points to use for the projection", default=128)
+		help="number of points to use for the projection, default 128", default=128)
 	parser.add_argument("-s", "--switch", action='store_true',
-		help="switches the labels of the left and right horn")
+		help="switches the labels of the left and right horn, default False")
 	parser.add_argument("--not-d", action='store_true',
-		help="flag used if the dataset is not downsampled")
+		help="flag used if the dataset is not downsampled, default False")
 
 	# Parse input arguments
 	args = parser.parse_args()
@@ -78,7 +78,8 @@ if __name__ == "__main__":
 		nb_imgs = len(mask_stack)
 	
 		# Window sizes for different moving averages
-		muscle_win_size = round(0.05 * nb_imgs)
+		muscle_win_size = round(0.10 * nb_imgs)
+		std_win_size = 20
 		circular_win_size = round(0.04 * args.points)
 
 		print("   Loading centreline")
@@ -101,17 +102,18 @@ if __name__ == "__main__":
 		
 		if args.switch:
 			avg_thickness[horns[i-1]] = utils.movingAverage(
-				muscle_thickness, muscle_win_size)
+				muscle_thickness, muscle_win_size).round(5)
 			avg_slice_thickness[horns[i-1]] = utils.circularAverage(
-				slice_thickness, circular_win_size)
-			errors[horns[i-1]] = utils.movingStd(muscle_thickness, muscle_win_size)
+				slice_thickness, circular_win_size).round(5)
+			errors[horns[i-1]] = utils.movingStd(muscle_thickness, std_win_size)
 
 		else:
 			avg_thickness[horn] = utils.movingAverage(muscle_thickness, 
-				muscle_win_size)
+				muscle_win_size).round(5)
 			avg_slice_thickness[horn] = utils.circularAverage(slice_thickness, 
-				circular_win_size)
-			errors[horn] = utils.movingStd(muscle_thickness, muscle_win_size)
+				circular_win_size).round(5)
+			errors[horn] = utils.movingStd(muscle_thickness, std_win_size)
+
 
 	# Save angular thickness 
 	with open(load_directory + "/angular_thickness.pkl", 'wb') as f:
@@ -123,5 +125,6 @@ if __name__ == "__main__":
 
 	# Plot everything
 	plots.plotMuscleThickness(avg_thickness, errors)
-	plots.plotAngularThickness(avg_slice_thickness)
+	plots.plotAngularThickness({"left": avg_slice_thickness["left"]})
+	plots.plotAngularThickness({"right": avg_slice_thickness["right"]})
 

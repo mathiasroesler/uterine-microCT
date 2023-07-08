@@ -58,17 +58,17 @@ def plotMuscleThickness(muscle_thickness, errors):
 			label="{} horn".format(horn.capitalize()), linewidth=4, 
 			color=colors[horn])
 
-	ax.tick_params(length=12, width=4, labelsize=21)
+	ax.tick_params(length=12, width=4, labelsize=24)
 	
 	# Reset x-axis ticks
 	plt.xticks(ticks=[0, 0.2, 0.6, 1], 
 		labels=["Cervix", "Cervical end", "Centre", "Ovarian end"])
 
-	plt.ylim([0, 0.75])
+	plt.ylim([0, 0.7])
 	plt.xlim([0, 1])
-	plt.xlabel("Locations", fontsize=21)
-	plt.ylabel("Muscle thickness (in mm)", fontsize=21)
-	plt.legend(fontsize=21)
+	plt.xlabel("Locations", fontsize=24)
+	plt.ylabel("Muscle thickness (in mm)", fontsize=24)
+	plt.legend(fontsize=24)
 
 	plt.show()
 
@@ -79,7 +79,7 @@ def plotAngularThickness(slice_thickness):
 
 	Arguments:
 	slice_thickness -- dict(ndarray), array containing the angluar thickness
-		of three slices for each horn.
+		of four slices for each horn.
 
 	Return:
 	
@@ -100,19 +100,22 @@ def plotAngularThickness(slice_thickness):
 		x_values = np.arange(nb_points)
 
 		ax[i].plot(x_values, y_values[:, 0], 
+			linestyle='dashdot', color=colors[horn],
+			label="Cervix", linewidth=4)
+		ax[i].plot(x_values, y_values[:, 1], 
 			linestyle='solid', color=colors[horn],
 			label="Cervical end", linewidth=4)
-		ax[i].plot(x_values, y_values[:, 1],
+		ax[i].plot(x_values, y_values[:, 2],
 			linestyle='dashed', color=colors[horn],
 			label="Centre",	linewidth=4)
-		ax[i].plot(x_values, y_values[:, 2],
+		ax[i].plot(x_values, y_values[:, 3],
 			linestyle='dotted', color=colors[horn],
 			label="Ovarian end", linewidth=4)
-		ax[i].set_title("{} horn".format(horn.capitalize()), fontsize=21)
+		ax[i].set_title("{} horn".format(horn.capitalize()), fontsize=24)
 
 		# Change tick parameters
-		ax[i].tick_params(length=12, width=4, labelsize=21)
-		ax[i].legend(fontsize=21)
+		ax[i].tick_params(length=12, width=4, labelsize=24)
+		ax[i].legend(fontsize=24, loc="upper center")
 
 	plt.xticks(ticks=
 		[nb_points // 4, nb_points // 2,  3*nb_points // 4, nb_points-1],
@@ -120,9 +123,9 @@ def plotAngularThickness(slice_thickness):
 
 	# Set labels and legends
 	fig.text(0.06, 0.5, 'Muscle thickness (in mm)', ha='center', va='center', 
-		rotation='vertical', fontsize=21)
-	plt.xlabel(r"Angle $\theta$ (in rad)", fontsize=21)
+		rotation='vertical', fontsize=24)
+	plt.xlabel(r"Angle $\theta$ (in rad)", fontsize=24)
 
-	plt.ylim([0, 0.80])
+	plt.ylim([0, 1.2])
 	plt.xlim([0, nb_points-1])
 	plt.show()

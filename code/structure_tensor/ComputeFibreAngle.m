@@ -12,6 +12,8 @@ function angle = ComputeFibreAngle(fibre, centrepoints, cur_X, cur_Z)
 %
 %   Return:
 %    - angle, angle between the fibre and the current plane in degrees.
+nb_used_slices = 10;
+
 if isempty(centrepoints)
     z_vector = [0; 0; 1];
 
@@ -24,32 +26,48 @@ else
         % Define the z vector as the centre vector between current slice
         % and the current + 5th slice.
         cur_idx = 3;
-        cur_centrepoint = centrepoints(cur_idx:cur_idx+1, cur_Z);
 
     elseif ~all(centrepoints(5:6, cur_Z))
         % If there is only one centre point found
-                cur_idx = 5;
-        cur_centrepoint = centrepoints(cur_idx:cur_idx+1, cur_Z);
+        cur_idx = 1;
 
     else
-        % If there are left and right centre points find the neares to
+        % If there are left and right centre points find the nearest to
         % cur_X
-        [~, cur_idx] = min(abs(centrepoints(1:2:end, cur_Z) - cur_X));
-        cur_centrepoint = centrepoints(cur_idx:cur_idx+1, cur_Z);
-
+        [~, cur_idx] = min(abs(centrepoints(1:4:end, cur_Z) - cur_X));
+        
+        if cur_idx == 2
+            % Get the starting index of the last centre point
+            cur_idx = 5;
+        end
     end
 
-    if cur_Z + 5 > size(centrepoints, 2)
+    cur_centrepoint = centrepoints(cur_idx:cur_idx+1, cur_Z);
+
+    if cur_Z + nb_used_slices > size(centrepoints, 2)
         % If there are not enough slices use the previous slices
         % instead
-        next_centrepoint = centrepoints(cur_idx:cur_idx+1, cur_Z - 5);
+        next_centrepoint = centrepoints(cur_idx:cur_idx+1, cur_Z - nb_used_slices);
+
+        if all(next_centrepoint == 0)
+            % The next slice only has one centre point left
+            next_centrepoint = centrepoints(1:2, cur_Z - nb_used_slices);
+        end
         z_vector = cur_centrepoint - next_centrepoint;
+        z_vector = [z_vector; -nb_used_slices]; % Append the z component
+
     else
-        next_centrepoint = centrepoints(cur_idx:cur_idx+1, cur_Z + 5);
+        next_centrepoint = centrepoints(cur_idx:cur_idx+1, cur_Z + nb_used_slices);
+
+        if all(next_centrepoint == 0)
+            % The next slice only has one centre point left
+            next_centrepoint = centrepoints(1:2, cur_Z + nb_used_slices);
+        end
         z_vector = next_centrepoint - cur_centrepoint;
+        z_vector = [z_vector; nb_used_slices]; % Append the z component
+
     end
-    z_vector = [z_vector; 5]; % Append the z component
 end
 
-angle = rad2deg(acos(fibre * z_vector));
+angle = rad2deg(acos(fibre * (z_vector/norm(z_vector))));
 end

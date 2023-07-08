@@ -202,13 +202,15 @@ def movingStd(array, window_size):
 	return std_array
 	
 
-def writeExElem(file_path, elements):
-	""" Writes out the data from a mesh to a exnode file
+def writeExElemVol(file_path, elements, thickness=True):
+	""" Writes out the data from a volumetric mesh to a exnode file
 
 	Arguments:
 	file_path -- str, path to the file to save to.
 	elements -- ndarray, list of nodes associated with each tetrahedra,
-		size = Nx4
+		size = Nx4.
+	thickness -- bool, flag used if thickness has been provided to the
+		exnode file, default True.
 
 	Return:
 
@@ -221,11 +223,19 @@ def writeExElem(file_path, elements):
 
 	with open(file_path, "w") as f:
 		# Write the exnode file header
-		f.write("Group name: uterus\n")
+		f.write("Group name: mesh\n")
+		f.write("Region: /uterus\n")
 		f.write("Shape.  Dimension=3 simplex(2;3)*simplex*simplex\n")
 		f.write("#Scale factor sets=0\n")
 		f.write("#Nodes=4\n")
-		f.write("#Fields=2\n")
+
+		if thickness:
+			f.write("#Fields=2\n")
+
+		else:
+			# If no thickness is provided there is only one field
+			f.write("#Fields=1\n")
+
 		f.write("1) coordinates, coordinate, rectangular cartesian, #Components=3\n")
 		f.write(" x. l.simplex(2;3)*l.simplex*l.simplex, no modify, standard node based.\n")
 		f.write("  #Nodes=4\n")
@@ -269,12 +279,14 @@ def writeExElem(file_path, elements):
 		f.write("  4. #Values=1\n")
 		f.write("	Value indices: 1\n")
 		f.write("	Scale factor indices: 0\n")
-		f.write("2) thickness, field, rectangular cartesian, #Components=1\n")
-		f.write(" t. constant, no modify, standard node based.\n")
-		f.write("  #Nodes=1\n")
-		f.write("  1. #Values=1\n")
-		f.write("	Value indices: 1\n")
-		f.write("	Scale factor indices: 0\n")
+
+		if thickness:
+			f.write("2) thickness, field, rectangular cartesian, #Components=1\n")
+			f.write(" thickness. constant, no modify, standard node based.\n")
+			f.write("  #Nodes=1\n")
+			f.write("  1. #Values=1\n")
+			f.write("	Value indices: 1\n")
+			f.write("	Scale factor indices: 0\n")
 
 		for i, nodes in enumerate(elements):
 			f.write("Element: {} 0 0\n".format(i+1))
@@ -283,16 +295,100 @@ def writeExElem(file_path, elements):
 				nodes[0]+1, nodes[1]+1, nodes[2]+1, nodes[3]+1)) 
 
 
-def writeExNode(file_path, nodes, thickness):
-	""" Writes out the nodes and the thickness from a mesh 
-		to a exnode file
+def writeExElemSurf(file_path, elements, thickness=True):
+	""" Writes out the data from a surface mesh to a exnode file
+
+	Arguments:
+	file_path -- str, path to the file to save to.
+	elements -- ndarray, list of nodes associated with each triangle,
+		size = Nx3.
+	thickness -- bool, flag used if thickness has been provided to the
+		exnode file, default True.
+
+	Return:
+
+	"""
+	try:
+		assert(elements.shape[1] == 3)
+
+	except AssertionError:
+		sys.stderr.write("Error: elements should contain 3 nodes\n")
+
+	with open(file_path, "w") as f:
+		# Write the exnode file header
+		f.write("Group name: mesh\n")
+		f.write("Region: /uterus\n")
+		f.write("Shape.  Dimension=2 simplex(2)*simplex\n")
+		f.write("#Scale factor sets=0\n")
+		f.write("#Nodes=3\n")
+
+		if thickness:
+			f.write("#Fields=2\n")
+
+		else:
+			# If no thickness is provided there is only one field
+			f.write("#Fields=1\n")
+
+		f.write("1) coordinates, coordinate, rectangular cartesian, #Components=3\n")
+		f.write(" x. l.simplex(2)*l.simplex, no modify, standard node based.\n")
+		f.write("  #Nodes=3\n")
+		f.write("  1. #Values=1\n")
+		f.write("	Value indices: 1\n")
+		f.write("	Scale factor indices: 0\n")
+		f.write("  2. #Values=1\n")
+		f.write("	Value indices: 1\n")
+		f.write("	Scale factor indices: 0\n")
+		f.write("  3. #Values=1\n")
+		f.write("	Value indices: 1\n")
+		f.write("	Scale factor indices: 0\n")
+		f.write(" y. l.simplex(2)*l.simplex, no modify, standard node based.\n")
+		f.write("  #Nodes=3\n")
+		f.write("  1. #Values=1\n")
+		f.write("	Value indices: 1\n")
+		f.write("	Scale factor indices: 0\n")
+		f.write("  2. #Values=1\n")
+		f.write("	Value indices: 1\n")
+		f.write("	Scale factor indices: 0\n")
+		f.write("  3. #Values=1\n")
+		f.write("	Value indices: 1\n")
+		f.write("	Scale factor indices: 0\n")
+		f.write(" z. l.simplex(2)*l.simplex, no modify, standard node based.\n")
+		f.write("  #Nodes=3\n")
+		f.write("  1. #Values=1\n")
+		f.write("	Value indices: 1\n")
+		f.write("	Scale factor indices: 0\n")
+		f.write("  2. #Values=1\n")
+		f.write("	Value indices: 1\n")
+		f.write("	Scale factor indices: 0\n")
+		f.write("  3. #Values=1\n")
+		f.write("	Value indices: 1\n")
+		f.write("	Scale factor indices: 0\n")
+
+		if thickness:
+			f.write("2) thickness, field, rectangular cartesian, #Components=1\n")
+			f.write(" thickness. constant, no modify, standard node based.\n")
+			f.write("  #Nodes=1\n")
+			f.write("  1. #Values=1\n")
+			f.write("	Value indices: 1\n")
+			f.write("	Scale factor indices: 0\n")
+
+		for i, nodes in enumerate(elements):
+			f.write("Element: {} 0 0\n".format(i+1))
+			f.write(" Nodes: \n")
+			f.write("  {} {} {}\n".format(
+				nodes[0]+1, nodes[1]+1, nodes[2]+1))
+
+
+def writeExNode(file_path, nodes, thickness=None):
+	""" Writes out the nodes from a mesh to a exnode file,
+		and adds the thickness field if provided
 
 	Arguments:
 	file_path -- str, path to the file to save to.
 	nodes -- ndarray, list of coordinates for each node.
 		size = Nx3
 	thickness -- ndarray, list of thickness value for each node.
-		size = Nx1
+		size = Nx1, default value None.
 
 	Return:
 
@@ -305,28 +401,41 @@ def writeExNode(file_path, nodes, thickness):
 		sys.stderr.write("Error: nodes should have three coordinates\n")
 		exit()
 
-	try:
-		# Check that thickness and nodes have the same dimension
-		assert(nodes.shape[0] == thickness.shape[0])
+	if type(thickness) != type(None):
+		try:
+			# Check that thickness and nodes have the same dimension
+			assert(nodes.shape[0] == thickness.shape[0])
 
-	except AssertionError:
-		sys.stderr.write("Error: nodes and thickness should have the same " \
-		"number of elements\n")
-		exit()
+		except AssertionError:
+			sys.stderr.write("Error: nodes and thickness should have the same " \
+			"number of elements\n")
+			exit()
 
 	with open(file_path, "w") as f:
 		# Write exnode file header
-		f.write("Group name: uterus\n")
-		f.write("#Fields=2\n")
+		f.write("Group name: mesh\n")
+		f.write("Region: /uterus\n")
+		
+		if type(thickness) != type(None):
+			f.write("#Fields=2\n")
+
+		else:
+			# If no thickness is provided there is only one field
+			f.write("#Fields=1\n")
+
 		f.write("1) coordinates, coordinate, rectangular cartesian, #Components=3\n")
 		f.write(" x. Value index=1, #Derivatives=0\n")
 		f.write(" y. Value index=2, #Derivatives=0\n")
 		f.write(" z. Value index=3, #Derivatives=0\n")
-		f.write("2) thickness, field, rectangular cartesian, #Components=1\n")
-		f.write(" t. Value index=4, #Derivatives=0\n") 
+
+		if type(thickness) != type(None):
+			f.write("2) thickness, field, rectangular cartesian, #Components=1\n")
+			f.write(" thickness. Value index=4, #Derivatives=0\n") 
 
 		for i in range(len(nodes)):
 			f.write("Node: {}\n".format(i+1))
 			f.write(" {} {} {}\n".format(
 				nodes[i][0], nodes[i][1], nodes[i][2]))
-			f.write(" {}\n".format(thickness[i, 0]))
+			
+			if type(thickness) != type(None):
+				f.write(" {}\n".format(thickness[i]))

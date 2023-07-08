@@ -4,7 +4,7 @@ function rotated_stack = rotateImageStack(img_stack, region, nb_used_slices)
 %
 %   Input:
 %    - img_stack, stack of N MxP images to rotate, img_stack(MxPxN).
-%    - region, selects which region to rotate, either left, right or body.
+%    - region, selects which region to rotate, either left, right.
 %    - nb_used_slices, number of slices to take to estimate the centre
 %    vector.
 %
@@ -38,26 +38,33 @@ for k = 1:nb_slices
     % Next mask for finding rotation axis
     if k < nb_slices-nb_used_slices
         next_mask = img_stack(:, :, k+nb_used_slices);
+        z_centre = nb_used_slices;
     else
-        % Use the previous slices to get rotation vector
+        % Use less slices to get rotation vector
         next_mask = img_stack(:, :, k-nb_used_slices);
+        z_centre = nb_used_slices;
     end
+
     % Find centre points
     cur_centrepoints = findCentrepoints(cur_mask, region);
     next_centrepoints = findCentrepoints(next_mask, region);
 
-    if size(cur_centrepoints, 1) == 3
-        % Get correct centre point if several are returned
-        cur_centrepoints = cur_centrepoints(region_nb, :);
+    % Get correct centre point
+    cur_centrepoints = cur_centrepoints(region_nb, :);
+    next_centrepoints = next_centrepoints(region_nb, :);
+
+    % Add the z component
+    centre_vector = [next_centrepoints - cur_centrepoints, z_centre];
+
+    % Ensure consistent x direction
+    condition_1 = centre_vector(1) < 0 && strcmp(region, 'right');
+    condition_2 = centre_vector(1) > 0 && strcmp(region, 'left');
+
+    if condition_1 || condition_2
+        centre_vector(1) = -centre_vector(1);
     end
 
-    if size(next_centrepoints, 1) == 3
-        % Get correct centre point if several are returned
-        next_centrepoints = next_centrepoints(region_nb, :);
-    end
-
-    % Get the normalised centre vector in 3D
-    centre_vector = [next_centrepoints - cur_centrepoints, nb_used_slices];
+    % Normalise the centre vector
     centre_vector = centre_vector ./ norm(centre_vector);
 
     if isequal(centre_vector, [0, 0, 1])
