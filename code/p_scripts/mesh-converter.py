@@ -21,7 +21,7 @@ if __name__ == "__main__":
 		help="name of the mesh to convert")
 	parser.add_argument("--mesh-dir", type=str, default="mesh/",
 		help="path from BASE to the mesh, default mesh/")
-	parser.add_argument("-e", "--extension", choices={"vtu", "vtk", "stl"},
+	parser.add_argument("-e", "--extension", choices={"vtu", "vtk"},
 		help="mesh extesion, default value vtk", default="vtk")
 
 	args = parser.parse_args()
