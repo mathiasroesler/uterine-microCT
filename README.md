@@ -154,9 +154,20 @@ python3 mesh-converter.py --help
 The supported file types for the mesh are .vtk, and .vtu. \
 
 ### Visualisation
-To visualise the meshes and fibres in cmgui, com files are located in the com folder. 
-![alt text](img/fibres.png)
-![alt text](img/meshes.png)
+To visualise the meshes and fibres in cmgui, com files are located in the com folder. \
+Below is an example of a figure generated for the article using the 
+AWA015_PTA_1_Rec_Trans_fibre_mesh.com (A) and the AWA015_PTA_2_Ova_Rec_Trans_L4_fibres.com (B) com files,
+which overlays the fibres found in the uterus on the surface mesh, and shows the fibres in a smaller section
+of the uterus located near the ovaries.
+![alt text](img/fibres.png "Example of a figure generated for the article using the 
+AWA015_PTA_1_Rec_Trans_fibre_mesh.com (A) and the AWA015_PTA_2_Ova_Rec_Trans_L4_fibres.com (B) com files")
+
+Below is an example of a figure generated for the article using the 
+AWA015_PTA_1_Rec_Trans_thickness_mesh.com (A) and the AWA015_PTA_2_Ova_Rec_Trans_thickness_mesh.com (B) 
+com files which show the thickness of the muscle layers in the uterus.
+![alt text](img/meshes.png "Example of a figure generated for the article using the 
+AWA015_PTA_1_Rec_Trans_thickness_mesh.com (A) and the AWA015_PTA_2_Ova_Rec_Trans_thickness_mesh.com (B) 
+com files.")
 
 ## Data availability
 The uCT dataset used and the meshes generated are available [here](https://figshare.com/).
