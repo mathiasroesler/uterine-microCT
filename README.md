@@ -1,6 +1,6 @@
-# uCT analysis
+# $`\mu`$CT analysis
 ## General description
-This repository contains code to analyse uCT datasets of rat uteri and used for the paper
+This repository contains code to analyse $`\mu`$CT datasets of rat uteri and used for the paper
 __3D virtual histology of the rat uterus musculature using micro-computed tomography__
 
 ## Requirements
@@ -66,7 +66,7 @@ the __baseDir.m__ function and for the Python scripts by editing the BASE variab
  file. Both of these files are located in the utils folder. 
 
 ### Downsampling
-The image of the original uCT dataset can be downsampled using the __downsampledMicroCTDataset.m__ script 
+The image of the original $`\mu`$CT dataset can be downsampled using the __downsampledMicroCTDataset.m__ script 
 located in the m_scripts folder. The numbers of the first and last images to be downsampled are specified
 in the configuration file. The downsampled images will be saved in the downsampled folder.\
 The images can either be downsampled by a given factor, or the new resolutions for each axis can be 
@@ -80,7 +80,7 @@ For example, the muscle segmentation masks will be saved in the muscle_segmentat
 tissue segmentation masks will be saved in the tissue_segmentation folder. The parameters for the 
 segmentation script are set in the configuration file.
 
-The segmentation masks and uCT images can be converted to a 
+The segmentation masks and $`\mu`$CT images can be converted to a 
 [NIfTI](https://nifti.nimh.nih.gov/nifti-2/) archive with the __nifti-converter.py__ script located in the
  p_scripts folder. To see the arguments and options of the script, use the --help flag:
 ```bash
@@ -88,14 +88,14 @@ python3 nifti-converter.py --help
 ```
 The NIfTI archive can be read by software such as [ITK-SNAP](http://www.itksnap.org/pmwiki/pmwiki.php) to
  edit the segmentation masks. The edited masks can be exported with the __readNiftiSegmentation.m__
-script located in the utils folder. This script requires that the uCT images and the segmentations be 
+script located in the utils folder. This script requires that the $`\mu`$CT images and the segmentations be 
 located in the same folder.
 
 ### Analysis
 The analysis requires muscle segmentation masks.
 
 #### Thickness analysis
-If the uCT images do not slice the uterine horns perpendicularly, the segmentation masks can be reoriented
+If the $`\mu`$CT images do not slice the uterine horns perpendicularly, the segmentation masks can be reoriented
 to align each horn with the z-axis. The __uCTRotation.m__ script located in the m_scripts folder rotates
 the left and right horns. The rotated images of each horn are saved in their respective folders. The number
 of the first and last images to be rotated can be chosen in the configuration file in case some slices are
@@ -172,4 +172,4 @@ AWA015_PTA_1_Rec_Trans_thickness_mesh.com (A) and the AWA015_PTA_2_Ova_Rec_Trans
 com files.")
 
 ## Data availability
-The uCT dataset used and the meshes generated are available [here](https://figshare.com/).
+The $`\mu`$CT dataset used and the meshes generated are available [here](https://figshare.com/).
