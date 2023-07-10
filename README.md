@@ -1,8 +1,26 @@
-# $`\mu`$CT analysis
+# Uterine $`\mu`$CT analysis
+# Table of contents
+1. [General description](#general-description)
+2. [Requirements](#requirements)
+3. [Workflow](#workflow)
+4. [Data folder structure](#structure)
+5. [Usage](#usage)
+   1. [Setup](#setup)
+   2. [Downsampling](#downsampling)
+   3. [Segmentation](#segmentation)
+   4. [Analysis](#analysis)
+       1. [Thickness analysis](#thickness)
+       2. [Fibre analysis](#fibre)
+       3. [Mesh generation](#mesh)
+    5. [Visualisation](#visualisation)
+6. [Data availability](#data-availability)
+
+<a id="general-description"></a>
 ## General description
 This repository contains code to analyse $`\mu`$CT datasets of rat uteri and used for the paper
 __3D virtual histology of the rat uterus musculature using micro-computed tomography__
 
+<a id="requirements"></a>
 ## Requirements
 The code was run on Linux Ubuntu 22.04.2 LTS\
 The code was developed in [MATLAB](https://www.mathworks.com/products/matlab.html) version 2022a and [Python](https://www.python.org/) version 3.10.6\
@@ -10,7 +28,8 @@ The visualisation was done in [cmgui](https://www.cmiss.org/cmgui/)\
 The required packages for Python are found in requirements.txt\
 This project uses [TOML](https://toml.io/en/) files for configuration.
 
-## Workflow
+<a id="workflow"></a>
+## Workflow 
 The following diagram presents the workflow of the project:
 ```mermaid
 graph LR
@@ -25,7 +44,8 @@ E --> H
 G --> H
 ```
 
-## Data folder structure
+<a id="structure"></a>
+## Data folder structure 
 The folders that contain the data are structured in the following way:
 ```bash
 data
@@ -45,10 +65,12 @@ There is one configuration file for the main dataset (AWA015_PTA_1_Rec_Trans.tom
 downsampled dataset (AWA015_PTA_1_Rec_Trans_downsampled.toml). The configuration files used in this
 project are placed in the config folder.
 
-## Usage
+<a id="usage"></a>
+## Usage 
 The main scripts used in this project are contained in the m_scripts folder for the MATLAB code and in the p_scripts for the Python code.
 
-### Setup 
+<a id="setup"></a>
+### Setup
 Install the Python packages and add the location of the code to your PYTHONPATH by running the setup
 script:
 ```bash
@@ -65,14 +87,16 @@ The default path is Documents/phd. The base directory can be changed for the MAT
 the __baseDir.m__ function and for the Python scripts by editing the BASE variable in the __utils.py__
  file. Both of these files are located in the utils folder. 
 
-### Downsampling
+<a id="downsampling"></a>
+### Downsampling 
 The image of the original $`\mu`$CT dataset can be downsampled using the __downsampledMicroCTDataset.m__ script 
 located in the m_scripts folder. The numbers of the first and last images to be downsampled are specified
 in the configuration file. The downsampled images will be saved in the downsampled folder.\
 The images can either be downsampled by a given factor, or the new resolutions for each axis can be 
 provided as a 3D vector [x y z].
 
-### Segmentation
+<a id="segmentation"></a>
+### Segmentation 
 The image of the downsampled or original dataset can be segmented with the __segmentMicroCTDataset.m__
 script located in the m_scripts folder. There are four types of segmentation possible: fat, tissue,
 shape, and muscle. The segmentation masks are saved in different folders depending on the chosen type.
@@ -91,10 +115,12 @@ The NIfTI archive can be read by software such as [ITK-SNAP](http://www.itksnap.
 script located in the utils folder. This script requires that the $`\mu`$CT images and the segmentations be 
 located in the same folder.
 
-### Analysis
+<a id="analysis"></a>
+### Analysis 
 The analysis requires muscle segmentation masks.
 
-#### Thickness analysis
+<a id="thickness"></a>
+#### Thickness analysis 
 If the $`\mu`$CT images do not slice the uterine horns perpendicularly, the segmentation masks can be reoriented
 to align each horn with the z-axis. The __uCTRotation.m__ script located in the m_scripts folder rotates
 the left and right horns. The rotated images of each horn are saved in their respective folders. The number
@@ -117,6 +143,7 @@ The average thickness for each horn will be displayed on the terminal. The plot 
 variations and the plots of the angular thickness of the __4__ slices selected in the configuration file
 will be displayed. The angular and average thicknesses will be saved in the muscle_segmentation folder.
 
+<a id="fibre"></a>
 #### Fibre analysis
 The muscle fibres can be extracted from the muscle segmentation masks. The __STPipeline.m__ script
 located in the m_scripts folder finds the fibres using structure tensors. This script requires that the
@@ -135,7 +162,8 @@ parameters for the script can be set in the configuration file.
 
 This code was written by Mark Trew.
 
-#### Mesh generation
+<a id="mesh"></a>
+#### Mesh generation 
 The segmentation masks can be used to generate a surface mesh with software such as 
 [ITK-SNAP](http://www.itksnap.org/pmwiki/pmwiki.php). The __mesh-annotation.py__ script annotated a mesh
 (surface or volumetric) with the thickness data calculated previously. To see the arguments and options 
@@ -153,7 +181,8 @@ python3 mesh-converter.py --help
 ```
 The supported file types for the mesh are .vtk, and .vtu.
 
-### Visualisation
+<a id="visualisation"></a>
+### Visualisation 
 To visualise the meshes and fibres in cmgui, com files are located in the com folder.\
 Below is an example of a figure generated for the article using the 
 AWA015_PTA_1_Rec_Trans_fibre_mesh.com (A) and the AWA015_PTA_2_Ova_Rec_Trans_L4_fibres.com (B) com files,
@@ -171,5 +200,6 @@ com files which show the thickness of the muscle layers in the uterus.
 AWA015_PTA_1_Rec_Trans_thickness_mesh.com (A) and the AWA015_PTA_2_Ova_Rec_Trans_thickness_mesh.com (B) 
 com files.")
 
+<a id="data-availability"></a>
 ## Data availability
 The $`\mu`$CT dataset used and the meshes generated are available [here](https://figshare.com/).
