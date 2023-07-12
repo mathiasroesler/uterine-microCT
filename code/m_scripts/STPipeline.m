@@ -56,6 +56,8 @@ end
 params = toml.map_to_struct(toml_map);
 file_template = params.prefix;
 extension = params.extension;
+xlim = params.ST.xlim; % x limits for cropping images
+ylim = params.ST.ylim; % y limits for cropping images
 
 orig_img_dir = load_directory;
 src_dir = join([load_directory, "ST"], '/');
@@ -105,7 +107,7 @@ if mask
     % Load in image set
     fprintf('... loading images ...\n');
     img_paths = getImagePaths(img_input_dir, extension);
-    I = loadImageStack(img_paths);
+    I = loadImageStack(img_paths, [], xlim, ylim);
 
     % Add on zero padding to top of image beyond truncation
     I = padarray(I,[0,0,TopPadding],0,'post');
@@ -171,7 +173,7 @@ if mask
 end
 
 % Clear everything except general parameters and input arguments
-clearvars -EXCEPT params base_dir src_dir extension file_template data_folder mask diffusion structure_tensor streamlines
+clearvars -EXCEPT params base_dir src_dir extension file_template data_folder mask diffusion structure_tensor streamlines xlim ylim
 
 
 if diffusion
@@ -216,7 +218,7 @@ if diffusion
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     fprintf('... loading images ...\n');
     img_paths = getImagePaths(img_input_dir, extension);
-    I = loadImageStack(img_paths);
+    I = loadImageStack(img_paths, [], xlim, ylim);
     [Nj, Ni, Nk] = size(I);
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -315,7 +317,7 @@ if diffusion
 end
 
 % Clear everything except general parameters and input arguments
-clearvars -EXCEPT params base_dir src_dir extension file_template data_folder mask diffusion structure_tensor streamlines
+clearvars -EXCEPT params base_dir src_dir extension file_template data_folder mask diffusion structure_tensor streamlines xlim ylim
 
 if structure_tensor
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -355,7 +357,7 @@ if structure_tensor
     % Load in image set
     fprintf('... loading images ...\n');
     img_paths = getImagePaths(img_input_dir, extension);
-    I = loadImageStack(img_paths);
+    I = loadImageStack(img_paths, [], xlim, ylim);
     [Nj, Ni, Nk] = size(I);
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -653,7 +655,7 @@ if structure_tensor
 end
 
 % Clear everything except general parameters and input arguments
-clearvars -EXCEPT params base_dir src_dir extension file_template data_folder mask diffusion structure_tensor streamlines
+clearvars -EXCEPT params base_dir src_dir extension file_template data_folder mask diffusion structure_tensor streamlines xlim ylim
 
 if streamlines
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -714,7 +716,7 @@ if streamlines
 
     % Read in mask data
     mask_paths = getImagePaths(MaskPath, extension);
-    I3D = loadImageStack(mask_paths);
+    I3D = loadImageStack(mask_paths, [], xlim, ylim);
     [Nj, Ni, Nk] = size(I3D);
 
     try
