@@ -13,6 +13,7 @@ import numpy as np
 import utils.utils as utils
 import thickness_analysis.projection as projection
 
+from scipy import stats
 
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser(description=
@@ -61,6 +62,8 @@ if __name__ == "__main__":
 		sys.stderr.write("Error: uCT and histology data show have same shape.\n")
 
 	for i in range(uCT_data.shape[1]):
-		correl_matrix = np.corrcoef(uCT_data[:, i], histo_data[:, i])
-		print(u"{} section Pearson correlation coefficient: {:.2f}".format(
-			regions[i].capitalize(), correl_matrix[0, 1]))
+		p_stats = stats.pearsonr(uCT_data[:, i], histo_data[:, I])
+		print(u"{} section: r({}) = {:.2f}, p = {:.3f}".format(
+			regions[i].capitalize(), nb_samples-2, p_stats.statistic,
+			p_stats.pvalue))
+
