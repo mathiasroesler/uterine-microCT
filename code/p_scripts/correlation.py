@@ -61,8 +61,10 @@ if __name__ == "__main__":
 	except AssertionError:
 		sys.stderr.write("Error: uCT and histology data show have same shape.\n")
 
+	nb_samples = len(uCT_data)
+	
 	for i in range(uCT_data.shape[1]):
-		p_stats = stats.pearsonr(uCT_data[:, i], histo_data[:, I])
+		p_stats = stats.pearsonr(uCT_data[:, i], histo_data[:, i])
 		print(u"{} section: r({}) = {:.2f}, p = {:.3f}".format(
 			regions[i].capitalize(), nb_samples-2, p_stats.statistic,
 			p_stats.pvalue))
