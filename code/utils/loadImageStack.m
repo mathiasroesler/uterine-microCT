@@ -39,13 +39,13 @@ if isempty(xlim) && isempty(ylim)
     xlim = [1, size(img, 1)];
     ylim = [1, size(img, 2)];
 
-elseif ~isempty(xlim)
-    % If only x limits provided set y limits to be full image
-    ylim = [1, size(img, 2)];
-
-elseif ~isempty(ylim)
-    % If only y limits provided set x limits to be full image
+elseif isempty(xlim)
+    % If only x limits not provided set x limits to be full image
     xlim = [1, size(img, 1)];
+
+elseif isempty(ylim)
+    % If only y limits not provided set y limits to be full image
+    ylim = [1, size(img, 2)];
 end
 
 img_stack = zeros(diff(xlim)+1, diff(ylim)+1, nb_imgs, 'uint8');
