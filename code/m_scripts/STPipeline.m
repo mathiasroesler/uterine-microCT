@@ -365,7 +365,8 @@ if structure_tensor
     % Load in image set
     fprintf('... loading images ...\n');
     img_paths = getImagePaths(img_input_dir, extension);
-    I = loadImageStack(img_paths, [], xlim, ylim);
+    I = loadImageStack(img_paths); % Assume the extrapolated are already resized
+    clear img_paths
     [Nj, Ni, Nk] = size(I);
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -407,7 +408,7 @@ if structure_tensor
     % Compute fft of Image
     fprintf('... computing FFT of image ...\n');
     t10 = clock;
-    IPadf = single(fft(IPad)); %clear IPad;
+    IPadf = single(fft(IPad)); clear IPad;
     t1 = etime(clock,t10); fprintf(' fft time for IPad: %0.2f sec\n',t1);
 
     % Compute fft of 1st derivative weights
@@ -452,23 +453,23 @@ if structure_tensor
 
     fprintf('     - Jii ...\n');
     Jii = Di.*Di; Jii = reshape(Jii,[(Ni+4),(Nj+4),(Nk+4)]);
-    [Sii1,SI1,SJ1,SK1] = MultigridAveraging(Jii(SBi,SBj,SBk),SI0,SJ0,SK0,SmoothingTemplateWidth);
+    [Sii1,~,~,~] = MultigridAveraging(Jii(SBi,SBj,SBk),SI0,SJ0,SK0,SmoothingTemplateWidth);
 
     fprintf('     - Jij ...\n');
     Jij = Di.*Dj; Jij = reshape(Jij,[(Ni+4),(Nj+4),(Nk+4)]);
-    [Sij1,SI1,SJ1,SK1] = MultigridAveraging(Jij(SBi,SBj,SBk),SI0,SJ0,SK0,SmoothingTemplateWidth);
+    [Sij1,~,~,~] = MultigridAveraging(Jij(SBi,SBj,SBk),SI0,SJ0,SK0,SmoothingTemplateWidth);
 
     fprintf('     - Jik ...\n');
     Jik = Di.*Dk; Jik = reshape(Jik,[(Ni+4),(Nj+4),(Nk+4)]); %clear Di;
-    [Sik1,SI1,SJ1,SK1] = MultigridAveraging(Jik(SBi,SBj,SBk),SI0,SJ0,SK0,SmoothingTemplateWidth);
+    [Sik1,~,~,~] = MultigridAveraging(Jik(SBi,SBj,SBk),SI0,SJ0,SK0,SmoothingTemplateWidth);
 
     fprintf('     - Jjj ...\n');
     Jjj = Dj.*Dj; Jjj = reshape(Jjj,[(Ni+4),(Nj+4),(Nk+4)]);
-    [Sjj1,SI1,SJ1,SK1] = MultigridAveraging(Jjj(SBi,SBj,SBk),SI0,SJ0,SK0,SmoothingTemplateWidth);
+    [Sjj1,~,~,~] = MultigridAveraging(Jjj(SBi,SBj,SBk),SI0,SJ0,SK0,SmoothingTemplateWidth);
 
     fprintf('     - Jjk ...\n');
     Jjk = Dj.*Dk; Jjk = reshape(Jjk,[(Ni+4),(Nj+4),(Nk+4)]); %clear Dj;
-    [Sjk1,SI1,SJ1,SK1] = MultigridAveraging(Jjk(SBi,SBj,SBk),SI0,SJ0,SK0,SmoothingTemplateWidth);
+    [Sjk1,~,~,~] = MultigridAveraging(Jjk(SBi,SBj,SBk),SI0,SJ0,SK0,SmoothingTemplateWidth);
 
     fprintf('     - Jkk ...\n');
     Jkk = Dk.*Dk; Jkk = reshape(Jkk,[(Ni+4),(Nj+4),(Nk+4)]); %clear Dk;
@@ -481,11 +482,11 @@ if structure_tensor
     % Smooth to second level using multigrid binomial averaging
     fprintf('... Second level smoothing ...\n');
     t0 = clock;
-    [Sii2,SI2,SJ2,SK2] = MultigridAveraging(Sii1,SI1,SJ1,SK1,SmoothingTemplateWidth);
-    [Sij2,SI2,SJ2,SK2] = MultigridAveraging(Sij1,SI1,SJ1,SK1,SmoothingTemplateWidth);
-    [Sik2,SI2,SJ2,SK2] = MultigridAveraging(Sik1,SI1,SJ1,SK1,SmoothingTemplateWidth);
-    [Sjj2,SI2,SJ2,SK2] = MultigridAveraging(Sjj1,SI1,SJ1,SK1,SmoothingTemplateWidth);
-    [Sjk2,SI2,SJ2,SK2] = MultigridAveraging(Sjk1,SI1,SJ1,SK1,SmoothingTemplateWidth);
+    [Sii2,~,~,~] = MultigridAveraging(Sii1,SI1,SJ1,SK1,SmoothingTemplateWidth);
+    [Sij2,~,~,~] = MultigridAveraging(Sij1,SI1,SJ1,SK1,SmoothingTemplateWidth);
+    [Sik2,~,~,~] = MultigridAveraging(Sik1,SI1,SJ1,SK1,SmoothingTemplateWidth);
+    [Sjj2,~,~,~] = MultigridAveraging(Sjj1,SI1,SJ1,SK1,SmoothingTemplateWidth);
+    [Sjk2,~,~,~] = MultigridAveraging(Sjk1,SI1,SJ1,SK1,SmoothingTemplateWidth);
     [Skk2,SI2,SJ2,SK2] = MultigridAveraging(Skk1,SI1,SJ1,SK1,SmoothingTemplateWidth);
     t1 = etime(clock,t0); fprintf(' Second level smoothing time: %0.2f sec\n',t1);
     fprintf('... Second level data dimensions: (%d,%d,%d)\n',size(SI2));
@@ -493,11 +494,11 @@ if structure_tensor
     % Smooth to third level using multigrid binomial averaging
     fprintf('... Third level smoothing ...\n');
     t0 = clock;
-    [Sii3,SI3,SJ3,SK3] = MultigridAveraging(Sii2,SI2,SJ2,SK2,SmoothingTemplateWidth);
-    [Sij3,SI3,SJ3,SK3] = MultigridAveraging(Sij2,SI2,SJ2,SK2,SmoothingTemplateWidth);
-    [Sik3,SI3,SJ3,SK3] = MultigridAveraging(Sik2,SI2,SJ2,SK2,SmoothingTemplateWidth);
-    [Sjj3,SI3,SJ3,SK3] = MultigridAveraging(Sjj2,SI2,SJ2,SK2,SmoothingTemplateWidth);
-    [Sjk3,SI3,SJ3,SK3] = MultigridAveraging(Sjk2,SI2,SJ2,SK2,SmoothingTemplateWidth);
+    [Sii3,~,~,~] = MultigridAveraging(Sii2,SI2,SJ2,SK2,SmoothingTemplateWidth);
+    [Sij3,~,~,~] = MultigridAveraging(Sij2,SI2,SJ2,SK2,SmoothingTemplateWidth);
+    [Sik3,~,~,~] = MultigridAveraging(Sik2,SI2,SJ2,SK2,SmoothingTemplateWidth);
+    [Sjj3,~,~,~] = MultigridAveraging(Sjj2,SI2,SJ2,SK2,SmoothingTemplateWidth);
+    [Sjk3,~,~,~] = MultigridAveraging(Sjk2,SI2,SJ2,SK2,SmoothingTemplateWidth);
     [Skk3,SI3,SJ3,SK3] = MultigridAveraging(Skk2,SI2,SJ2,SK2,SmoothingTemplateWidth);
     t1 = etime(clock,t0); fprintf(' Third level smoothing time: %0.2f sec\n',t1);
     fprintf('... Third level data dimensions: (%d,%d,%d)\n',size(SI3));
@@ -505,11 +506,11 @@ if structure_tensor
     % Smooth to fourth level using multigrid binomial averaging
     fprintf('... Fourth level smoothing ...\n');
     t0 = clock;
-    [Sii4,SI4,SJ4,SK4] = MultigridAveraging(Sii3,SI3,SJ3,SK3,SmoothingTemplateWidth);
-    [Sij4,SI4,SJ4,SK4] = MultigridAveraging(Sij3,SI3,SJ3,SK3,SmoothingTemplateWidth);
-    [Sik4,SI4,SJ4,SK4] = MultigridAveraging(Sik3,SI3,SJ3,SK3,SmoothingTemplateWidth);
-    [Sjj4,SI4,SJ4,SK4] = MultigridAveraging(Sjj3,SI3,SJ3,SK3,SmoothingTemplateWidth);
-    [Sjk4,SI4,SJ4,SK4] = MultigridAveraging(Sjk3,SI3,SJ3,SK3,SmoothingTemplateWidth);
+    [Sii4,~,~,~] = MultigridAveraging(Sii3,SI3,SJ3,SK3,SmoothingTemplateWidth);
+    [Sij4,~,~,~] = MultigridAveraging(Sij3,SI3,SJ3,SK3,SmoothingTemplateWidth);
+    [Sik4,~,~,~] = MultigridAveraging(Sik3,SI3,SJ3,SK3,SmoothingTemplateWidth);
+    [Sjj4,~,~,~] = MultigridAveraging(Sjj3,SI3,SJ3,SK3,SmoothingTemplateWidth);
+    [Sjk4,~,~,~] = MultigridAveraging(Sjk3,SI3,SJ3,SK3,SmoothingTemplateWidth);
     [Skk4,SI4,SJ4,SK4] = MultigridAveraging(Skk3,SI3,SJ3,SK3,SmoothingTemplateWidth);
     t1 = etime(clock,t0); fprintf(' Fourth level smoothing time: %0.2f sec\n',t1);
     fprintf('... Fourth level data dimensions: (%d,%d,%d)\n',size(SI4));
@@ -756,53 +757,53 @@ if streamlines
     J = J(MaskGD);
     K = K(MaskGD);
 
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %
-    % Eigenanalysis
-    %
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    fprintf(' ... finding ethings ... \n');
-    FA= zeros(length(d2Xs),1);
-    Fibre = zeros(length(d2Xs),3);
-    angle = zeros(length(d2Xs), 1);
-
-    for i=1:length(d2Xs)
-        if ~mod(i,100000) fprintf(' entry: %d\n',i); end
-        % local structure tensor
-        ST = [d2Xs(i),dXYs(i),dXZs(i);dXYs(i),d2Ys(i),dYZs(i);dXZs(i),dYZs(i),d2Zs(i)];
-        [V,D] = eig(ST); % evect/eval in largest to smallest
-        [~,idx]=sort(diag(D));
-        L1 = D(idx(3),idx(3));
-        L2 = D(idx(2),idx(2));
-        L3 = D(idx(1),idx(1));
-        Fibre(i,:) = V(:,idx(1))';
-        angle(i) = ComputeFibreAngle(Fibre(i, :), centreline, I(i), K(i)); % Store the orientation angle
-
-        Trace = (L1+L2+L3)/3;
-        Denom = sqrt(L1.^2+L2.^2+L3.^3+1e-6);
-        FA(i) = sqrt(3/2)*(sqrt((L1-Trace).^2+(L2-Trace).^2+(L3-Trace).^2))./Denom;
-    end
-
-    angle(angle > 90) = 180 - angle(angle > 90); % Make sure angles are between 0 and 90 deg
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %
-    % Write exdata file
-    %
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    fprintf(' ... Writing exdata file ... \n');
-
-    % output file name
-    exfname = OutputPath + '/data_points_level_' + Level;
-
-    DataSLabels = {'FA', 'Angles'};
-    DataVLabels = {'Fibre'};
-    DataS = zeros(length(I),2);
-    DataS(:,1) = FA;
-    DataS(:, 2) = angle;
-    DataV = cell(1);
-    DataV{1} = Fibre;
-    GName = sprintf('DataPoints');
-    WriteGeneralExdataFile(I,J,K,(1:length(I))',DataS,DataV,exfname,GName,DataSLabels,DataVLabels);
+%     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     %
+%     % Eigenanalysis
+%     %
+%     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     fprintf(' ... finding ethings ... \n');
+%     FA= zeros(length(d2Xs),1);
+%     Fibre = zeros(length(d2Xs),3);
+%     angle = zeros(length(d2Xs), 1);
+% 
+%     for i=1:length(d2Xs)
+%         if ~mod(i,100000) fprintf(' entry: %d\n',i); end
+%         % local structure tensor
+%         ST = [d2Xs(i),dXYs(i),dXZs(i);dXYs(i),d2Ys(i),dYZs(i);dXZs(i),dYZs(i),d2Zs(i)];
+%         [V,D] = eig(ST); % evect/eval in largest to smallest
+%         [~,idx]=sort(diag(D));
+%         L1 = D(idx(3),idx(3));
+%         L2 = D(idx(2),idx(2));
+%         L3 = D(idx(1),idx(1));
+%         Fibre(i,:) = V(:,idx(1))';
+%         angle(i) = ComputeFibreAngle(Fibre(i, :), centreline, I(i), K(i)); % Store the orientation angle
+% 
+%         Trace = (L1+L2+L3)/3;
+%         Denom = sqrt(L1.^2+L2.^2+L3.^3+1e-6);
+%         FA(i) = sqrt(3/2)*(sqrt((L1-Trace).^2+(L2-Trace).^2+(L3-Trace).^2))./Denom;
+%     end
+% 
+%     angle(angle > 90) = 180 - angle(angle > 90); % Make sure angles are between 0 and 90 deg
+%     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     %
+%     % Write exdata file
+%     %
+%     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     fprintf(' ... Writing exdata file ... \n');
+% 
+%     % output file name
+%     exfname = OutputPath + '/data_points_level_' + Level;
+% 
+%     DataSLabels = {'FA', 'Angles'};
+%     DataVLabels = {'Fibre'};
+%     DataS = zeros(length(I),2);
+%     DataS(:,1) = FA;
+%     DataS(:, 2) = angle;
+%     DataV = cell(1);
+%     DataV{1} = Fibre;
+%     GName = sprintf('DataPoints');
+%     WriteGeneralExdataFile(I,J,K,(1:length(I))',DataS,DataV,exfname,GName,DataSLabels,DataVLabels);
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %
