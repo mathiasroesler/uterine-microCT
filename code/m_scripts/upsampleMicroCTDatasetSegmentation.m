@@ -130,4 +130,4 @@ fprintf(file_ID, "stack_size=%3d\n", stack_size*resize_factor);
 fprintf(file_ID, "pixel_x_res=%03f\n", new_resolution);
 fprintf(file_ID, "pixel_y_res=%03f\n", new_resolution);
 fprintf(file_ID, "pixel_z_res=%03f\n", new_resolution);
-% fclose(file_ID);
+fclose(file_ID);
