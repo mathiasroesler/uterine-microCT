@@ -52,7 +52,7 @@ else
     toml_map = toml.read(join([load_directory, base_name + ".toml"], '/'));
 end
 
-% Load parameters 
+% Load parameters
 params = toml.map_to_struct(toml_map);
 file_template = params.prefix;
 extension = params.extension;
@@ -169,7 +169,6 @@ if mask
 
     % Write masked tissue
     saveImageStack(uint8(IPFM).*I, img_output_dir, file_template);
-
 end
 
 % Clear everything except general parameters and input arguments
@@ -217,111 +216,104 @@ if diffusion
     %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     img_paths = getImagePaths(img_input_dir, extension);
-    nb_imgs = length(img_paths);
-    nb_batches = 4;
-    batches = [0 round(nb_imgs ./ (nb_batches:-1:1))];
+    fprintf('... loading images ...\n');
+    I = loadImageStack(img_paths, [], xlim, ylim);
+    [Nj, Ni, Nk] = size(I);
 
-    for k = 1:nb_batches
-        disp("Working on batch " + k + " of " + nb_batches);
-        fprintf('... loading images ...\n');        
-        I = loadImageStack(img_paths(batches(k)+1:batches(k+1)), ...
-            [], xlim, ylim);
-        [Nj, Ni, Nk] = size(I);
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %
+    % Identify tissue mask and erode.
+    %
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    fprintf('...mask and erosion...\n');
+    % 1. Identify tissue mask
+    IB = (I >= TissueMaskErosionThreshold);
+    % 2. erode tissue mask - the erosion filter is spherical with diameter
+    %    2*R+1 voxels
+    R = TissueMaskErosionRadius;
+    NHood = zeros(2*R+1,2*R+1,2*R+1);
+    NHood(R+1,R+1,R+1) = 1;
+    D = bwdist(NHood);
+    NHood = (D <= R);
+    IB = imerode(IB,NHood);
 
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %
-        % Identify tissue mask and erode.
-        %
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        fprintf('...mask and erosion...\n');
-        % 1. Identify tissue mask
-        IB = (I >= TissueMaskErosionThreshold);
-        % 2. erode tissue mask - the erosion filter is spherical with diameter
-        %    2*R+1 voxels
-        R = TissueMaskErosionRadius;
-        NHood = zeros(2*R+1,2*R+1,2*R+1);
-        NHood(R+1,R+1,R+1) = 1;
-        D = bwdist(NHood);
-        NHood = (D <= R);
-        IB = imerode(IB,NHood);
+    clear NHood;
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %
+    % Find voxels a specified distance from the tissue. Store nearest tissue
+    % values.
+    %
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    fprintf('...finding Euclidian distances...\n');
+    DT = TissueBoundaryDiffusionTestingDistance;
+    [D,L]=bwdist(IB);
+    TIdx = find(D >= DT-0.5 & D <= DT+0.5);
+    clear D;
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %
+    % Set up and perform diffusion.
+    %
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % Set timing initialization
+    trun0 = cputime;
 
-        clear NHood;
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %
-        % Find voxels a specified distance from the tissue. Store nearest tissue
-        % values.
-        %
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        fprintf('...finding Euclidian distances...\n');
-        DT = TissueBoundaryDiffusionTestingDistance;
-        [D,L]=bwdist(IB);
-        TIdx = find(D >= DT-0.5 & D <= DT+0.5);
-        clear D;
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %
-        % Set up and perform diffusion.
-        %
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % Set timing initialization
-        trun0 = cputime;
-
-        % Identify the points that will be used as boundary conditions
-        % on the diffusion
+    % Identify the points that will be used as boundary conditions
+    % on the diffusion
 
 
-        % 3D 7 point diffusion filter
-        F = zeros(3,3,3);
-        F(2,2,1)=1;
-        F(2,1,2)=1; F(1,2,2)=1; F(3,2,2)=1; F(2,3,2)=1; F(2,2,2)=-6;
-        F(2,2,3)=1;
+    % 3D 7 point diffusion filter
+    F = zeros(3,3,3);
+    F(2,2,1)=1;
+    F(2,1,2)=1; F(1,2,2)=1; F(3,2,2)=1; F(2,3,2)=1; F(2,2,2)=-6;
+    F(2,2,3)=1;
 
-        % Set up a 3D 7 point diffusion filter and then construct a circulant
-        % matrix.
+    % Set up a 3D 7 point diffusion filter and then construct a circulant
+    % matrix.
 
-        % Initial conditions on diffused image DI. Delta is the effective
-        % "time step". If it is too large the diffusion will be unstable.
-        % Clear the I and IB arrays as they are no longer needed.
-        DI = I.*cast(IB,'uint8'); clear I;
-        Delta = 0.3;
+    % Initial conditions on diffused image DI. Delta is the effective
+    % "time step". If it is too large the diffusion will be unstable.
+    % Clear the I and IB arrays as they are no longer needed.
+    DI = I.*cast(IB,'uint8'); clear I;
+    Delta = 0.3;
 
-        % Iterate over diffusion steps while the sign of the mean difference
-        % between the diffused image intensity DT voxels from the tissue and the
-        % nearest boundary condition is less than zero. The L array is the index of
-        % the original closest non-zero pixel to the test group, i.e. the nearest
-        % boundary condition.
-        % Note: this algorithm could be rewritten to potentially be faster.
-        % Using the same tools as for structure tensor analysis the F could be
-        % set up as a circulant matrix. Then the update operation would be:
-        % DI = Delta*F*DI + DI = (Delta*F+I)*DI = S*DI
-        % Here S becomes a new circulant matrix and the S*DI operation simply
-        % becomes a convolution operation and should be relatively fast.
-        n=1;
-        md = -1;
-        while  md <= 0
-            md = mean(double(DI(TIdx))-double(DI(L(TIdx))));
-            if ~mod(n,10), fprintf('... n: %d, mean diff: %f\n',n,md); end
-            % apply diffusion filter to current state of diffused image. DI is
-            % exterior padded with replicated values to enforce zero flux b.c.
-            DIhat = imfilter(padarray(DI,[1,1,1],'replicate'),F);
-            DIhat = DIhat(2:Nj+1,2:Ni+1,2:Nk+1);
-            % apply fixed boundary conditions
-            DIhat(IB) = 0;
-            % update the diffused image
-            DI = Delta*DIhat + DI;
-            % update counter
-            n = n+1;
-        end
-
-        trun1 = cputime;
-        fprintf(' Total time for %d its: %f\n',n,trun1-trun0);
-
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %
-        % Write boundary smoothed image files.
-        %
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        saveImageStack(DI, img_output_dir, file_template, batches(k)+1);
+    % Iterate over diffusion steps while the sign of the mean difference
+    % between the diffused image intensity DT voxels from the tissue and the
+    % nearest boundary condition is less than zero. The L array is the index of
+    % the original closest non-zero pixel to the test group, i.e. the nearest
+    % boundary condition.
+    % Note: this algorithm could be rewritten to potentially be faster.
+    % Using the same tools as for structure tensor analysis the F could be
+    % set up as a circulant matrix. Then the update operation would be:
+    % DI = Delta*F*DI + DI = (Delta*F+I)*DI = S*DI
+    % Here S becomes a new circulant matrix and the S*DI operation simply
+    % becomes a convolution operation and should be relatively fast.
+    n=1;
+    md = -1;
+    while  md <= 0
+        md = mean(double(DI(TIdx))-double(DI(L(TIdx))));
+        if ~mod(n,10), fprintf('... n: %d, mean diff: %f\n',n,md); end
+        % apply diffusion filter to current state of diffused image. DI is
+        % exterior padded with replicated values to enforce zero flux b.c.
+        DIhat = imfilter(padarray(DI,[1,1,1],'replicate'),F);
+        DIhat = DIhat(2:Nj+1,2:Ni+1,2:Nk+1);
+        % apply fixed boundary conditions
+        DIhat(IB) = 0;
+        % update the diffused image
+        DI = Delta*DIhat + DI;
+        % update counter
+        n = n+1;
     end
+
+    trun1 = cputime;
+    fprintf(' Total time for %d its: %f\n',n,trun1-trun0);
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %
+    % Write boundary smoothed image files.
+    %
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    saveImageStack(DI, img_output_dir, file_template);
+
 end
 
 % Clear everything except general parameters and input arguments
