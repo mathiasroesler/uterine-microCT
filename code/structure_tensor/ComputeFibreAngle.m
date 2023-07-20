@@ -26,12 +26,11 @@ else
         % Define the z vector as the centre vector between current slice
         % and the current + 5th slice.
         cur_idx = 3;
-
     else
         % If there are left and right centre points find the nearest to
         % cur_X
         [~, cur_idx] = min(abs(centrepoints(1:4:end, cur_Z) - cur_X));
-        
+
         if cur_idx == 2
             % Get the starting index of the last centre point
             cur_idx = 5;
@@ -44,29 +43,15 @@ else
         % If there are not enough slices use the previous slices
         % instead
         next_centrepoint = centrepoints(cur_idx:cur_idx+1, cur_Z - nb_used_slices);
-
-        if all(next_centrepoint == 0)
-            % The next slice only has one centre point left
-            next_centrepoint = centrepoints(1:2, cur_Z - nb_used_slices);
-        end
         z_vector = cur_centrepoint - next_centrepoint;
         z_vector = [z_vector; -nb_used_slices]; % Append the z component
 
     else
         next_centrepoint = centrepoints(cur_idx:cur_idx+1, cur_Z + nb_used_slices);
-
-        if all(next_centrepoint == 0)
-            % The next slice only has one centre point left
-            next_centrepoint = centrepoints(1:2, cur_Z + nb_used_slices);
-        end
         z_vector = next_centrepoint - cur_centrepoint;
         z_vector = [z_vector; nb_used_slices]; % Append the z component
 
     end
-end
-
-if abs(z_vector(3)/norm(z_vector)) < 0.1
-    t = 1;
 end
 
 angle = rad2deg(acos(fibre * (z_vector/norm(z_vector))));
