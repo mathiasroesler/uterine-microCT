@@ -1,4 +1,5 @@
-function angle = ComputeFibreAngle(fibre, centrepoints, cur_X, cur_Z)
+function angle = ComputeFibreAngle(fibre, centrepoints, cur_X, cur_Z, ...
+    nb_used_slices)
 %COMPUTEFIBREANGLE Computes the angle in degrees of the fibre relative to
 %the plane given by the vector between two centre points. 
 %
@@ -9,11 +10,10 @@ function angle = ComputeFibreAngle(fibre, centrepoints, cur_X, cur_Z)
 %    system.
 %    - cur_Z, z coordinate of the current fibre in the general coordinate
 %    system.
+%    - nb_used_slices, number of slices to use to estimate centre vector.
 %
 %   Return:
 %    - angle, angle between the fibre and the current plane in degrees.
-nb_used_slices = 10;
-
 if isempty(centrepoints)
     z_vector = [0; 0; 1];
 
@@ -26,10 +26,6 @@ else
         % Define the z vector as the centre vector between current slice
         % and the current + 5th slice.
         cur_idx = 3;
-
-    elseif ~all(centrepoints(5:6, cur_Z))
-        % If there is only one centre point found
-        cur_idx = 1;
 
     else
         % If there are left and right centre points find the nearest to
@@ -67,6 +63,10 @@ else
         z_vector = [z_vector; nb_used_slices]; % Append the z component
 
     end
+end
+
+if abs(z_vector(3)/norm(z_vector)) < 0.1
+    t = 1;
 end
 
 angle = rad2deg(acos(fibre * (z_vector/norm(z_vector))));

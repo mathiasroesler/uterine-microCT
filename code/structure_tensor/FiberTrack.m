@@ -1,4 +1,5 @@
-function [Paths] = FiberTrack(StartLoc,DS,I,J,K,Fd2Xs,FdXYs,FdXZs,Fd2Ys,FdYZs,Fd2Zs,Mask,NM,FiberIndex,TrackLength, centre_points)
+function [Paths] = FiberTrack(StartLoc,DS,I,J,K,Fd2Xs,FdXYs,FdXZs,Fd2Ys, ...
+    FdYZs,Fd2Zs,Mask,NM,FiberIndex,TrackLength, centre_points, nb_used_slices)
 
 % This function interpolates the structure tensor field at a sequence of
 % points along a fiber track
@@ -41,7 +42,8 @@ for i=1:2
       NewSheet = V(:,idx(2))';
       NewFiber = V(:,idx(FiberIndex))';
     
-      angle = ComputeFibreAngle(NewFiber, centre_points, CurrentPoint(1), CurrentPoint(3));
+      angle = ComputeFibreAngle(NewFiber, centre_points, ...
+          CurrentPoint(1), CurrentPoint(3), nb_used_slices);
 
       if angle > 90
           angle = 180 - angle;
@@ -72,7 +74,8 @@ for i=1:2
               OldFiber = NewFiber;
 
               % Calculate fibre angle
-              angle = ComputeFibreAngle(NewFiber, centre_points, CurrentPoint(1), CurrentPoint(3));
+              angle = ComputeFibreAngle(NewFiber, centre_points, ...
+                  CurrentPoint(1), CurrentPoint(3), nb_used_slices);
 
               if angle > 90
                   angle = 180 - angle;

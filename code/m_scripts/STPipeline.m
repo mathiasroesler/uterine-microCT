@@ -838,6 +838,7 @@ if streamlines
     % Determine paths
     Paths = cell(length(IdxS),1);
     DS = 5;
+    nb_used_slices = double(params.nb_used_slices);
 
     FiberIndex = 1; % fiber - otherwise use 1 for smallest eigenvalue/fiber
     MaxTrackLength = 10000; % Fiber tracks
@@ -847,7 +848,8 @@ if streamlines
         if ~mod(i,10) fprintf('Path: %d\n',i); end
         Paths{i} = FiberTrack([SI(IdxS(i)),SJ(IdxS(i)),SK(IdxS(i))], ...
             DS,I,J,K,Fd2Xs,FdXYs,FdXZs,Fd2Ys,FdYZs,Fd2Zs ...
-            ,I3D,[Ni,Nj,Nk],FiberIndex,MaxTrackLength, centreline);
+            ,I3D,[Ni,Nj,Nk],FiberIndex,MaxTrackLength, ...
+            centreline, nb_used_slices);
 
     end
 
