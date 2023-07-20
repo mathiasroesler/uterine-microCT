@@ -10,3 +10,28 @@ resolution=6.008106
 # Downsampling parameters
 start_nb=1000
 end_nb=2300
+
+
+nb_used_slices=5 # Number of slices for finding centre vectors
+
+# Region of interest
+xlim = [1, 2071] 
+ylim = [1, 3012]
+
+# Structure tensor parameters
+[ST]
+[ST.diffusion]
+	erosion_threshold=10
+	erosion_radius=2
+	diffusion_distance=2
+	
+[ST.structure_tensor]
+	derivative_template_width=3
+	smoothing_template_width=3
+	
+[ST.streamlines]
+	level=4
+	DJ=6
+	DI=6
+	DK=6
+
