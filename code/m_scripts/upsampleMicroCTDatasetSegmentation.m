@@ -1,5 +1,5 @@
 function upsampleMicroCTDatasetSegmentation(dir_path, base_name, type, ...
-    new_resolution, varargin)
+    resize_factor, varargin)
 %UPSAMPLEMICROCTDATASET Upsamples the segmentation of a downsampled uCT
 %dataset. The new resolution is automatically calculated based on the
 %config file of the non-downsampled dataset.
@@ -11,8 +11,7 @@ function upsampleMicroCTDatasetSegmentation(dir_path, base_name, type, ...
 %    - base_name, name of the dataset.
 %    - type, segmentation type, {fat, tissue, shape, muscle}, default value
 %    is muscle.
-%    - new_resolution, either an array with the X, Y, and Z resolutions or
-%    the factor by which to upsample by.
+%    - resize_factor, the factor by which to upsample by.
 %    - batch_size, number of image to process in one batch, default 128.
 %    - img_extension, extension of the images in the uCT dataset, default
 %    png.
@@ -53,26 +52,20 @@ mask_save_directory = join([main_directory, "ST/mask"], '/');
 
 %% Load and set parameters
 % Load properties of the original images that dont change
-toml_map = toml.read(join([main_directory, base_name + ".toml"], '/'));
+toml_map = toml.read(join([img_load_directory, base_name + ...
+    "_downsampled.toml"], '/'));
 params = toml.map_to_struct(toml_map);
+
+% Get ROI limits
+xlim = params.xlim;
+ylim = params.ylim;
 
 img_paths = getImagePaths(img_load_directory, img_extension);
 mask_paths = getImagePaths(mask_load_directory, img_extension);
 stack_size = length(img_paths);
 
-if sum(size(new_resolution)) == 4
-    % The input is the new resolution vector with 3 components
-    new_nb_pixel_x = new_resolution(1);
-    new_nb_pixel_y = new_resolution(2);
-    new_stack_size = new_resolution(3);
-    resize_factor = round(new_stack_size / stack_size);
-
-elseif isscalar(new_resolution)
-    % The input is the upsampling factory
-    resize_factor = new_resolution(1);
-
-else
-    error("The size of the input resolution is wrong. Size should be 1 or 3.")
+if ~isscalar(resize_factor)
+    error("The resize factor should be a scalar.")
 end
 
 nb_runs = ceil(stack_size/batch_size); % Number of times to run loop
@@ -97,15 +90,14 @@ for run = 1:nb_runs
     mask_stack = loadImageStack(mask_paths(first_image_nb:last_image_nb));
 
     % Resize current batch stack
-    if sum(size(new_resolution)) == 4
-        new_mask_stack = imresize3(uint8(mask_stack), [new_nb_pixel_x, ...
-            new_nb_pixel_y, new_batch_stack_size]);
-        new_img_stack = imresize3(uint8(img_stack), [new_nb_pixel_x, ...
-            new_nb_pixel_y, new_batch_stack_size]);
-    else
-        new_mask_stack = imresize3(uint8(mask_stack), resize_factor);        
-        new_img_stack = imresize3(uint8(img_stack), resize_factor);
-    end
+    new_mask_stack = imresize3(uint8(mask_stack( ...
+        xlim(1):xlim(2), ...
+        ylim(1):ylim(2))), ...
+        resize_factor);
+    new_img_stack = imresize3(uint8(img_stack( ...
+        xlim(1):xlim(2), ...
+        ylim(1):ylim(2))), ...
+        resize_factor);
     
     % Apply masks
     new_img_stack = new_img_stack .* new_mask_stack;
@@ -120,7 +112,7 @@ for run = 1:nb_runs
 end
 
 log_file = join([img_load_directory, params.prefix + "_upsampled.log"], '/');
-new_resolution = resize_factor*params.resolution; % um/pixel
+new_resolution = params.resolution / resize_factor; % um/pixel
 
 % Log required information
 file_ID = fopen(log_file, 'w');
