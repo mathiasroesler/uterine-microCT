@@ -49,7 +49,7 @@ save_directory = join([load_directory, "downsampled"], '/');
 % Load properties of the original images that dont change
 toml_map = toml.read(join([load_directory, base_name + ".toml"], '/'));
 params = toml.map_to_struct(toml_map);
-stack_size = params.end_nb - params.start_nb;
+stack_size = double(params.end_nb - params.start_nb);
 
 log_file = join([save_directory, params.prefix + "_downsampled.log"], '/');
 
