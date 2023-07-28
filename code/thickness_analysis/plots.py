@@ -85,7 +85,7 @@ def plotAngularThickness(slice_thickness):
 	
 	"""
 	fig, ax = plt.subplots(len(slice_thickness.keys()), 1, 
-		sharex=True, sharey=True)
+		subplot_kw={"projection": "polar"})
 	colors = {"left": "black", "right": "silver"} 
 
 	if not hasattr(ax, "__len__"):
@@ -97,7 +97,7 @@ def plotAngularThickness(slice_thickness):
 
 		# Create x-axis values so that everything is normalised
 		nb_points = y_values.shape[0]
-		x_values = np.arange(nb_points)
+		x_values = np.linspace(0, 2*np.pi, nb_points, endpoint=False)
 
 		ax[i].plot(x_values, y_values[:, 0], 
 			linestyle='dashdot', color=colors[horn],
@@ -111,21 +111,21 @@ def plotAngularThickness(slice_thickness):
 		ax[i].plot(x_values, y_values[:, 3],
 			linestyle='dotted', color=colors[horn],
 			label="Ovarian end", linewidth=4)
-		ax[i].set_title("{} horn".format(horn.capitalize()), fontsize=24)
+		ax[i].set_title("{} horn muscle thickness (in mm)".format(
+			horn.capitalize()), fontsize=24)
 
 		# Change tick parameters
 		ax[i].tick_params(length=12, width=4, labelsize=24)
-		ax[i].legend(fontsize=24, loc="upper center")
+		ax[i].set_rlabel_position(-22.5)  # Move radial labels
 
-	plt.xticks(ticks=
-		[nb_points // 4, nb_points // 2,  3*nb_points // 4, nb_points-1],
-		labels=[r"$\frac{\pi}{2}$", r"$\pi$", r"$\frac{3\pi}{4}$" ,r"$2\pi$"])
+		ax[i].set_rmax(1.0) # Set radial max
 
+	plt.xticks(ticks=plt.xticks()[0], labels=['0',r'$\frac{\pi}{4}$',\
+			r'$\frac{\pi}{2}$',r'$\frac{3\pi}{4}$', r'$\pi$',\
+			r'$\frac{5\pi}{4}$',r'$\frac{3\pi}{2}$',r'$\frac{7\pi}{4}$'])
 	# Set labels and legends
-	fig.text(0.06, 0.5, 'Muscle thickness (in mm)', ha='center', va='center', 
-		rotation='vertical', fontsize=24)
-	plt.xlabel(r"Angle $\theta$ (in rad)", fontsize=24)
+	angle = np.deg2rad(35)
+	plt.legend(loc="lower left", fontsize=24,
+			  bbox_to_anchor=(.5 + np.cos(angle)/2, .5 + np.sin(angle)/2))
 
-	plt.ylim([0, 1.2])
-	plt.xlim([0, nb_points-1])
 	plt.show()
