@@ -118,7 +118,7 @@ def plotAngularThickness(slice_thickness):
 		ax[i].tick_params(length=12, width=4, labelsize=24)
 		ax[i].set_rlabel_position(-22.5)  # Move radial labels
 
-		ax[i].set_rmax(1.0) # Set radial max
+		ax[i].set_rmax(1.1) # Set radial max
 
 	plt.xticks(ticks=plt.xticks()[0], labels=['0',r'$\frac{\pi}{4}$',\
 			r'$\frac{\pi}{2}$',r'$\frac{3\pi}{4}$', r'$\pi$',\
