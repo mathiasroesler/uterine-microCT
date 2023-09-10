@@ -115,10 +115,9 @@ def plotAngularThickness(slice_thickness, projection=False):
 		ax[i].set_title("{} horn muscle thickness (in mm)".format(
 			horn.capitalize()), fontsize=24)
 
-		# Change tick parameters
-		ax[i].tick_params(length=12, width=4, labelsize=34)
 		
 		if projection:
+			ax[i].tick_params(length=12, width=4, labelsize=34)
 			ax[i].set_rlabel_position(-22.5)  # Move radial labels
 
 			ax[i].set_rmax(1.1) # Set radial max
@@ -135,6 +134,7 @@ def plotAngularThickness(slice_thickness, projection=False):
 					r'$\frac{7\pi}{4}$'])
 
 		else:
+			ax[i].tick_params(length=12, width=4, labelsize=24)
 			plt.xlim([0, 2*np.pi])
 			plt.ylim([0, 1.1])
 			ticks = np.linspace(0, 2*np.pi, 9)
