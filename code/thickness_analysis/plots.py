@@ -73,19 +73,20 @@ def plotMuscleThickness(muscle_thickness, errors):
 	plt.show()
 
 
-def plotAngularThickness(slice_thickness):
+def plotAngularThickness(slice_thickness, projection=False):
 	""" Plots the muscle thickness of one slice as a function of the 
 	angle theta
 
 	Arguments:
 	slice_thickness -- dict(ndarray), array containing the angluar thickness
 		of four slices for each horn.
+	projection -- str, projection type of the plot, default value False.
 
 	Return:
 	
 	"""
 	fig, ax = plt.subplots(len(slice_thickness.keys()), 1, 
-		subplot_kw={"projection": "polar"})
+		subplot_kw={"polar": projection})
 	colors = {"left": "black", "right": "silver"} 
 
 	if not hasattr(ax, "__len__"):
@@ -116,16 +117,27 @@ def plotAngularThickness(slice_thickness):
 
 		# Change tick parameters
 		ax[i].tick_params(length=12, width=4, labelsize=24)
-		ax[i].set_rlabel_position(-22.5)  # Move radial labels
+		
+		if projection:
+			ax[i].set_rlabel_position(-22.5)  # Move radial labels
 
-		ax[i].set_rmax(1.1) # Set radial max
+			ax[i].set_rmax(1.1) # Set radial max
+			ticks = plt.xticks()[0]
 
-	plt.xticks(ticks=plt.xticks()[0], labels=['0',r'$\frac{\pi}{4}$',\
+			# Set labels and legends
+			angle = np.deg2rad(35)
+			plt.legend(loc="lower left", fontsize=24,
+				bbox_to_anchor=(.5 + np.cos(angle)/2, .5 + np.sin(angle)/2))
+
+		else:
+			plt.xlim([0, 2*np.pi])
+			plt.ylim([0, 1.1])
+			ticks = np.linspace(0, 2*np.pi, 8)
+			plt.legend(fontsize=24)
+
+	plt.xticks(ticks=ticks, labels=['0',r'$\frac{\pi}{4}$',\
 			r'$\frac{\pi}{2}$',r'$\frac{3\pi}{4}$', r'$\pi$',\
 			r'$\frac{5\pi}{4}$',r'$\frac{3\pi}{2}$',r'$\frac{7\pi}{4}$'])
-	# Set labels and legends
-	angle = np.deg2rad(35)
-	plt.legend(loc="lower left", fontsize=24,
-			  bbox_to_anchor=(.5 + np.cos(angle)/2, .5 + np.sin(angle)/2))
+
 
 	plt.show()
