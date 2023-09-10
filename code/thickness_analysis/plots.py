@@ -116,7 +116,7 @@ def plotAngularThickness(slice_thickness, projection=False):
 			horn.capitalize()), fontsize=24)
 
 		# Change tick parameters
-		ax[i].tick_params(length=12, width=4, labelsize=24)
+		ax[i].tick_params(length=12, width=4, labelsize=34)
 		
 		if projection:
 			ax[i].set_rlabel_position(-22.5)  # Move radial labels
@@ -138,7 +138,7 @@ def plotAngularThickness(slice_thickness, projection=False):
 			plt.xlim([0, 2*np.pi])
 			plt.ylim([0, 1.1])
 			ticks = np.linspace(0, 2*np.pi, 9)
-			plt.legend(fontsize=24)
+			plt.legend(loc="upper center", fontsize=24)
 
 			plt.xticks(ticks=ticks, labels=['0',r'$\frac{\pi}{4}$',\
 					r'$\frac{\pi}{2}$',r'$\frac{3\pi}{4}$', r'$\pi$',\
