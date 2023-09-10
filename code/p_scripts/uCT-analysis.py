@@ -125,6 +125,12 @@ if __name__ == "__main__":
 
 	# Plot everything
 	plots.plotMuscleThickness(avg_thickness, errors)
-	plots.plotAngularThickness({"left": avg_slice_thickness["left"]})
-	plots.plotAngularThickness({"right": avg_slice_thickness["right"]})
+
+	# plots.plotAngularThickness({"left": avg_slice_thickness["left"]})
+	# plots.plotAngularThickness({"right": avg_slice_thickness["right"]})
+
+	plots.plotAngularThickness({"left": avg_slice_thickness["left"]}, 
+		projection=True)
+	plots.plotAngularThickness({"right": avg_slice_thickness["right"]}, 
+		projection=True)
 
