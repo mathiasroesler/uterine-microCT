@@ -85,11 +85,11 @@ if __name__ == "__main__":
 		centreline[int(args.img_nb)-1], args.points, args.horn)
 
 	# Plot everything
-	fig, ax = plt.subplots()
+	fig, ax = plt.subplots(dpi=300)
 	plt.imshow(original_img, cmap='gray')
-	fig, ax = plt.subplots()
+	fig, ax = plt.subplots(dpi=300)
 	plt.imshow(original_mask, cmap='gray')
-	fig, ax = plt.subplots()
+	fig, ax = plt.subplots(dpi=300)
 	plt.imshow(rotated_mask, cmap='gray')
 	plots.plotProjectionPoints(rotated_mask, centreline[int(args.img_nb)-1], 
 		projection_points)
