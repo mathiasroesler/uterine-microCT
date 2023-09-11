@@ -54,12 +54,14 @@ def plotMuscleThickness(muscle_thickness, errors):
 		horn_length = len(horn_thickness)
 
 		ax.errorbar(np.linspace(0, 1, horn_length), horn_thickness, 
-			yerr=error_bars,
+			yerr=error_bars, linewidth=2,
 			label="{} horn".format(horn.capitalize()), color=colors[horn])
 
 	# Reset x-axis ticks
 	plt.xticks(ticks=[0, 0.2, 0.6, 1], 
 		labels=["Cervix", "Cervical end", "Centre", "Ovarian end"])
+
+	ax.tick_params(length=6, width=2, labelsize=14)
 
 	plt.ylim([0, 0.7])
 	plt.xlim([0, 1])
@@ -99,19 +101,20 @@ def plotAngularThickness(slice_thickness, projection=False):
 
 		ax[i].plot(x_values, y_values[:, 0], 
 			linestyle='dashdot', color=colors[horn],
-			label="Cervix")
+			label="Cervix", linewidth=2)
 		ax[i].plot(x_values, y_values[:, 1], 
 			linestyle='solid', color=colors[horn],
-			label="Cervical end")
+			label="Cervical end", linewidth=2)
 		ax[i].plot(x_values, y_values[:, 2],
 			linestyle='dashed', color=colors[horn],
-			label="Centre")
+			label="Centre", linewidth=2)
 		ax[i].plot(x_values, y_values[:, 3],
 			linestyle='dotted', color=colors[horn],
-			label="Ovarian end")
+			label="Ovarian end", linewidth=2)
 		ax[i].set_title("{} horn muscle thickness (in mm)".format(
 			horn.capitalize()))
 
+		ax[i].tick_params(length=6, width=2, labelsize=14)
 		
 		if projection:
 			ax[i].set_rlabel_position(-22.5)  # Move radial labels
