@@ -1,5 +1,5 @@
 # Directory to the mesh
-set dir /home/mroe734/Documents/phd/mesh/
+set dir /home/mroe734/Documents/phd/mesh/rat
 
 # Read elements and nodes of the surface mesh
 gfx read node AWA015_PTA_1_Rec_Trans_surface_mesh.exnode 
