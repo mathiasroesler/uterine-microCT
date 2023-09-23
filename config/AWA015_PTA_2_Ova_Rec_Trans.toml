@@ -22,16 +22,16 @@ ylim = [1, 3012]
 [ST]
 [ST.diffusion]
 	erosion_threshold=10
-	erosion_radius=2
+	erosion_radius=4
 	diffusion_distance=2
 	
 [ST.structure_tensor]
-	derivative_template_width=3
-	smoothing_template_width=3
+	derivative_template_width=5
+	smoothing_template_width=5
 	
 [ST.streamlines]
-	level=4
-	DJ=6
-	DI=6
-	DK=6
+	level=5
+	DJ=12
+	DI=12
+	DK=12
 
