@@ -21,13 +21,13 @@ def plotProjectionPoints(img, centre, projection_points):
 	Return:
 	
 	"""
-	fig, ax = plt.subplots()
+	fig, ax = plt.subplots(dpi=300)
 
 	plt.imshow(img, cmap='gray') # Plot image
-	ax.plot(centre[0], centre[1], '.r', markersize=18) # Plot centre
+	ax.plot(centre[0], centre[1], '.r') # Plot centre
 
 	for point in projection_points:
-		ax.plot(point[0], point[1], '.b', markersize=18)
+		ax.plot(point[0], point[1], '.b')
 	
 	plt.show()
 	
@@ -45,7 +45,7 @@ def plotMuscleThickness(muscle_thickness, errors):
 	Return:
 	
 	"""
-	fig, ax = plt.subplots()
+	fig, ax = plt.subplots(dpi=300)
 	colors = {"left": "black", "right": "silver"} 
 
 	for horn in muscle_thickness.keys():
@@ -54,38 +54,38 @@ def plotMuscleThickness(muscle_thickness, errors):
 		horn_length = len(horn_thickness)
 
 		ax.errorbar(np.linspace(0, 1, horn_length), horn_thickness, 
-			yerr=error_bars,
-			label="{} horn".format(horn.capitalize()), linewidth=4, 
-			color=colors[horn])
+			yerr=error_bars, linewidth=2,
+			label="{} horn".format(horn.capitalize()), color=colors[horn])
 
-	ax.tick_params(length=12, width=4, labelsize=24)
-	
 	# Reset x-axis ticks
 	plt.xticks(ticks=[0, 0.2, 0.6, 1], 
 		labels=["Cervix", "Cervical end", "Centre", "Ovarian end"])
 
+	ax.tick_params(length=6, width=2, labelsize=14)
+
 	plt.ylim([0, 0.7])
 	plt.xlim([0, 1])
-	plt.xlabel("Locations", fontsize=24)
-	plt.ylabel("Muscle thickness (in mm)", fontsize=24)
-	plt.legend(fontsize=24)
+	plt.xlabel("Locations")
+	plt.ylabel("Muscle thickness (in mm)")
+	plt.legend()
 
 	plt.show()
 
 
-def plotAngularThickness(slice_thickness):
+def plotAngularThickness(slice_thickness, projection=False):
 	""" Plots the muscle thickness of one slice as a function of the 
 	angle theta
 
 	Arguments:
 	slice_thickness -- dict(ndarray), array containing the angluar thickness
 		of four slices for each horn.
+	projection -- str, projection type of the plot, default value False.
 
 	Return:
 	
 	"""
 	fig, ax = plt.subplots(len(slice_thickness.keys()), 1, 
-		sharex=True, sharey=True)
+		subplot_kw={"polar": projection}, dpi=300)
 	colors = {"left": "black", "right": "silver"} 
 
 	if not hasattr(ax, "__len__"):
@@ -97,35 +97,50 @@ def plotAngularThickness(slice_thickness):
 
 		# Create x-axis values so that everything is normalised
 		nb_points = y_values.shape[0]
-		x_values = np.arange(nb_points)
+		x_values = np.linspace(0, 2*np.pi, nb_points, endpoint=False)
 
 		ax[i].plot(x_values, y_values[:, 0], 
 			linestyle='dashdot', color=colors[horn],
-			label="Cervix", linewidth=4)
+			label="Cervix", linewidth=2)
 		ax[i].plot(x_values, y_values[:, 1], 
 			linestyle='solid', color=colors[horn],
-			label="Cervical end", linewidth=4)
+			label="Cervical end", linewidth=2)
 		ax[i].plot(x_values, y_values[:, 2],
 			linestyle='dashed', color=colors[horn],
-			label="Centre",	linewidth=4)
+			label="Centre", linewidth=2)
 		ax[i].plot(x_values, y_values[:, 3],
 			linestyle='dotted', color=colors[horn],
-			label="Ovarian end", linewidth=4)
-		ax[i].set_title("{} horn".format(horn.capitalize()), fontsize=24)
+			label="Ovarian end", linewidth=2)
+		ax[i].set_title("{} horn muscle thickness (in mm)".format(
+			horn.capitalize()))
 
-		# Change tick parameters
-		ax[i].tick_params(length=12, width=4, labelsize=24)
-		ax[i].legend(fontsize=24, loc="upper center")
+		ax[i].tick_params(length=6, width=2, labelsize=14)
+		
+		if projection:
+			ax[i].set_rlabel_position(-22.5)  # Move radial labels
 
-	plt.xticks(ticks=
-		[nb_points // 4, nb_points // 2,  3*nb_points // 4, nb_points-1],
-		labels=[r"$\frac{\pi}{2}$", r"$\pi$", r"$\frac{3\pi}{4}$" ,r"$2\pi$"])
+			ax[i].set_rmax(1.1) # Set radial max
+			ticks = plt.xticks()[0]
 
-	# Set labels and legends
-	fig.text(0.06, 0.5, 'Muscle thickness (in mm)', ha='center', va='center', 
-		rotation='vertical', fontsize=24)
-	plt.xlabel(r"Angle $\theta$ (in rad)", fontsize=24)
+			# Set labels and legends
+			angle = np.deg2rad(25)
+			plt.legend(loc="lower left",
+				bbox_to_anchor=(.5 + np.cos(angle)/2, .5 + np.sin(angle)/2))
 
-	plt.ylim([0, 1.2])
-	plt.xlim([0, nb_points-1])
+			plt.xticks(ticks=ticks, labels=['0',r'$\frac{\pi}{4}$',\
+					r'$\frac{\pi}{2}$',r'$\frac{3\pi}{4}$', r'$\pi$',\
+					r'$\frac{5\pi}{4}$',r'$\frac{3\pi}{2}$',\
+					r'$\frac{7\pi}{4}$'])
+
+		else:
+			plt.xlim([0, 2*np.pi])
+			plt.ylim([0, 1.1])
+			ticks = np.linspace(0, 2*np.pi, 9)
+			plt.legend(loc="upper center")
+
+			plt.xticks(ticks=ticks, labels=['0',r'$\frac{\pi}{4}$',\
+					r'$\frac{\pi}{2}$',r'$\frac{3\pi}{4}$', r'$\pi$',\
+					r'$\frac{5\pi}{4}$',r'$\frac{3\pi}{2}$',\
+					r'$\frac{7\pi}{4}$', r'2$\pi$'])
+
 	plt.show()

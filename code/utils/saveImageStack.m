@@ -17,6 +17,6 @@ if nargin < 4
 end
 
 parfor k = 1:size(img_stack, 3)
-    img_name = sprintf(img_prefix + "_%.3d." + extension, (k-1) + start_nb);
+    img_name = sprintf(img_prefix + "_%.5d." + extension, (k-1) + start_nb);
     imwrite(img_stack(:, :, k), join([save_dir, img_name], '/'));
 end

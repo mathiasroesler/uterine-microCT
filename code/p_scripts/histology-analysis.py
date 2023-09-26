@@ -77,6 +77,7 @@ if __name__ == "__main__":
 
 	# Plot everything
 	plots.plotAngularThickness(avg_slice_thickness)
+	plots.plotAngularThickness(avg_slice_thickness, projection=True)
 
 
 	# Save angular thickness

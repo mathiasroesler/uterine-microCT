@@ -12,7 +12,7 @@ top_stack = stack_cell{1};
 left_stack = stack_cell{2};
 right_stack = stack_cell{3};
 
-if ~isequal(size(left_stack), size(right_stack))
+if ~isequal(size(left_stack, 1), size(right_stack, 1)) || ~isequal(size(left_stack, 3), size(right_stack, 3))
     error("The dimensions of the left and right stacks do not agree")
 
 elseif size(top_stack, 2) ~= size(right_stack, 2) + size(left_stack, 2)

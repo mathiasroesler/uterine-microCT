@@ -44,7 +44,7 @@ end
 % Load parameters
 params = toml.map_to_struct(toml_map);
 preprocess = params.preprocess;
-morph_size = params.morph_size;
+morph_size = double(params.morph_size);
 
 % Get image paths
 img_paths = getImagePaths(load_directory, extension);

@@ -22,6 +22,10 @@ split_nb=137 # Slice number after which horns are independant
 
 nb_used_slices=5 # Number of slices for finding centre vectors
 
+# Region of interest (for upsampling)
+xlim = [158, 375]
+ylim = [175, 788]
+
 # Segmentation parameters
 [segmentation]
 

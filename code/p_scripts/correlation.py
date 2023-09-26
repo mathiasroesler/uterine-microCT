@@ -64,8 +64,12 @@ if __name__ == "__main__":
 	nb_samples = len(uCT_data)
 	
 	for i in range(uCT_data.shape[1]):
+		t_stats = stats.ttest_rel(uCT_data[:, i], histo_data[:, i])
 		p_stats = stats.pearsonr(uCT_data[:, i], histo_data[:, i])
 		print(u"{} section: r({}) = {:.2f}, p = {:.3f}".format(
 			regions[i].capitalize(), nb_samples-2, p_stats.statistic,
 			p_stats.pvalue))
+		print(u"{} section: t({}) = {:.2f}, p = {:.3f}".format(
+			regions[i].capitalize(), nb_samples-2, t_stats.statistic,
+			t_stats.pvalue))
 
