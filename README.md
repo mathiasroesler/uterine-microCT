@@ -6,7 +6,7 @@
 4. [Data folder structure](#structure)
 5. [Usage](#usage)
    1. [Setup](#setup)
-   2. [Downsampling](#downsampling)
+   2. [Resampling](#resampling)
    3. [Segmentation](#segmentation)
    4. [Analysis](#analysis)
        1. [Thickness analysis](#thickness)
@@ -33,15 +33,17 @@ This project uses [TOML](https://toml.io/en/) files for configuration.
 The following diagram presents the workflow of the project:
 ```mermaid
 graph LR
-A(Initial dataset) --> B(Downsampling)
+A[("Initial
+microCT images")] --> B(Downsampling)
 B --> C(Segmentation)
 C --> D(Reorientation)
 D --> E(Thickness analysis)
 C --> F(Mesh generation)
-C --> G(Fibre analysis)
-F --> H(Visualisation)
-E --> H
-G --> H
+C --> G("Upsampling (optional)")
+G --> H(Fibre analysis)
+F --> I((Visualisation))
+E --> I
+H --> I
 ```
 
 <a id="structure"></a>
@@ -59,6 +61,12 @@ data
 │           ├── extrapolated
 │           ├── mask
 │           └── masked
+├── muscle_segmentation
+└── ST
+│   ├── binary
+│   ├── extrapolated
+│   ├── mask
+│   └── masked
 ```
 Configuration files should have the same name as the dataset and be placed in the data folders.\
 There is one configuration file for the main dataset (AWA015_PTA_1_Rec_Trans.toml) and one for the 
@@ -87,13 +95,16 @@ The default path is Documents/phd. The base directory can be changed for the MAT
 the __baseDir.m__ function and for the Python scripts by editing the BASE variable in the __utils.py__
  file. Both of these files are located in the utils folder. 
 
-<a id="downsampling"></a>
-### Downsampling 
-The image of the original $`\mu`$CT dataset can be downsampled using the __downsampledMicroCTDataset.m__ script 
+<a id="resampling"></a>
+### Resampling 
+The image of the original $`\mu`$CT dataset can be downsampled using the __downsampleMicroCTDataset.m__ script 
 located in the m_scripts folder. The numbers of the first and last images to be downsampled are specified
 in the configuration file. The downsampled images will be saved in the downsampled folder.\
-The images can either be downsampled by a given factor, or the new resolutions for each axis can be 
-provided as a 3D vector [x y z].
+The images can either be downsampled by a given factor (less than 1), or the new resolutions for each axis can be 
+provided as a 3D vector [x y z]. To upsample the images use a factor greater than 1. \
+Similarly, the segmentation masks can be upsampled with the __upsampleMicroCTDatasetSegmentation.m__ script located
+in the m_scripts folder. The masks are loaded from one of the segmentation folders and saved in the top-level 
+muscle_segmentation folder.
 
 <a id="segmentation"></a>
 ### Segmentation 
