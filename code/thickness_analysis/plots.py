@@ -143,4 +143,6 @@ def plotAngularThickness(slice_thickness, projection=False):
 					r'$\frac{5\pi}{4}$',r'$\frac{3\pi}{2}$',\
 					r'$\frac{7\pi}{4}$', r'2$\pi$'])
 
+			plt.ylabel("Muscle thickness (in mm)", fontsize=10)
+			plt.xlabel(r"Angle $\theta$", fontsize=10)
 	plt.show()
