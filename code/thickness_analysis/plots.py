@@ -61,12 +61,12 @@ def plotMuscleThickness(muscle_thickness, errors):
 	plt.xticks(ticks=[0, 0.2, 0.6, 1], 
 		labels=["Cervix", "Cervical end", "Centre", "Ovarian end"])
 
-	ax.tick_params(length=6, width=2, labelsize=14)
+	ax.tick_params(length=6, width=2, labelsize=12)
 
 	plt.ylim([0, 0.7])
 	plt.xlim([0, 1])
-	plt.xlabel("Locations")
-	plt.ylabel("Muscle thickness (in mm)")
+	plt.xlabel("Locations", fontsize=12)
+	plt.ylabel("Muscle thickness (in mm)", fontsize=12)
 	plt.legend()
 
 	plt.show()
@@ -114,7 +114,7 @@ def plotAngularThickness(slice_thickness, projection=False):
 		ax[i].set_title("{} horn muscle thickness (in mm)".format(
 			horn.capitalize()))
 
-		ax[i].tick_params(length=6, width=2, labelsize=14)
+		ax[i].tick_params(length=6, width=2, labelsize=12)
 		
 		if projection:
 			ax[i].set_rlabel_position(-22.5)  # Move radial labels
@@ -143,4 +143,6 @@ def plotAngularThickness(slice_thickness, projection=False):
 					r'$\frac{5\pi}{4}$',r'$\frac{3\pi}{2}$',\
 					r'$\frac{7\pi}{4}$', r'2$\pi$'])
 
+			plt.ylabel("Muscle thickness (in mm)", fontsize=12)
+			plt.xlabel(r"Angle $\theta$", fontsize=12)
 	plt.show()
