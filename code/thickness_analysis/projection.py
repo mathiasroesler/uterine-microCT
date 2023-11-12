@@ -67,7 +67,7 @@ def findProjectionPoints(img, centre_point, nb_points, horn):
 	centre_point -- list[int], coordinates of the centre point (XY).
 	nb_points -- int, number of desired projection points, must be a 
 		multiple of 2.
-	horn -- str {left, right}, horn that is been analysed
+	horn -- str {left, right}, horn that is being analysed
 
 	Return:
 	projection_points -- ndarray, list of the coordinates of the
@@ -252,7 +252,7 @@ def estimateMuscleThickness(img_stack, centreline, nb_points, slice_nbs, horn):
 	nb_points -- int, number of points to use for projection.
 	slice_nbs -- list[int], number of the slices at which to save
 		angular thickness.
-	horn -- str {left, right}, horn that is been analysed
+	horn -- str {left, right}, horn that is being analysed
 
 	Return:
 	muscle_thickness_array -- ndarray, muscle thickness of each slice.
