@@ -57,6 +57,14 @@ def separateHornsTest():
 				line_x, line_y = projection.separateHorns(
 					img.shape, centre_point[2:4], n)
 
+				for j in range(len(line_x)):
+					# Clear half of the image based on the horn
+					if _horn[i] == "left":
+						img[j, line_x[j]:] = 0
+
+					elif _horn[i] == "right":
+						img[j, :line_x[j]] = 0;
+
 				# Plot
 				plt.imshow(img, cmap='gray') 
 				plt.plot(line_x, line_y)
