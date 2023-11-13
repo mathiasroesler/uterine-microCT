@@ -41,18 +41,10 @@ def separateHornsTest():
 				# The horns are not clearly separated and three points are given
 				# Create a vector between the left and right points
 
-				## Old version
-				v = centre_point[1:2] - centre_point[4:6]
-				v = v / np.linalg.norm(v)
-
-				# Use the middle point to draw a line
-				line_x_old, line_y_old = projection.findLineCoordinates(
-					img.shape, centre_point[2:4], np.arccos(np.dot(v, [0, -1])))
-
-				## New version
 				n = np.array([
 					centre_point[1] - centre_point[5], 
 					centre_point[4] - centre_point[0]])
+				n = n / np.linalg.norm(n)
 
 				line_x, line_y = projection.separateHorns(
 					img.shape, centre_point[2:4], n)
@@ -68,7 +60,6 @@ def separateHornsTest():
 				# Plot
 				plt.imshow(img, cmap='gray') 
 				plt.plot(line_x, line_y)
-				plt.plot(line_x_old, line_y_old)
 				plt.plot(centre_point[2], centre_point[3], '.r')
 				plt.show()
 

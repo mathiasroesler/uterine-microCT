@@ -84,8 +84,8 @@ def separateHorns(img_shape, centre_point, normal):
 	# Create the line and get the pixel values that it cuts through
 	points = [(x, y) for x, y in zip(x_points, y_points) if 0 <= x <= img_shape[1] and 0 <= y <= img_shape[0]]
 	x_points, y_points = zip(*points)
-	line_y, line_x = skd.line(y_points[0], x_points[0], y_points[-1],
-		x_points[-1])
+	line_y, line_x = skd.line(int(y_points[0]), int(x_points[0]), 
+		int(y_points[-1]), int(x_points[-1]))
 
 	return line_x, line_y
 
@@ -122,6 +122,8 @@ def findProjectionPoints(img, centre_point, nb_points, horn):
 		normal = np.array([
 			centre_point[1] - centre_point[5], 
 			centre_point[4] - centre_point[0]])
+
+		normal = normal / np.linalg.norm(normal)
 
 		# Use the middle point to draw a line
 		line_x, _ = separateHorns(img.shape, centre_point[2:4], normal)
