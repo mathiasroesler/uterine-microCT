@@ -82,7 +82,8 @@ def separateHorns(img_shape, centre_point, normal):
 	y_points = y_centre + normal[1] * t
 		
 	# Create the line and get the pixel values that it cuts through
-	points = [(x, y) for x, y in zip(x_points, y_points) if 0 <= x <= img_shape[1] and 0 <= y <= img_shape[0]]
+	points = [(x, y) for x, y in zip(x_points, y_points) if
+		 0 <= x < img_shape[1] and 0 <= y < img_shape[0]]
 	x_points, y_points = zip(*points)
 	line_y, line_x = skd.line(int(y_points[0]), int(x_points[0]), 
 		int(y_points[-1]), int(x_points[-1]))
@@ -308,23 +309,25 @@ def estimateMuscleThickness(img_stack, centreline, nb_points, slice_nbs, horn):
 	idx_removed_slices = list()
 
 	for i, img in enumerate(img_stack):
-		try:
-			projection_points = findProjectionPoints(img, centreline[i, :], 
-				nb_points, horn)
-			diff = np.diff(projection_points, axis=0)
-			norm = np.linalg.norm(diff, axis=1)	
-			thickness = norm[np.arange(0, projection_points.shape[0], 2)]
-			muscle_thickness_array[i] = np.mean(thickness)
+		#try:
+		projection_points = findProjectionPoints(img, centreline[i, :], 
+			nb_points, horn)
+		diff = np.diff(projection_points, axis=0)
+		norm = np.linalg.norm(diff, axis=1)	
+		thickness = norm[np.arange(0, projection_points.shape[0], 2)]
+		muscle_thickness_array[i] = np.mean(thickness)
 
-			if i in slice_nbs:
-				ordered_thickness = alignBorder(thickness)	
-				slice_thickness_array.append(ordered_thickness)
+		if i in slice_nbs:
+			ordered_thickness = alignBorder(thickness)	
+			slice_thickness_array.append(ordered_thickness)
 
+		"""
 		except:
 			# Write to stderr and add slice number to the remove list
 			sys.stderr.write("Warning: unable to process image number {}\n".format(
 				i))
 			idx_removed_slices.append(i)
+		"""
 
 	# Remove the slices the values of the slices that were not processed
 	muscle_thickness_array = np.delete(muscle_thickness_array, 
