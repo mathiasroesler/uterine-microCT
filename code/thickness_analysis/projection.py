@@ -58,6 +58,38 @@ def findLineCoordinates(img_shape, centre_point, theta):
 	return line_x, line_y
 
 
+def separateHorns(img_shape, centre_point, normal):
+	""" Finds the line in the image given an angle and a point.
+
+	Arguments:
+	img_shape -- ndarray, shape of the image that is being analysed.
+	centre_point -- ndarray, coordinates of the centre point (XY).
+	normal -- ndarray, coordinates of the normal vector.
+	
+	Return:
+	line_x -- list[int], x coordinates of the line that belong to the
+		image.
+	line_y -- list[int], y coordinates of the line that belong to the
+		image.
+
+	"""
+	# Ensure that coordinates are integers
+	x_centre = int(np.round(centre_point[0]))
+	y_centre = int(np.round(centre_point[1]))
+
+	t = np.arange(-max(img_shape), max(img_shape))
+	x_points = x_centre + normal[0] * t
+	y_points = y_centre + normal[1] * t
+		
+	# Create the line and get the pixel values that it cuts through
+	points = [(x, y) for x, y in zip(x_points, y_points) if 0 <= x <= img_shape[1] and 0 <= y <= img_shape[0]]
+	x_points, y_points = zip(*points)
+	line_y, line_x = skd.line(int(y_points[0]), int(x_points[0]), 
+		int(y_points[-1]), int(x_points[-1]))
+
+	return line_x, line_y
+
+
 def findProjectionPoints(img, centre_point, nb_points, horn):
 	""" Find the projection points from the centre point onto the muscle
 	layers given the desired number of points.
@@ -67,7 +99,7 @@ def findProjectionPoints(img, centre_point, nb_points, horn):
 	centre_point -- list[int], coordinates of the centre point (XY).
 	nb_points -- int, number of desired projection points, must be a 
 		multiple of 2.
-	horn -- str {left, right}, horn that is been analysed
+	horn -- str {left, right}, horn that is being analysed
 
 	Return:
 	projection_points -- ndarray, list of the coordinates of the
@@ -87,12 +119,14 @@ def findProjectionPoints(img, centre_point, nb_points, horn):
 	if (centre_point[2:4] != np.array([0, 0])).all():
 		# The horns are not clearly separated and three points are given
 		# Create a vector between the left and right points
-		v = centre_point[1:2] - centre_point[4:6]
-		v = v / np.linalg.norm(v)
+		normal = np.array([
+			centre_point[1] - centre_point[5], 
+			centre_point[4] - centre_point[0]])
+
+		normal = normal / np.linalg.norm(normal)
 
 		# Use the middle point to draw a line
-		line_x, _ = findLineCoordinates(img.shape, centre_point[2:4], 
-			np.arccos(np.dot(v, [0, -1])))
+		line_x, _ = separateHorns(img.shape, centre_point[2:4], normal)
 
 		for i in range(len(line_x)):
 			# Clear half of the image based on the horn
@@ -252,7 +286,7 @@ def estimateMuscleThickness(img_stack, centreline, nb_points, slice_nbs, horn):
 	nb_points -- int, number of points to use for projection.
 	slice_nbs -- list[int], number of the slices at which to save
 		angular thickness.
-	horn -- str {left, right}, horn that is been analysed
+	horn -- str {left, right}, horn that is being analysed
 
 	Return:
 	muscle_thickness_array -- ndarray, muscle thickness of each slice.
