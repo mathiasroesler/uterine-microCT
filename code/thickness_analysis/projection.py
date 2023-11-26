@@ -9,9 +9,6 @@ import sys
 import numpy as np
 import skimage.io as skio
 import skimage.draw as skd
-import skimage.measure as skme
-import skimage.transform as skt
-import skimage.morphology as skmo
 import thickness_analysis.plots as plots
 
 
@@ -158,6 +155,8 @@ def findProjectionPoints(img, centre_point, nb_points, horn):
 		x_coords = line_x[coords]
 		y_coords = line_y[coords]
 
+		if i == 62:
+			breakpoint()
 		points = createProjectionPointCoords(
 			x_coords, y_coords, centre_point, theta, i)
 
@@ -238,8 +237,12 @@ def createProjectionPointCoords(x_coords, y_coords, centre_point, theta, i):
 		point_list = np.flip(point_list)
 		
 	# Create the sets of points on the inner and outer edges
-	first_set = point_list[[neg_indices[0], neg_indices[1]]]
-	second_set = point_list[[pos_indices[0], pos_indices[1]]]
+	try:
+		first_set = point_list[[neg_indices[0], neg_indices[1]]]
+		second_set = point_list[[pos_indices[0], pos_indices[1]]]
+
+	except IndexError:
+		breakpoint()
 
 	projection_points = np.concatenate((first_set, second_set))
 
