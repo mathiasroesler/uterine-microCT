@@ -6,6 +6,7 @@
 # Last modified: 06/23
 
 import sys
+import logging
 import numpy as np
 import skimage.io as skio
 import skimage.draw as skd
@@ -155,8 +156,6 @@ def findProjectionPoints(img, centre_point, nb_points, horn):
 		x_coords = line_x[coords]
 		y_coords = line_y[coords]
 
-		if i == 62:
-			breakpoint()
 		points = createProjectionPointCoords(
 			x_coords, y_coords, centre_point, theta, i)
 
@@ -237,12 +236,8 @@ def createProjectionPointCoords(x_coords, y_coords, centre_point, theta, i):
 		point_list = np.flip(point_list)
 		
 	# Create the sets of points on the inner and outer edges
-	try:
-		first_set = point_list[[neg_indices[0], neg_indices[1]]]
-		second_set = point_list[[pos_indices[0], pos_indices[1]]]
-
-	except IndexError:
-		breakpoint()
+	first_set = point_list[[neg_indices[0], neg_indices[1]]]
+	second_set = point_list[[pos_indices[0], pos_indices[1]]]
 
 	projection_points = np.concatenate((first_set, second_set))
 
@@ -290,7 +285,7 @@ def estimateMuscleThickness(img_stack, centreline, nb_points, slice_nbs, horn):
 	nb_points -- int, number of points to use for projection.
 	slice_nbs -- list[int], number of the slices at which to save
 		angular thickness.
-	horn -- str {left, right}, horn that is being analysed
+	horn -- str {left, right}, horn that is being analysed.
 
 	Return:
 	muscle_thickness_array -- ndarray, muscle thickness of each slice.
@@ -311,26 +306,32 @@ def estimateMuscleThickness(img_stack, centreline, nb_points, slice_nbs, horn):
 	slice_thickness_array = list()
 	idx_removed_slices = list()
 
+	# Create error log file
+	log_filename = "uCT_{}_errors.log".format(horn)
+	logging.basicConfig(filename=log_filename, filemode='w', 
+		level=logging.ERROR, format="%(levelname)s %(name)s %(message)s")
+	logger = logging.getLogger(__name__ + '_' + horn)
+	logger.addHandler(logging.FileHandler(log_filename))
+
 	for i, img in enumerate(img_stack):
-		#try:
-		projection_points = findProjectionPoints(img, centreline[i, :], 
-			nb_points, horn)
-		diff = np.diff(projection_points, axis=0)
-		norm = np.linalg.norm(diff, axis=1)	
-		thickness = norm[np.arange(0, projection_points.shape[0], 2)]
-		muscle_thickness_array[i] = np.mean(thickness)
+		try:
+			projection_points = findProjectionPoints(img, centreline[i, :], 
+				nb_points, horn)
+			diff = np.diff(projection_points, axis=0)
+			norm = np.linalg.norm(diff, axis=1)	
+			thickness = norm[np.arange(0, projection_points.shape[0], 2)]
+			muscle_thickness_array[i] = np.mean(thickness)
 
-		if i in slice_nbs:
-			ordered_thickness = alignBorder(thickness)	
-			slice_thickness_array.append(ordered_thickness)
+			if i in slice_nbs:
+				ordered_thickness = alignBorder(thickness)	
+				slice_thickness_array.append(ordered_thickness)
 
-		"""
-		except:
+		except Exception as err:
 			# Write to stderr and add slice number to the remove list
 			sys.stderr.write("Warning: unable to process image number {}\n".format(
 				i))
 			idx_removed_slices.append(i)
-		"""
+			logger.exception(err)
 
 	# Remove the slices the values of the slices that were not processed
 	muscle_thickness_array = np.delete(muscle_thickness_array, 
