@@ -6,12 +6,10 @@
 # Last modified: 06/23
 
 import sys
+import logging
 import numpy as np
 import skimage.io as skio
 import skimage.draw as skd
-import skimage.measure as skme
-import skimage.transform as skt
-import skimage.morphology as skmo
 import thickness_analysis.plots as plots
 
 
@@ -82,7 +80,8 @@ def separateHorns(img_shape, centre_point, normal):
 	y_points = y_centre + normal[1] * t
 		
 	# Create the line and get the pixel values that it cuts through
-	points = [(x, y) for x, y in zip(x_points, y_points) if 0 <= x <= img_shape[1] and 0 <= y <= img_shape[0]]
+	points = [(x, y) for x, y in zip(x_points, y_points) if
+		 0 <= x < img_shape[1] and 0 <= y < img_shape[0]]
 	x_points, y_points = zip(*points)
 	line_y, line_x = skd.line(int(y_points[0]), int(x_points[0]), 
 		int(y_points[-1]), int(x_points[-1]))
@@ -99,7 +98,7 @@ def findProjectionPoints(img, centre_point, nb_points, horn):
 	centre_point -- list[int], coordinates of the centre point (XY).
 	nb_points -- int, number of desired projection points, must be a 
 		multiple of 2.
-	horn -- str {left, right}, horn that is being analysed
+	horn -- str {left, right}, horn that is being analysed.
 
 	Return:
 	projection_points -- ndarray, list of the coordinates of the
@@ -158,14 +157,14 @@ def findProjectionPoints(img, centre_point, nb_points, horn):
 		y_coords = line_y[coords]
 
 		points = createProjectionPointCoords(
-			x_coords, y_coords, centre_point, theta, i)
+			x_coords, y_coords, centre_point, theta)
 
 		projection_points[i*4:(i+1)*4] = points
 
 	return projection_points
 
 
-def createProjectionPointCoords(x_coords, y_coords, centre_point, theta, i):
+def createProjectionPointCoords(x_coords, y_coords, centre_point, theta):
 	""" Creates the (x, y) pairs of coordinates for the projection points
 
 	The points that are to the right of the centre point are placed first
@@ -193,21 +192,34 @@ def createProjectionPointCoords(x_coords, y_coords, centre_point, theta, i):
 			" the same size.\n")
 		exit(1)
 
+	transpose = False
 	point_list = np.transpose([x_coords, y_coords])
 	
-	if theta == np.pi/2:
-		# In the case of the vertical line flip x and y
-		point_list = np.transpose([y_coords, x_coords])
-		centre_point = np.flip(centre_point)
-
 	# Get the indices of points before and after on the first axis
 	diff = point_list - centre_point
-	
 	neg_indices = np.arange(len(diff))[diff[:, 0] < 0]
 	pos_indices = np.arange(len(diff))[diff[:, 0] >= 0]
-	
+
+	if pos_indices.shape[0] <= 1 or neg_indices.shape[0] <= 1:
+		# If the x coords are not enough to distinguish use y coords
+		point_list = np.flip(point_list, axis=1) # Flip to [y, x]
+		centre_point = np.flip(centre_point) # Flip to [y, x]
+
+		diff = point_list - centre_point
+		neg_indices = np.arange(len(diff))[diff[:, 0] < 0]
+		pos_indices = np.arange(len(diff))[diff[:, 0] >= 0]
+		transpose = True
+
 	if pos_indices.shape[0] <= 1 or neg_indices.shape[0] <= 1:
 		# If some points where not found, assure minimal distance of 1
+		tranpose = False
+		point_list = np.flip(point_list, axis=1) # Flip to [x, y]
+		centre_point = np.flip(centre_point) # Flip to [x, y]
+
+		diff = point_list - centre_point
+		neg_indices = np.arange(len(diff))[diff[:, 0] < 0]
+		pos_indices = np.arange(len(diff))[diff[:, 0] >= 0]
+		
 		if diff[0, 0] < 0:
 			# Points need to be added after the centre point
 			point_list = np.concatenate(([[centre_point[0]+2, centre_point[1]]], 
@@ -218,7 +230,7 @@ def createProjectionPointCoords(x_coords, y_coords, centre_point, theta, i):
 			point_list = np.concatenate((point_list,
 				[[centre_point[0]-1, centre_point[1]]], 
 				[[centre_point[0]-2, centre_point[1]]]))
-			
+
 		diff = point_list - centre_point
 		neg_indices = np.arange(len(diff))[diff[:, 0] < 0]
 		pos_indices = np.arange(len(diff))[diff[:, 0] >= 0]
@@ -232,14 +244,22 @@ def createProjectionPointCoords(x_coords, y_coords, centre_point, theta, i):
 	neg_indices = neg_indices[np.argsort(distances_neg)]
 	pos_indices = pos_indices[np.argsort(distances_pos)]
 
-	if theta == np.pi/2:
-		# In the case of the vertical reset x and y
-		point_list = np.flip(point_list)
-		
 	# Create the sets of points on the inner and outer edges
-	first_set = point_list[[neg_indices[0], neg_indices[1]]]
-	second_set = point_list[[pos_indices[0], pos_indices[1]]]
+	if transpose:
+		# Flip the points back to [x, y]
+		point_list = np.flip(point_list, axis=1)
+		centre_point = np.flip(centre_point)
 
+	if theta < np.pi/2:
+		# The positive points are on the left
+		first_set = point_list[[neg_indices[0], neg_indices[1]]]
+		second_set = point_list[[pos_indices[0], pos_indices[1]]]
+
+	else:
+		# The positive points are on the right
+		first_set = point_list[[pos_indices[0], pos_indices[1]]]
+		second_set = point_list[[neg_indices[0], neg_indices[1]]]
+		
 	projection_points = np.concatenate((first_set, second_set))
 
 	return projection_points
@@ -258,16 +278,13 @@ def alignBorder(thickness):
 	"""
 	nb_points = len(thickness)
 
-	# Find the four quadrants
-	quad_1 = thickness[np.arange(0, nb_points // 2, 2)]
-	quad_2 = thickness[np.arange(1 + (nb_points) // 2, nb_points, 2)]
-	quad_3 = thickness[np.arange(1, nb_points // 2, 2)]
-	quad_4 = thickness[np.arange(nb_points // 2, nb_points, 2)]
+	# Find the two halves
+	right_half = np.arange(0, nb_points, 2)
+	left_half = np.arange(1, nb_points, 2)
 
 	# Order thickness to go from 0 to 2pi
-	ordered_thickness = np.concatenate((
-	quad_1, quad_2, quad_3, quad_4))
-
+	ordered_thickness = np.concatenate((thickness[right_half],
+		thickness[left_half]))	
 
 	# Roll array to line up 0 with anti-mesometrial border
 	max_idx = np.argmax(ordered_thickness)
@@ -286,7 +303,7 @@ def estimateMuscleThickness(img_stack, centreline, nb_points, slice_nbs, horn):
 	nb_points -- int, number of points to use for projection.
 	slice_nbs -- list[int], number of the slices at which to save
 		angular thickness.
-	horn -- str {left, right}, horn that is being analysed
+	horn -- str {left, right}, horn that is being analysed.
 
 	Return:
 	muscle_thickness_array -- ndarray, muscle thickness of each slice.
@@ -307,6 +324,12 @@ def estimateMuscleThickness(img_stack, centreline, nb_points, slice_nbs, horn):
 	slice_thickness_array = list()
 	idx_removed_slices = list()
 
+	# Create error log file
+	log_filename = "uCT_errors.log"
+	logging.basicConfig(filename=log_filename, filemode='w', 
+		level=logging.ERROR, format="%(levelname)s %(name)s %(message)s")
+	logger = logging.getLogger(__name__ + '_' + horn)
+
 	for i, img in enumerate(img_stack):
 		try:
 			projection_points = findProjectionPoints(img, centreline[i, :], 
@@ -320,11 +343,12 @@ def estimateMuscleThickness(img_stack, centreline, nb_points, slice_nbs, horn):
 				ordered_thickness = alignBorder(thickness)	
 				slice_thickness_array.append(ordered_thickness)
 
-		except:
+		except Exception as err:
 			# Write to stderr and add slice number to the remove list
 			sys.stderr.write("Warning: unable to process image number {}\n".format(
 				i))
 			idx_removed_slices.append(i)
+			logger.exception(err)
 
 	# Remove the slices the values of the slices that were not processed
 	muscle_thickness_array = np.delete(muscle_thickness_array, 
