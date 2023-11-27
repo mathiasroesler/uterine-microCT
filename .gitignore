@@ -4,6 +4,7 @@ data/
 # Ignore python swp and cache
 code/p_scripts/*.swp
 code/p_scripts/__pycache__
+code/p_scripts/*.log
 code/thickness_analysis/*.swp
 code/thickness_analysis/__pycache__
 code/tests/*.swp
