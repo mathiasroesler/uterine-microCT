@@ -328,11 +328,10 @@ def estimateMuscleThickness(img_stack, centreline, nb_points, slice_nbs, horn):
 	idx_removed_slices = list()
 
 	# Create error log file
-	log_filename = "uCT_{}_errors.log".format(horn)
+	log_filename = "uCT_errors.log"
 	logging.basicConfig(filename=log_filename, filemode='w', 
 		level=logging.ERROR, format="%(levelname)s %(name)s %(message)s")
 	logger = logging.getLogger(__name__ + '_' + horn)
-	logger.addHandler(logging.FileHandler(log_filename))
 
 	for i, img in enumerate(img_stack):
 		try:
@@ -353,7 +352,6 @@ def estimateMuscleThickness(img_stack, centreline, nb_points, slice_nbs, horn):
 				i))
 			idx_removed_slices.append(i)
 			logger.exception(err)
-			exit()
 
 	# Remove the slices the values of the slices that were not processed
 	muscle_thickness_array = np.delete(muscle_thickness_array, 
