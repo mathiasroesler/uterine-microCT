@@ -49,12 +49,10 @@ def alignBorderTest():
 			plt.imshow(img, cmap='gray') 
 			plt.plot(projection_points[right_half][:, 0], 
 				projection_points[right_half][:, 1], '.b')
-			plt.show()
 
 			# Plot second half
-			plt.imshow(img, cmap='gray') 
 			plt.plot(projection_points[left_half][:, 0], 
-				projection_points[left_half][:, 1], '.b')
+				projection_points[left_half][:, 1], '.g')
 			plt.show()
 
 
