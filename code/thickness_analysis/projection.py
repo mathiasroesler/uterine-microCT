@@ -278,16 +278,13 @@ def alignBorder(thickness):
 	"""
 	nb_points = len(thickness)
 
-	# Find the four quadrants
-	quad_1 = thickness[np.arange(0, nb_points // 2, 2)]
-	quad_2 = thickness[np.arange(1 + (nb_points) // 2, nb_points, 2)]
-	quad_3 = thickness[np.arange(1, nb_points // 2, 2)]
-	quad_4 = thickness[np.arange(nb_points // 2, nb_points, 2)]
+	# Find the two halves
+	indices = np.arange(len(projection_points))
+	right_half = indices[(indices % 4 == 0) | ((indices - 1) % 4 == 0)]
+	left_half = np.setdiff1d(indices, right_half)
 
 	# Order thickness to go from 0 to 2pi
-	ordered_thickness = np.concatenate((
-	quad_1, quad_2, quad_3, quad_4))
-
+	ordered_thickness = np.concatenate((right_half, left_half))	
 
 	# Roll array to line up 0 with anti-mesometrial border
 	max_idx = np.argmax(ordered_thickness)
