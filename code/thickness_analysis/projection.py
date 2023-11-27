@@ -250,7 +250,7 @@ def createProjectionPointCoords(x_coords, y_coords, centre_point, theta):
 		point_list = np.flip(point_list, axis=1)
 		centre_point = np.flip(centre_point)
 
-	if theta <= np.pi/2:
+	if theta < np.pi/2:
 		# The positive points are on the left
 		first_set = point_list[[neg_indices[0], neg_indices[1]]]
 		second_set = point_list[[pos_indices[0], pos_indices[1]]]
