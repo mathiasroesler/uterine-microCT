@@ -279,12 +279,12 @@ def alignBorder(thickness):
 	nb_points = len(thickness)
 
 	# Find the two halves
-	indices = np.arange(len(projection_points))
-	right_half = indices[(indices % 4 == 0) | ((indices - 1) % 4 == 0)]
-	left_half = np.setdiff1d(indices, right_half)
+	right_half = np.arange(0, nb_points, 2)
+	left_half = np.arange(1, nb_points, 2)
 
 	# Order thickness to go from 0 to 2pi
-	ordered_thickness = np.concatenate((right_half, left_half))	
+	ordered_thickness = np.concatenate((thickness[right_half],
+		thickness[left_half]))	
 
 	# Roll array to line up 0 with anti-mesometrial border
 	max_idx = np.argmax(ordered_thickness)
