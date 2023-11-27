@@ -98,7 +98,7 @@ def findProjectionPoints(img, centre_point, nb_points, horn):
 	centre_point -- list[int], coordinates of the centre point (XY).
 	nb_points -- int, number of desired projection points, must be a 
 		multiple of 2.
-	horn -- str {left, right}, horn that is being analysed
+	horn -- str {left, right}, horn that is being analysed.
 
 	Return:
 	projection_points -- ndarray, list of the coordinates of the
@@ -157,14 +157,14 @@ def findProjectionPoints(img, centre_point, nb_points, horn):
 		y_coords = line_y[coords]
 
 		points = createProjectionPointCoords(
-			x_coords, y_coords, centre_point, theta, i)
+			x_coords, y_coords, centre_point, theta)
 
 		projection_points[i*4:(i+1)*4] = points
 
 	return projection_points
 
 
-def createProjectionPointCoords(x_coords, y_coords, centre_point, theta, i):
+def createProjectionPointCoords(x_coords, y_coords, centre_point, theta):
 	""" Creates the (x, y) pairs of coordinates for the projection points
 
 	The points that are to the right of the centre point are placed first
@@ -192,21 +192,34 @@ def createProjectionPointCoords(x_coords, y_coords, centre_point, theta, i):
 			" the same size.\n")
 		exit(1)
 
+	transpose = False
 	point_list = np.transpose([x_coords, y_coords])
 	
-	if theta == np.pi/2:
-		# In the case of the vertical line flip x and y
-		point_list = np.transpose([y_coords, x_coords])
-		centre_point = np.flip(centre_point)
-
 	# Get the indices of points before and after on the first axis
 	diff = point_list - centre_point
-	
 	neg_indices = np.arange(len(diff))[diff[:, 0] < 0]
 	pos_indices = np.arange(len(diff))[diff[:, 0] >= 0]
-	
+
+	if pos_indices.shape[0] <= 1 or neg_indices.shape[0] <= 1:
+		# If the x coords are not enough to distinguish use y coords
+		point_list = np.flip(point_list, axis=1) # Flip to [y, x]
+		centre_point = np.flip(centre_point) # Flip to [y, x]
+
+		diff = point_list - centre_point
+		neg_indices = np.arange(len(diff))[diff[:, 0] < 0]
+		pos_indices = np.arange(len(diff))[diff[:, 0] >= 0]
+		transpose = True
+
 	if pos_indices.shape[0] <= 1 or neg_indices.shape[0] <= 1:
 		# If some points where not found, assure minimal distance of 1
+		tranpose = False
+		point_list = np.flip(point_list, axis=1) # Flip to [x, y]
+		centre_point = np.flip(centre_point) # Flip to [x, y]
+
+		diff = point_list - centre_point
+		neg_indices = np.arange(len(diff))[diff[:, 0] < 0]
+		pos_indices = np.arange(len(diff))[diff[:, 0] >= 0]
+		
 		if diff[0, 0] < 0:
 			# Points need to be added after the centre point
 			point_list = np.concatenate(([[centre_point[0]+2, centre_point[1]]], 
@@ -217,7 +230,7 @@ def createProjectionPointCoords(x_coords, y_coords, centre_point, theta, i):
 			point_list = np.concatenate((point_list,
 				[[centre_point[0]-1, centre_point[1]]], 
 				[[centre_point[0]-2, centre_point[1]]]))
-			
+
 		diff = point_list - centre_point
 		neg_indices = np.arange(len(diff))[diff[:, 0] < 0]
 		pos_indices = np.arange(len(diff))[diff[:, 0] >= 0]
@@ -231,14 +244,22 @@ def createProjectionPointCoords(x_coords, y_coords, centre_point, theta, i):
 	neg_indices = neg_indices[np.argsort(distances_neg)]
 	pos_indices = pos_indices[np.argsort(distances_pos)]
 
-	if theta == np.pi/2:
-		# In the case of the vertical reset x and y
-		point_list = np.flip(point_list)
-		
 	# Create the sets of points on the inner and outer edges
-	first_set = point_list[[neg_indices[0], neg_indices[1]]]
-	second_set = point_list[[pos_indices[0], pos_indices[1]]]
+	if transpose:
+		# Flip the points back to [x, y]
+		point_list = np.flip(point_list, axis=1)
+		centre_point = np.flip(centre_point)
 
+	if theta <= np.pi/2:
+		# The positive points are on the left
+		first_set = point_list[[neg_indices[0], neg_indices[1]]]
+		second_set = point_list[[pos_indices[0], pos_indices[1]]]
+
+	else:
+		# The positive points are on the right
+		first_set = point_list[[pos_indices[0], pos_indices[1]]]
+		second_set = point_list[[neg_indices[0], neg_indices[1]]]
+		
 	projection_points = np.concatenate((first_set, second_set))
 
 	return projection_points
@@ -332,6 +353,7 @@ def estimateMuscleThickness(img_stack, centreline, nb_points, slice_nbs, horn):
 				i))
 			idx_removed_slices.append(i)
 			logger.exception(err)
+			exit()
 
 	# Remove the slices the values of the slices that were not processed
 	muscle_thickness_array = np.delete(muscle_thickness_array, 
