@@ -13,7 +13,8 @@
        2. [Fibre analysis](#fibre)
        3. [Mesh generation](#mesh)
     5. [Visualisation](#visualisation)
-6. [Data availability](#data-availability)
+6. [Testing](#testing)
+7. [Data availability](#data-availability)
 
 <a id="general-description"></a>
 ## General description
@@ -63,10 +64,10 @@ data
 │           └── masked
 ├── muscle_segmentation
 └── ST
-│   ├── binary
-│   ├── extrapolated
-│   ├── mask
-│   └── masked
+    ├── binary
+    ├── extrapolated
+    ├── mask
+    └── masked
 ```
 Configuration files should have the same name as the dataset and be placed in the data folders.\
 There is one configuration file for the main dataset (AWA015_PTA_1_Rec_Trans.toml) and one for the 
@@ -196,21 +197,38 @@ The supported file types for the mesh are .vtk, and .vtu.
 ### Visualisation 
 To visualise the meshes and fibres in cmgui, com files are located in the com folder.\
 Below is an example of a figure generated for the article using the 
-AWA015_PTA_1_Rec_Trans_fibre_mesh.com (A) and the AWA015_PTA_2_Ova_Rec_Trans_L4_fibres.com (B) com files,
-which overlays the fibres found in the uterus on the surface mesh and shows the fibres in a smaller section
+AWA015_PTA_1_Rec_Trans_L4_fibres.com (A) and the AWA015_PTA_2_Ova_Rec_Trans_L5_fibres.com (B) com files,
+which shows the fibres found in the uterus and in a smaller section
 of the uterus located near the ovaries.
 
 ![alt text](img/fibres.png "Example of a figure generated for the article using the 
-AWA015_PTA_1_Rec_Trans_fibre_mesh.com (A) and the AWA015_PTA_2_Ova_Rec_Trans_L4_fibres.com (B) com files")
+AWA015_PTA_1_Rec_Trans_L4_fibres.com (A) and the AWA015_PTA_2_Ova_Rec_Trans_L5_fibres.com (B) com files")
 
 Below is an example of a figure generated for the article using the 
 AWA015_PTA_1_Rec_Trans_thickness_mesh.com (A) and the AWA015_PTA_2_Ova_Rec_Trans_thickness_mesh.com (B) 
 com files which show the thickness of the muscle layers in the uterus.
 
 ![alt text](img/meshes.png "Example of a figure generated for the article using the 
-AWA015_PTA_1_Rec_Trans_thickness_mesh.com (A) and the AWA015_PTA_2_Ova_Rec_Trans_thickness_mesh.com (B) 
+AWA015_PTA_1_Rec_Trans_thickness_mesh.com full view (A) and the AWA015_PTA_1_Rec_Trans_thickness_mesh.com clipped view (B) 
 com files.")
+
+<a id="testing"></a>
+## Testing
+Some scripts have been written to test certain functions of the workflow and are located in the code/tests folder.
+
+The data used for the tests is found in the data/tests folder. An example of the structure is presented below:
+```bash
+data
+└── tests
+    └── AWA015
+        └── muscle_segmentation
+            ├── left_horn_test_mask.png
+            ├── right_horn_test_mask.png
+            └── centreline.mat
+```
+
+More test sets can be added with a similar structure. The **_sets** variable needs to be updated in the test scripts for it to be included in the tests. 
 
 <a id="data-availability"></a>
 ## Data availability
-The $`\mu`$CT dataset used and the meshes generated are available [here](https://figshare.com/).
+The $`\mu`$CT dataset used and the meshes generated are available [here](https://auckland.figshare.com/projects/Three-dimensional_virtual_histology_of_the_rat_uterus_musculature_using_micro-computed_tomography/167804).
