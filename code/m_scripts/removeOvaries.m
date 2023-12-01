@@ -43,7 +43,7 @@ disp('Loading image stack')
 img_stack = loadImageStack(img_paths);
 
 middle_pixel = floor(max(size(img_stack)) / 2);
-[~, largest_dim] = max(size(img_stack));
+[~, largest_dim] = max([size(img_stack, 1), size(img_stack, 2)]);
 nb_img = size(img_stack, 3);
 
 disp('Removing left ovary')
@@ -51,10 +51,10 @@ for k = params.left_ovary:nb_img
     % Remove ovary on the left side of the image
     switch largest_dim
         case 1
-            img_stack(1:middle_pixel, :, k) = 0;
+            img_stack(:, 1:middle_pixel, k) = 0;
 
         case 2
-            img_stack(:, 1:middle_pixel, k) = 0;
+            img_stack(1:middle_pixel, :, k) = 0;
     end
 end
 
@@ -63,10 +63,10 @@ for k = params.right_ovary:nb_img
     % Remove ovary on the right side of the image
     switch largest_dim
         case 1
-            img_stack(middle_pixel:end, :, k) = 0;
+            img_stack(:, middle_pixel:end, k) = 0;
 
         case 2
-            img_stack(:, middle_pixel:end, k) = 0;
+            img_stack(middle_pixel:end, :, k) = 0;
     end
 end
 
