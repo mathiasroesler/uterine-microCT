@@ -46,7 +46,7 @@ def plotMuscleThickness(muscle_thickness, errors):
 	
 	"""
 	fig, ax = plt.subplots(dpi=300)
-	colors = {"left": "blue", "right": "red"} 
+	colors = {"left": "tab:blue", "right": "tab:red"} 
 
 	for horn in muscle_thickness.keys():
 		horn_thickness = muscle_thickness[horn]
@@ -86,7 +86,6 @@ def plotAngularThickness(slice_thickness, projection=False):
 	"""
 	fig, ax = plt.subplots(len(slice_thickness.keys()), 1, 
 		subplot_kw={"polar": projection}, dpi=300)
-	colors = {"left": "blue", "right": "red"} 
 
 	if not hasattr(ax, "__len__"):
 		# If only one subplot is created
@@ -100,16 +99,16 @@ def plotAngularThickness(slice_thickness, projection=False):
 		x_values = np.linspace(0, 2*np.pi, nb_points, endpoint=False)
 
 		ax[i].plot(x_values, y_values[:, 0], 
-			linestyle='dashdot', color=colors[horn],
+			color="tab:gray",
 			label="Cervix", linewidth=2)
 		ax[i].plot(x_values, y_values[:, 1], 
-			linestyle='solid', color=colors[horn],
+			color="tab:orange",
 			label="Cervical end", linewidth=2)
 		ax[i].plot(x_values, y_values[:, 2],
-			linestyle='dashed', color=colors[horn],
+			color="tab:purple",
 			label="Centre", linewidth=2)
 		ax[i].plot(x_values, y_values[:, 3],
-			linestyle='dotted', color=colors[horn],
+			color="tab:green",
 			label="Ovarian end", linewidth=2)
 		ax[i].set_title("{} horn muscle thickness (in mm)".format(
 			horn.capitalize()))
