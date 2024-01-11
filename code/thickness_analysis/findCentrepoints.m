@@ -35,8 +35,8 @@ if proper_region == 1 && nb_holes < 1
     % then in the body, if there is 1 then single horn
 
     % Single horn and can exit early
-    centrepoint = filled_props( ...
-        [filled_props.Area] > proper_size).Centroid;
+    centrepoint = centre_props( ...
+        [centre_props.Area] > proper_size).Centroid;
 
     if strcmp(region, "left")
         % Left horn
