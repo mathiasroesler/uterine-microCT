@@ -30,7 +30,7 @@ proper_region = sum([filled_props.Area] > proper_size);
 centre_props = regionprops(centre_regions, 'Area', 'Centroid');
 nb_holes = sum([centre_props.Area] > proper_size);
 
-if proper_region == 1 && nb_holes < 1
+if proper_region == 1 && nb_holes <= 1
     % Use the number of holes to filter out the region. If there are two
     % then in the body, if there is 1 then single horn
 
