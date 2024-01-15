@@ -128,8 +128,8 @@ if __name__ == "__main__":
 	# Plot everything
 	plots.plotMuscleThickness(avg_thickness, errors)
 
-	plots.plotAngularThickness({"left": avg_slice_thickness["left"]}, 
-		projection=args.polar)
-	plots.plotAngularThickness({"right": avg_slice_thickness["right"]}, 
-		projection=args.polar)
+	if len(horns) == 2:
+		for horn in horns:
+			plots.plotAngularThickness({horn: avg_slice_thickness[horn]}, 
+				projection=args.polar)
 
