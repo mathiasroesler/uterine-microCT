@@ -24,6 +24,8 @@ if __name__ == "__main__":
 		help="path from BASE to the mesh, default mesh/")
 	parser.add_argument("--data-dir", type=str, default="microCT/data",
 		help="path form BASE to the thickness data, default microCT/data")
+	parser.add_argument("--horn", type=str, choices={"left", "right", "both"},
+		help="horn to process", default="both")
 	parser.add_argument("-s", "--switch", action='store_true',
 		help="switches the labels of the left and right horn, default False")
 	parser.add_argument("--not-d", action='store_true',
@@ -57,7 +59,13 @@ if __name__ == "__main__":
 	# Add the muscle segmentation to the load directory
 	thickness_directory = os.path.join(thickness_directory, 
 		"muscle_segmentation")
-	horns = ["right", "left"]
+
+	# Convert both to left and right
+	if args.horn == "both":
+		horns = ["left", "right"]
+
+	else:
+		horns = [args.horn]
 	
 	# Get the centreline
 	centreline_dict = scipy.io.loadmat(thickness_directory + "/centreline.mat")
@@ -86,8 +94,17 @@ if __name__ == "__main__":
 	# Split the mesh elements into left and right
 	element_idx_dict = dict()
 	x_delta = mesh.points[:, 0].max() - mesh.points[:, 0].min() 
-	element_idx_dict['left'] = np.where(abs(mesh.points[:, 0]) < x_delta)[0]
-	element_idx_dict['right'] = np.where(abs(mesh.points[:, 0]) >= x_delta)[0]
+
+	if len(horns) == 1:
+		# If single horn all elements are associated with horn
+		element_idx_dict[horns[0]] = np.arange(len(mesh.points))
+
+	else:
+		# If two horns split elements into left and right
+		element_idx_dict['left'] = np.where(
+			abs(mesh.points[:, 0]) < x_delta)[0]
+		element_idx_dict['right'] = np.where(
+			abs(mesh.points[:, 0]) >= x_delta)[0]
 
 	# Split the centre points into left and right
 	centrepoint_coords = dict()
