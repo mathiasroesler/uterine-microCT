@@ -66,7 +66,8 @@ def plotMuscleThickness(muscle_thickness, errors):
 	plt.ylim([0, 0.7])
 	plt.xlim([0, 1])
 	plt.xlabel("Locations", fontsize=12)
-	plt.ylabel("Muscle thickness (in mm)", fontsize=12)
+	plt.ylabel("Muscle thickness (mm)", fontsize=12)
+	plt.title("Average thickness in the uterus")
 	plt.legend()
 
 	plt.show()
@@ -110,7 +111,7 @@ def plotAngularThickness(slice_thickness, projection=False):
 		ax[i].plot(x_values, y_values[:, 3],
 			color="tab:green",
 			label="Ovarian end", linewidth=2)
-		ax[i].set_title("{} horn muscle thickness (in mm)".format(
+		ax[i].set_title("{} horn thickness".format(
 			horn.capitalize()))
 
 		ax[i].tick_params(length=6, width=2, labelsize=12)
@@ -142,6 +143,6 @@ def plotAngularThickness(slice_thickness, projection=False):
 					r'$\frac{5\pi}{4}$',r'$\frac{3\pi}{2}$',\
 					r'$\frac{7\pi}{4}$', r'2$\pi$'])
 
-			plt.ylabel("Muscle thickness (in mm)", fontsize=12)
-			plt.xlabel(r"Angle $\theta$", fontsize=12)
+			plt.ylabel("Muscle thickness (mm)", fontsize=12)
+			plt.xlabel(r"Angle $\theta$ (rad)", fontsize=12)
 	plt.show()
