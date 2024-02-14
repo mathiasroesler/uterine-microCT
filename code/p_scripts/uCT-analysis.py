@@ -29,6 +29,8 @@ if __name__ == "__main__":
 		help="horn to process", default="both")
 	parser.add_argument("-p", "--points", type=int, metavar="points",
 		help="number of points to use for the projection, default 128", default=128)
+	parser.add_argument("-P", "--polar", action='store_true',
+		help="flag used to plot the angular thickness in polar projection, default False")
 	parser.add_argument("-s", "--switch", action='store_true',
 		help="switches the labels of the left and right horn, default False")
 	parser.add_argument("--not-d", action='store_true',
@@ -126,11 +128,8 @@ if __name__ == "__main__":
 	# Plot everything
 	plots.plotMuscleThickness(avg_thickness, errors)
 
-	# plots.plotAngularThickness({"left": avg_slice_thickness["left"]})
-	# plots.plotAngularThickness({"right": avg_slice_thickness["right"]})
-
-	plots.plotAngularThickness({"left": avg_slice_thickness["left"]}, 
-		projection=True)
-	plots.plotAngularThickness({"right": avg_slice_thickness["right"]}, 
-		projection=True)
+	if len(horns) == 2:
+		for horn in horns:
+			plots.plotAngularThickness({horn: avg_slice_thickness[horn]}, 
+				projection=args.polar)
 

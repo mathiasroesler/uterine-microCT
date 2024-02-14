@@ -1,5 +1,5 @@
 function [img_stack, mask_stack] = readNiftiSegmentation(dir_path, ...
-    base_name, type, downsampled)
+    base_name, type, downsampled, binarise)
 %READNIFTISEGMENTATION Reads the segmentation and images from the nifti
 %files. The masks are applied to the images.
 %   
@@ -12,16 +12,21 @@ function [img_stack, mask_stack] = readNiftiSegmentation(dir_path, ...
 %    is muscle.
 %    - downsampled, true if the dataset has been downsampled, default value
 %    is true.
+%    - binarise, true if the masks should be binarise, defautl value is
+%    true. 
 %
 %   Return:
 %    - img_stack, uint8, stack of images read from the nifti file. The
 %    segmentation masks have been applied.
-%    - mask_stack, logical, stack of segmentation masks.
+%    - mask_stack, logical or uint8, stack of segmentation masks.
 if nargin < 3
     type = "muscle";
 end
 if nargin < 4
     downsampled = true;
+end
+if nargin < 5
+    binarise = true;
 end
 
 % Directory where images are located
@@ -39,7 +44,12 @@ mask_stack = niftiread(join([load_directory, mask_file], '/'));
 img_stack = niftiread(join([load_directory, img_file], '/'));
 
 % Binarize the masks
-mask_stack = imbinarize(mask_stack); 
+if binarise
+    mask_stack = imbinarize(mask_stack); 
+
+else
+    mask_stack = uint8(mask_stack);
+end
 
 % Permute the first two columns of images and masks
 mask_stack = permute(mask_stack, [2 1 3]);

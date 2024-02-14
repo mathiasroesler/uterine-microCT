@@ -2,8 +2,8 @@
 set dir /home/mroe734/Documents/phd/mesh/rat
 
 # Read elements and nodes of the volumetric mesh
-gfx read node AWA015_PTA_1_Rec_Trans_volumetric_mesh_annotated.exnode 
-gfx read elem AWA015_PTA_1_Rec_Trans_volumetric_mesh_annotated.exelem
+gfx read node AWA015_PTA_2_Ova_Rec_Trans_volumetric_mesh_annotated.exnode 
+gfx read elem AWA015_PTA_2_Ova_Rec_Trans_volumetric_mesh_annotated.exelem
 gfx def faces egroup uterus
 
 # Create scene and spectrum
@@ -21,11 +21,11 @@ gfx modify g_element /uterus point glyph colour_bar spectrum thickness LOCAL NOR
 
 gfx modify window 1 image view_all
 
-# For clipped view of the mesh
-#gfx modify window 1 image rotate 1 0 0 12
-#gfx modify window 1 image rotate 0 1 0 2
-#gfx modify window 1 image rotate 0 0 1 2
-#gfx modify window 1 view near_clipping_plane 1545
-
 # For full mesh views
-gfx modify window 1 layout simple
+#gfx modify window 1 image rotate 1 0 0 90
+#gfx modify window 1 image rotate 0 0 1 -90
+
+# For clipped view of the mesh
+gfx modify window 1 view near_clipping_plane 1545
+gfx modify window 1 image rotate 0 0 1 -90
+gfx modify window 1 image rotate 1 0 0 90

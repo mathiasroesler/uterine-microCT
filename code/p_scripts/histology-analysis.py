@@ -25,8 +25,10 @@ if __name__ == "__main__":
 		help="name of the dataset")
 	parser.add_argument("-e", "--extension", type=str, metavar="extension",
 		help="extension for the saved images, default png", default="png")
-	parser.add_argument("--points", type=int, 
+	parser.add_argument("-p", "--points", type=int, 
 		help="number of points to use for the projection, default 128", default=128)
+	parser.add_argument("-P", "--polar", action='store_true',
+		help="flag used to plot the angular thickness in polar projection, default False")
 
 	# Parse input arguments
 	args = parser.parse_args()
@@ -76,8 +78,7 @@ if __name__ == "__main__":
 		circular_win_size).round(5)
 
 	# Plot everything
-	plots.plotAngularThickness(avg_slice_thickness)
-	plots.plotAngularThickness(avg_slice_thickness, projection=True)
+	plots.plotAngularThickness(avg_slice_thickness, projection=args.polar)
 
 
 	# Save angular thickness
