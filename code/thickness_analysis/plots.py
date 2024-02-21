@@ -100,15 +100,19 @@ def plotAngularThickness(slice_thickness, projection=False):
 		x_values = np.linspace(0, 2*np.pi, nb_points, endpoint=False)
 
 		ax[i].plot(x_values, y_values[:, 0], 
+			linestyle="dashdot",
 			color="tab:gray",
 			label="Cervix", linewidth=2)
 		ax[i].plot(x_values, y_values[:, 1], 
+			linestyle="solid",
 			color="tab:orange",
 			label="Cervical end", linewidth=2)
 		ax[i].plot(x_values, y_values[:, 2],
+			linestyle="dashed",
 			color="tab:purple",
 			label="Centre", linewidth=2)
 		ax[i].plot(x_values, y_values[:, 3],
+			linestyle="dotted",
 			color="tab:green",
 			label="Ovarian end", linewidth=2)
 		ax[i].set_title("{} horn thickness".format(
