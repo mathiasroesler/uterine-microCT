@@ -28,6 +28,7 @@ def lineCoordinatesTest():
 	theta = [np.pi/4, np.pi/2, 3*np.pi/4, np.pi]
 
 	for dataset in params["sets"]:
+		print("Testing set {}".format(dataset))
 		test_dir = _dir + dataset + "/muscle_segmentation"
 		img_stack = utils.loadImageStack(test_dir) # Load test images
 		centreline_dict = scipy.io.loadmat(test_dir + "/centreline.mat")
