@@ -12,11 +12,6 @@ import utils.utils as utils
 import thickness_analysis.plots as plots
 import thickness_analysis.projection as projection
 
-_dir = utils.HOME + '/' + utils.BASE + "/microCT/data/tests/"
-_nb_points = 10
-_sets = ["AWA015", "AWA030"]
-_horn = ["left", "right"]
-
 
 def findProjectionPointsTest():
 	""" Tests the projection point algorithm on test images
@@ -26,7 +21,12 @@ def findProjectionPointsTest():
 	Return:
 
 	"""
-	for dataset in _sets:
+	_dir = utils.HOME + '/' + utils.BASE + "/microCT/data/tests/"
+	param_file = _dir + "test.toml"
+	params = utils.parseTOML(param_file)
+
+	for dataset in params["sets"]:
+		print("Testing set {}".format(dataset))
 		test_dir = _dir + dataset + "/muscle_segmentation"
 		img_stack = utils.loadImageStack(test_dir) # Load test images
 		centreline_dict = scipy.io.loadmat(test_dir + "/centreline.mat")
@@ -35,8 +35,10 @@ def findProjectionPointsTest():
 
 		for i in range(2):
 			projection_points = projection.findProjectionPoints(
-				img_stack[i], centreline[i], _nb_points, _horn[i]) 
-			plots.plotProjectionPoints(img_stack[i], centreline[i, i*4:i*4+2], projection_points)
+				img_stack[i], centreline[i], params["nb_points"], 
+				params["horn"][i]) 
+			plots.plotProjectionPoints(img_stack[i], 
+				centreline[i, i*4:i*4+2], projection_points)
 
 
 findProjectionPointsTest()
