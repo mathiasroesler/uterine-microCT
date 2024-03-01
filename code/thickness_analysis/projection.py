@@ -33,11 +33,12 @@ def findLineCoordinates(img_shape, centre_point, theta):
 	y_centre = int(np.round(centre_point[1]))
 
 	if theta != np.pi:
-		y_points = np.arange(img_shape[0], dtype=int)
+		y_points = np.arange(0, img_shape[0], 0.3)
 		x_points = (((y_centre - y_points) * np.cos(theta)) /
 			 np.sin(theta) + x_centre)
 		x_points = x_points.astype(int) # Convert to int
-		
+		y_points = y_points.astype(int) # Convert to int
+
 		# Find the points that are in the image
 		intersection = np.intersect1d(np.where(x_points >= 0),
 			np.where(x_points < img_shape[1]))
@@ -219,7 +220,7 @@ def createProjectionPointCoords(x_coords, y_coords, centre_point, theta):
 		diff = point_list - centre_point
 		neg_indices = np.arange(len(diff))[diff[:, 0] < 0]
 		pos_indices = np.arange(len(diff))[diff[:, 0] >= 0]
-		
+
 		if diff[0, 0] < 0:
 			# Points need to be added after the centre point
 			point_list = np.concatenate(([[centre_point[0]+2, centre_point[1]]], 
