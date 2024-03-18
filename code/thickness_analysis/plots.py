@@ -5,148 +5,193 @@
 # Author: Mathias Roesler
 # Last modified: 06/23
 
-import sys
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
 
 def plotProjectionPoints(img, centre, projection_points):
-	""" Plots the centre point and projection points of an image
+    """Plots the centre point and projection points of an image
 
-	Arguments:
-	img -- ndarray, image to display.
-	centre -- ndarray, coordinates of the centre point (XY).
-	projection_points -- ndarray, coordinates of the projection points (XY).
+    Arguments:
+    img -- ndarray, image to display.
+    centre -- ndarray, coordinates of the centre point (XY).
+    projection_points -- ndarray, coordinates of the projection points (XY).
 
-	Return:
-	
-	"""
-	fig, ax = plt.subplots(dpi=300)
+    Return:
 
-	plt.imshow(img, cmap='gray') # Plot image
-	ax.plot(centre[0], centre[1], '.r') # Plot centre
+    """
+    fig, ax = plt.subplots(dpi=300)
 
-	for point in projection_points:
-		ax.plot(point[0], point[1], '.b')
-	
-	plt.show()
-	
+    plt.imshow(img, cmap="gray")  # Plot image
+    ax.plot(centre[0], centre[1], ".r")  # Plot centre
+
+    for point in projection_points:
+        ax.plot(point[0], point[1], ".b")
+
+    plt.show()
+
 
 def plotMuscleThickness(muscle_thickness, errors):
-	""" Plots the muscle thickness of both horns on the same plot
+    """Plots the muscle thickness of both horns on the same plot
 
-	The number of points is normalised so that both sets are shown
-	between 0 and 1
+    The number of points is normalised so that both sets are shown
+    between 0 and 1
 
-	Arguments:
-	muscle_thickness -- dict(ndarray), thickness of the horns.
-	errors -- dict(ndarray), errors for the muscle thickness.
+    Arguments:
+    muscle_thickness -- dict(ndarray), thickness of the horns.
+    errors -- dict(ndarray), errors for the muscle thickness.
 
-	Return:
-	
-	"""
-	fig, ax = plt.subplots(dpi=300)
-	colors = {"left": "tab:blue", "right": "tab:red"} 
+    Return:
 
-	for horn in muscle_thickness.keys():
-		horn_thickness = muscle_thickness[horn]
-		error_bars = errors[horn]
-		horn_length = len(horn_thickness)
+    """
+    fig, ax = plt.subplots(dpi=300)
+    colors = {"left": "tab:blue", "right": "tab:red"}
 
-		ax.errorbar(np.linspace(0, 1, horn_length), horn_thickness, 
-			yerr=error_bars, linewidth=2,
-			label="{} horn".format(horn.capitalize()), color=colors[horn])
+    for horn in muscle_thickness.keys():
+        horn_thickness = muscle_thickness[horn]
+        error_bars = errors[horn]
+        horn_length = len(horn_thickness)
 
-	# Reset x-axis ticks
-	plt.xticks(ticks=[0, 0.2, 0.6, 1], 
-		labels=["Cervix", "Cervical end", "Centre", "Ovarian end"])
+        ax.errorbar(
+            np.linspace(0, 1, horn_length),
+            horn_thickness,
+            yerr=error_bars,
+            linewidth=2,
+            label="{} horn".format(horn.capitalize()),
+            color=colors[horn],
+        )
 
-	ax.tick_params(length=6, width=2, labelsize=12)
+    # Reset x-axis ticks
+    plt.xticks(
+        ticks=[0, 0.2, 0.6, 1],
+        labels=["Cervix", "Cervical end", "Centre", "Ovarian end"],
+    )
 
-	plt.ylim([0, 0.7])
-	plt.xlim([0, 1])
-	plt.xlabel("Locations", fontsize=12)
-	plt.ylabel("Muscle thickness (mm)", fontsize=12)
-	plt.title("Average thickness in the uterus")
-	plt.legend()
+    ax.tick_params(length=6, width=2, labelsize=12)
 
-	plt.show()
+    plt.ylim([0, 0.7])
+    plt.xlim([0, 1])
+    plt.xlabel("Locations", fontsize=12)
+    plt.ylabel("Muscle thickness (mm)", fontsize=12)
+    plt.title("Average thickness in the uterus")
+    plt.legend()
+
+    plt.show()
 
 
 def plotAngularThickness(slice_thickness, projection=False):
-	""" Plots the muscle thickness of one slice as a function of the 
-	angle theta
+    """Plots the muscle thickness of one slice as a function of the
+    angle theta
 
-	Arguments:
-	slice_thickness -- dict(ndarray), array containing the angluar thickness
-		of four slices for each horn.
-	projection -- str, projection type of the plot, default value False.
+    Arguments:
+    slice_thickness -- dict(ndarray), array containing the angluar thickness
+            of four slices for each horn.
+    projection -- str, projection type of the plot, default value False.
 
-	Return:
-	
-	"""
-	fig, ax = plt.subplots(len(slice_thickness.keys()), 1, 
-		subplot_kw={"polar": projection}, dpi=300)
+    Return:
 
-	if not hasattr(ax, "__len__"):
-		# If only one subplot is created
-		ax = [ax] # Convert to list for rest of code to work
-	
-	for i, horn in enumerate(slice_thickness.keys()):
-		y_values = slice_thickness[horn]
+    """
+    fig, ax = plt.subplots(
+        len(slice_thickness.keys()), 1, subplot_kw={"polar": projection},
+        dpi=300
+    )
 
-		# Create x-axis values so that everything is normalised
-		nb_points = y_values.shape[0]
-		x_values = np.linspace(0, 2*np.pi, nb_points, endpoint=False)
+    if not hasattr(ax, "__len__"):
+        # If only one subplot is created
+        ax = [ax]  # Convert to list for rest of code to work
 
-		ax[i].plot(x_values, y_values[:, 0], 
-			linestyle="dashdot",
-			color="tab:gray",
-			label="Cervix", linewidth=2)
-		ax[i].plot(x_values, y_values[:, 1], 
-			linestyle="solid",
-			color="tab:orange",
-			label="Cervical end", linewidth=2)
-		ax[i].plot(x_values, y_values[:, 2],
-			linestyle="dashed",
-			color="tab:purple",
-			label="Centre", linewidth=2)
-		ax[i].plot(x_values, y_values[:, 3],
-			linestyle="dotted",
-			color="tab:green",
-			label="Ovarian end", linewidth=2)
-		ax[i].set_title("{} horn thickness".format(
-			horn.capitalize()))
+    for i, horn in enumerate(slice_thickness.keys()):
+        y_values = slice_thickness[horn]
 
-		ax[i].tick_params(length=6, width=2, labelsize=12)
-		
-		if projection:
-			ax[i].set_rlabel_position(-22.5)  # Move radial labels
+        # Create x-axis values so that everything is normalised
+        nb_points = y_values.shape[0]
+        x_values = np.linspace(0, 2 * np.pi, nb_points, endpoint=False)
 
-			ax[i].set_rmax(1.1) # Set radial max
-			ticks = plt.xticks()[0]
+        ax[i].plot(
+            x_values,
+            y_values[:, 0],
+            linestyle="dashdot",
+            color="tab:gray",
+            label="Cervix",
+            linewidth=2,
+        )
+        ax[i].plot(
+            x_values,
+            y_values[:, 1],
+            linestyle="solid",
+            color="tab:orange",
+            label="Cervical end",
+            linewidth=2,
+        )
+        ax[i].plot(
+            x_values,
+            y_values[:, 2],
+            linestyle="dashed",
+            color="tab:purple",
+            label="Centre",
+            linewidth=2,
+        )
+        ax[i].plot(
+            x_values,
+            y_values[:, 3],
+            linestyle="dotted",
+            color="tab:green",
+            label="Ovarian end",
+            linewidth=2,
+        )
+        ax[i].set_title("{} horn thickness".format(horn.capitalize()))
 
-			# Set labels and legends
-			angle = np.deg2rad(25)
-			plt.legend(loc="lower left",
-				bbox_to_anchor=(.5 + np.cos(angle)/2, .5 + np.sin(angle)/2))
+        ax[i].tick_params(length=6, width=2, labelsize=12)
 
-			plt.xticks(ticks=ticks, labels=['0',r'$\frac{\pi}{4}$',\
-					r'$\frac{\pi}{2}$',r'$\frac{3\pi}{4}$', r'$\pi$',\
-					r'$\frac{5\pi}{4}$',r'$\frac{3\pi}{2}$',\
-					r'$\frac{7\pi}{4}$'])
+        if projection:
+            ax[i].set_rlabel_position(-22.5)  # Move radial labels
 
-		else:
-			plt.xlim([0, 2*np.pi])
-			plt.ylim([0, 1.1])
-			ticks = np.linspace(0, 2*np.pi, 9)
-			plt.legend(loc="upper center")
+            ax[i].set_rmax(1.1)  # Set radial max
+            ticks = plt.xticks()[0]
 
-			plt.xticks(ticks=ticks, labels=['0',r'$\frac{\pi}{4}$',\
-					r'$\frac{\pi}{2}$',r'$\frac{3\pi}{4}$', r'$\pi$',\
-					r'$\frac{5\pi}{4}$',r'$\frac{3\pi}{2}$',\
-					r'$\frac{7\pi}{4}$', r'2$\pi$'])
+            # Set labels and legends
+            angle = np.deg2rad(25)
+            plt.legend(
+                loc="lower left",
+                bbox_to_anchor=(0.5 + np.cos(angle) / 2, 0.5 + np.sin(
+                    angle) / 2),
+            )
 
-			plt.ylabel("Muscle thickness (mm)", fontsize=12)
-			plt.xlabel(r"Angle $\theta$ (rad)", fontsize=12)
-	plt.show()
+            plt.xticks(
+                ticks=ticks,
+                labels=[
+                    "0",
+                    r"$\frac{\pi}{4}$",
+                    r"$\frac{\pi}{2}$",
+                    r"$\frac{3\pi}{4}$",
+                    r"$\pi$",
+                    r"$\frac{5\pi}{4}$",
+                    r"$\frac{3\pi}{2}$",
+                    r"$\frac{7\pi}{4}$",
+                ],
+            )
+
+        else:
+            plt.xlim([0, 2 * np.pi])
+            plt.ylim([0, 1.1])
+            ticks = np.linspace(0, 2 * np.pi, 9)
+            plt.legend(loc="upper center")
+
+            plt.xticks(
+                ticks=ticks,
+                labels=[
+                    "0",
+                    r"$\frac{\pi}{4}$",
+                    r"$\frac{\pi}{2}$",
+                    r"$\frac{3\pi}{4}$",
+                    r"$\pi$",
+                    r"$\frac{5\pi}{4}$",
+                    r"$\frac{3\pi}{2}$",
+                    r"$\frac{7\pi}{4}$",
+                    r"2$\pi$",
+                ],
+            )
+
+            plt.ylabel("Muscle thickness (mm)", fontsize=12)
+            plt.xlabel(r"Angle $\theta$ (rad)", fontsize=12)
+    plt.show()

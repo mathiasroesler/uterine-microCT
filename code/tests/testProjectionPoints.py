@@ -5,38 +5,43 @@
 # Author: Mathias Roesler
 # Last modified: 11/23
 
-import sys
-import scipy.io
 import numpy as np
-import utils.utils as utils
+import scipy.io
+
 import thickness_analysis.plots as plots
 import thickness_analysis.projection as projection
-
-_dir = utils.HOME + '/' + utils.BASE + "/microCT/data/tests/"
-_nb_points = 10
-_sets = ["AWA015", "AWA030"]
-_horn = ["left", "right"]
+import utils.utils as utils
 
 
 def findProjectionPointsTest():
-	""" Tests the projection point algorithm on test images
+    """Tests the projection point algorithm on test images
 
-	Arguments:
+    Arguments:
 
-	Return:
+    Return:
 
-	"""
-	for dataset in _sets:
-		test_dir = _dir + dataset + "/muscle_segmentation"
-		img_stack = utils.loadImageStack(test_dir) # Load test images
-		centreline_dict = scipy.io.loadmat(test_dir + "/centreline.mat")
-		centreline = np.transpose(centreline_dict["centreline"])
-		centreline = np.round(centreline).astype(int) # Round and convert to int
+    """
+    _dir = utils.HOME + "/" + utils.BASE + "/microCT/data/tests/"
+    param_file = _dir + "test.toml"
+    params = utils.parseTOML(param_file)
 
-		for i in range(2):
-			projection_points = projection.findProjectionPoints(
-				img_stack[i], centreline[i], _nb_points, _horn[i]) 
-			plots.plotProjectionPoints(img_stack[i], centreline[i, i*4:i*4+2], projection_points)
+    for dataset in params["sets"]:
+        print("Testing set {}".format(dataset))
+        test_dir = _dir + dataset + "/muscle_segmentation"
+        img_stack = utils.loadImageStack(test_dir)  # Load test images
+        centreline_dict = scipy.io.loadmat(test_dir + "/centreline.mat")
+        centreline = np.transpose(centreline_dict["centreline"])
+        centreline = np.round(centreline).astype(int)  # Convert to int
+
+        for i in range(2):
+            projection_points = projection.findProjectionPoints(
+                img_stack[i], centreline[i], params["nb_points"],
+                params["horn"][i]
+            )
+            plots.plotProjectionPoints(
+                img_stack[i], centreline[i, i * 4: i * 4 + 2],
+                projection_points
+            )
 
 
 findProjectionPointsTest()
