@@ -129,18 +129,24 @@ if __name__ == "__main__":
         centreline = np.round(centreline).astype(int)  # Convert to int
 
         print("   Estimating muscle thickness")
-        muscle_thickness, slice_thickness = projection.estimateMuscleThickness(
-            mask_stack, centreline, args.points, params[horn]["slice_nbs"],
-            horn
+        muscle_thickness, slice_thickness, radius = projection.estimateMuscleThickness(
+            mask_stack, centreline, args.points,
+            params[horn]["slice_nbs"], horn
         )
 
         # Rescale the thickness to mm
         muscle_thickness *= params["scaling_factor"]
         slice_thickness *= params["scaling_factor"]
+        radius *= params["scaling_factor"]
 
         print(
             "{} horn muscle thickness: {:.2f} \u00B1 {:.2f}".format(
                 horn, np.mean(muscle_thickness), np.std(muscle_thickness)
+            )
+        )
+        print(
+            "{} horn radius: {:.2f} \u00B1 {:.2f}".format(
+                horn, np.mean(radius), np.std(radius)
             )
         )
 

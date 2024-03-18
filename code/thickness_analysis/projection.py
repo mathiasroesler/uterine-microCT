@@ -323,6 +323,7 @@ def estimateMuscleThickness(img_stack, centreline, nb_points, slice_nbs, horn):
     muscle_thickness_array -- ndarray, muscle thickness of each slice.
     slice_thickness_array -- ndarray, muscle thickness at different angles
         for three slices.
+    radius_array -- ndarray, average radius of each slice.
 
     """
     try:
@@ -337,6 +338,7 @@ def estimateMuscleThickness(img_stack, centreline, nb_points, slice_nbs, horn):
 
     nb_imgs = len(img_stack)
     muscle_thickness_array = np.zeros(nb_imgs)
+    radius_array = np.zeros(nb_imgs)
     slice_thickness_array = list()
     idx_removed_slices = list()
 
@@ -360,6 +362,23 @@ def estimateMuscleThickness(img_stack, centreline, nb_points, slice_nbs, horn):
             thickness = norm[np.arange(0, projection_points.shape[0], 2)]
             muscle_thickness_array[i] = np.mean(thickness)
 
+            # Get points in the inner layer of muscles
+            inner_points = projection_points[
+                np.arange(1, projection_points.shape[0], 2)
+            ]
+
+            # Select the correct centre point based on the horn
+            if horn == "left":
+                centre_point = centreline[i, 0:2]
+
+            elif horn == "right":
+                centre_point = centreline[i, 4:6]
+
+            # Estimate average radius for the slice
+            radius_array[i] = np.mean(
+                np.linalg.norm(inner_points - centre_point)
+            )
+
             if i in slice_nbs:
                 ordered_thickness = alignBorder(thickness)
                 slice_thickness_array.append(ordered_thickness)
@@ -375,4 +394,7 @@ def estimateMuscleThickness(img_stack, centreline, nb_points, slice_nbs, horn):
     muscle_thickness_array = np.delete(muscle_thickness_array,
                                        idx_removed_slices)
 
-    return muscle_thickness_array, np.transpose(slice_thickness_array)
+    radius_array = np.delete(radius_array, idx_removed_slices)
+
+    return muscle_thickness_array, np.transpose(
+        slice_thickness_array), radius_array
