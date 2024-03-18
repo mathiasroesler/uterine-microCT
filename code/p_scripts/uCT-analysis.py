@@ -127,6 +127,7 @@ if __name__ == "__main__":
         )
         centreline = np.transpose(centreline_dict["centreline"])
         centreline = np.round(centreline).astype(int)  # Convert to int
+        nb_slices = len(centreline) - 1  # Number of slices in the horn
 
         print("   Estimating muscle thickness")
         muscle_thickness, slice_thickness, radius = projection.estimateMuscleThickness(
@@ -134,10 +135,33 @@ if __name__ == "__main__":
             params[horn]["slice_nbs"], horn
         )
 
+        # Estimate horn length
+        print("   Estimating horn length")
+        centreline_dict = scipy.io.loadmat(
+            load_directory + "/centreline.mat"
+        )
+        centreline = np.transpose(centreline_dict["centreline"])
+        centreline = np.round(centreline).astype(int)  # Convert to int
+
+        if horn == "left":
+            ind = np.where(centreline[:nb_slices, 0:4] == 0)[0]
+            horn_start = np.append(centreline[ind[0], 0:2], 0)
+            # Divide len by 2 because np.where doubles the length
+            horn_end = np.append(centreline[ind[-1], 0:2], len(ind) / 2)
+
+        elif horn == "right":
+            ind = np.where(centreline[:nb_slices, 2:6] == 0)[0]
+            horn_start = np.append(centreline[ind[0], 4:6], 0)
+            # Divide len by 2 because np.where doubles the length
+            horn_end = np.append(centreline[ind[-1], 4:6], len(ind) / 2)
+
+        length = np.linalg.norm(horn_end - horn_start)
+
         # Rescale the thickness to mm
         muscle_thickness *= params["scaling_factor"]
         slice_thickness *= params["scaling_factor"]
         radius *= params["scaling_factor"]
+        length *= params["scaling_factor"]
 
         print(
             "{} horn muscle thickness: {:.2f} \u00B1 {:.2f} mm".format(
@@ -147,6 +171,11 @@ if __name__ == "__main__":
         print(
             "{} horn radius: {:.2f} \u00B1 {:.2f} mm".format(
                 horn, np.mean(radius), np.std(radius)
+            )
+        )
+        print(
+            "{} horn length: {:.2f} mm".format(
+                horn, length
             )
         )
 
