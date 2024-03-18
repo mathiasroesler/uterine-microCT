@@ -21,3 +21,6 @@ code/segmentation/*.asv
 code/utils/*.asv
 code/structure_tensor/*.asv
 code/thickness_analysis/*.asv
+
+# Ignore backup files
+*.backup
