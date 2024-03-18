@@ -140,12 +140,12 @@ if __name__ == "__main__":
         radius *= params["scaling_factor"]
 
         print(
-            "{} horn muscle thickness: {:.2f} \u00B1 {:.2f}".format(
+            "{} horn muscle thickness: {:.2f} \u00B1 {:.2f} mm".format(
                 horn, np.mean(muscle_thickness), np.std(muscle_thickness)
             )
         )
         print(
-            "{} horn radius: {:.2f} \u00B1 {:.2f}".format(
+            "{} horn radius: {:.2f} \u00B1 {:.2f} mm".format(
                 horn, np.mean(radius), np.std(radius)
             )
         )
