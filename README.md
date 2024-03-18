@@ -143,15 +143,15 @@ Before calculating the muscle wall thickness, the centreline of each horn must b
 __uCTCenterline.m__ script located in the m_scripts folder. The region argument determines which 
 segmentation masks are loaded. If "left", "right", or ["left", "right"] are specified, the rotated masks
 located in either the left or right folder are used. If "both" is specified, the non-rotated segmentation
-masks are used.
+masks are used. The centreline of the non-rotated segmentation masks is required for the calculation of the horn length.
 
-Once the centrelines are generated, the muscle wall thickness can be calculated with the 
+Once the centrelines are generated, the analysis can be performed with the 
 __uCT-analysis.py__ script located in the p_scripts folder. To see the arguments and options of the 
 script, use the --help flag:
 ```bash
 python3 uCT-analysis.py --help
 ```
-The average thickness for each horn will be displayed on the terminal. The plot of the thickness 
+The average thickness, the average radius, and the length of each horn will be displayed on the terminal. The plot of the thickness 
 variations and the plots of the angular thickness of the __4__ slices selected in the configuration file
 will be displayed. The angular and average thicknesses will be saved in the muscle_segmentation folder.
 
@@ -162,7 +162,7 @@ located in the m_scripts folder finds the fibres using structure tensors. This s
 segmentation masks and the masked uCT images be placed in the ST/mask and ST/masked folders, respectively.
 The masks can be applied either by specifying the paths to the masks in the __loadImageStack.m__ function
  located in the utils folder or with the __readNiftiSegmentation.m__ function. They can then be saved
-with the __saveImageStack.m__ function located in the utils folder.\
+with the __saveImageStack.m__ function located in the utils folder.
 
 The fibres will be annotated based on the angle relative to the centreline of each horn found in the 
 centreline.mat file created with the __uCTCentreline.m__ script. If no centreline is provided, the slices
