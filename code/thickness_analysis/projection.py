@@ -196,7 +196,7 @@ def createProjectionPointCoords(x_coords, y_coords, centre_point, theta):
 
     except AssertionError:
         sys.stderr.write(
-            "Error: x_coords and y_coords should have" " the same size.\n")
+            "Error: x_coords and y_coords should have the same size.\n")
         exit(1)
 
     transpose = False
@@ -364,7 +364,7 @@ def estimateMuscleThickness(img_stack, centreline, nb_points, slice_nbs, horn):
 
             # Get points in the inner layer of muscles
             inner_points = projection_points[
-                np.arange(1, projection_points.shape[0], 2)
+                np.arange(0, projection_points.shape[0], 2)
             ]
 
             # Select the correct centre point based on the horn
@@ -376,7 +376,7 @@ def estimateMuscleThickness(img_stack, centreline, nb_points, slice_nbs, horn):
 
             # Estimate average radius for the slice
             radius_array[i] = np.mean(
-                np.linalg.norm(inner_points - centre_point)
+                np.linalg.norm(inner_points - centre_point, axis=1)
             )
 
             if i in slice_nbs:
