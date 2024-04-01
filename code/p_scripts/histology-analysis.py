@@ -89,7 +89,7 @@ if __name__ == "__main__":
     centreline = np.transpose(centreline_dict["centreline"])
 
     print("   Estimating muscle thickness")
-    muscle_thickness, slice_thickness = projection.estimateMuscleThickness(
+    muscle_thickness, slice_thickness, _ = projection.estimateMuscleThickness(
         mask_stack, centreline, args.points, params[horn]["slice_nbs"], horn
     )
 
