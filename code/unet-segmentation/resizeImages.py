@@ -45,7 +45,7 @@ if __name__ == "__main__":
     new_size = args.new_size
     load_directory = os.path.join(utils.HOME, utils.BASE, args.dir_path,
                                   args.base_name)
-    save_directory = os.path.join(load_directory, "cropped/")
+    save_directory = os.path.join(load_directory, "resized/")
 
     img_list = sorted(glob.glob("*.{}".format(args.extension),
                                 root_dir=load_directory))
