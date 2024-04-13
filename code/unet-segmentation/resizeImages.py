@@ -70,3 +70,9 @@ if __name__ == "__main__":
             skio.imsave("{}/{}_block_{}_{}.{}".format(
                 save_directory, img_name, 0, 0, args.extension
             ), img_block, check_contrast=False)
+
+        else:
+            img_block = img[:512, :512]
+            skio.imsave("{}/{}_block_{}_{}.{}".format(
+                save_directory, img_name, 0, 0, args.extension
+            ), img_block, check_contrast=False)
