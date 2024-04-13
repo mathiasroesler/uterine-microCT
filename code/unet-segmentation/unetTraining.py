@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# unetSegmentation.py: Script to train the unet model
+# unetTraining.py: Script to train the unet model
 # Author: Mathias Roesler
 # Last modified: 04/24
 
