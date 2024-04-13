@@ -74,11 +74,9 @@ input_shape = imgs_train[0].shape
 
 model = custom_unet(
     input_shape,
-    filters=32,
-    use_batch_norm=True,
+    filters=16,
     dropout=0.3,
-    dropout_change_per_layer=0.0,
-    num_layers=4
+    num_layers=8
 )
 
 
