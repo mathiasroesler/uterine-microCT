@@ -62,44 +62,41 @@ if __name__ == "__main__":
                               masks.shape[2],
                               1)
 
-imgs_val, imgs_train, masks_val, masks_train = train_test_split(
-    imgs, masks, test_size=0.9, random_state=0)
+    imgs_val, imgs_train, masks_val, masks_train = train_test_split(
+        imgs, masks, test_size=0.9, random_state=0)
 
-print("imgs_train: ", imgs_train.shape)
-print("masks_train: ", masks_train.shape)
-print("imgs_val: ", imgs_val.shape)
-print("masks_val: ", masks_val.shape)
+    print("imgs_train: ", imgs_train.shape)
+    print("masks_train: ", masks_train.shape)
+    print("imgs_val: ", imgs_val.shape)
+    print("masks_val: ", masks_val.shape)
 
-input_shape = imgs_train[0].shape
+    input_shape = imgs_train[0].shape
 
-model = custom_unet(
-    input_shape,
-    filters=16,
-    dropout=0.3,
-    num_layers=8
-)
+    model = custom_unet(
+        input_shape,
+        filters=16,
+        dropout=0.3,
+        num_layers=8
+    )
 
+    model_filename = 'unet-model.keras'
+    callback_checkpoint = ModelCheckpoint(
+        model_filename,
+        verbose=1,
+        monitor='val_loss',
+        save_best_only=True,
+    )
 
-model_filename = 'unet-model.keras'
-callback_checkpoint = ModelCheckpoint(
-    model_filename,
-    verbose=1,
-    monitor='val_loss',
-    save_best_only=True,
-)
+    model.compile(
+        optimizer=Adam(),
+        loss='binary_crossentropy',
+        metrics=[iou, iou_thresholded]
+    )
 
-
-model.compile(
-    optimizer=Adam(),
-    loss='binary_crossentropy',
-    metrics=[iou, iou_thresholded]
-)
-
-
-history = model.fit(
-    imgs_train, masks_train,
-    steps_per_epoch=args.steps,
-    epochs=args.epochs,
-    validation_data=(imgs_val, masks_val),
-    callbacks=[callback_checkpoint]
-)
+    history = model.fit(
+        imgs_train, masks_train,
+        steps_per_epoch=args.steps,
+        epochs=args.epochs,
+        validation_data=(imgs_val, masks_val),
+        callbacks=[callback_checkpoint]
+    )
