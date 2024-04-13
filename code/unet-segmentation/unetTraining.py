@@ -79,9 +79,11 @@ if __name__ == "__main__":
         num_layers=8
     )
 
-    model_filename = 'unet-model.keras'
+    model_weights = 'unet-weights.keras'
+    model_name = 'unet-model.keras'
+
     callback_checkpoint = ModelCheckpoint(
-        model_filename,
+        model_weights,
         verbose=1,
         monitor='val_loss',
         save_best_only=True,
@@ -100,3 +102,7 @@ if __name__ == "__main__":
         validation_data=(imgs_val, masks_val),
         callbacks=[callback_checkpoint]
     )
+
+    # Load best weights and save full model
+    model.load_weights(model_weights)
+    model.save(model_name)
