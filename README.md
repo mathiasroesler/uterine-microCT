@@ -140,6 +140,12 @@ To see the arguments and options of the script, use the --help flag:
 python3 unetTraining.py --help
 ```
 
+##### Segmenting
+The **unetSegment.py** script segments a dataset using a trained model. The images should be 512 x 512 pixels and placed in the imgs folder of the dataset directory. The segmentation masks are saved in the masks folder of that directory. 
+To see the arguments and options of the script, use the --help flag:
+```bash
+python3 unetSegment.py --help
+```
 <a id="format-conversion"></a>
 #### Format conversion
 The segmentation masks and $`\mu`$CT images can be converted to a 
