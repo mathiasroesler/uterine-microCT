@@ -9,10 +9,11 @@ import os
 import argparse
 
 import numpy as np
+import tensorflow as tf
 import utils.utils as utils
 import skimage.io as skio
 
-import tf
+from skimage.filters import threshold_otsu
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -59,10 +60,22 @@ if __name__ == "__main__":
                             1)
 
     # Load trained model
-    model = tf.keras.models.load(args.model)
+    model = tf.keras.models.load_model(args.model)
+    masks = model.predict(imgs)
 
-    for i, img in enumerate(imgs):
-        mask = model.predict(img)
+    # Reset max value to 255
+    masks *= 255
+    # Convert masks to uint8
+    masks = masks.astype('uint8')
+
+    for i in range(masks.shape[0]):
+        # Get mask
+        mask = np.squeeze(masks[i, :, :])
+
+        # Binarise image
+        threshold = threshold_otsu(mask)
+        mask = mask > threshold
+
         skio.imsave("{}/{}_{}.{}".format(
             save_directory, args.base_name, i, args.extension
         ), mask, check_contrast=False)
