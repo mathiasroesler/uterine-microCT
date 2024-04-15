@@ -14,3 +14,4 @@ tensorboard-data-server
 tensorflow
 tensorflow-io-gcs-filesystem
 keras_unet
+h5py
