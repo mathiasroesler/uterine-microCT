@@ -3,6 +3,7 @@ From: ubuntu:22.04
 
 %files
     /home/mroe734/Documents/phd/requirements.txt /requirements.txt
+    /home/mroe734/.local/lib/python3.10/site-packages/keras_unet/metrics.py /metrics.py
 
 %post
     # Update package lists and install necessary packages
@@ -12,6 +13,8 @@ From: ubuntu:22.04
         && rm -rf /var/lib/apt/lists/*
 
     pip install -r /requirements.txt
+    # Hack to try and modify the metrics to be able to save models
+    mv /metrics.py /usr/local/lib/python3.10/dist-packages/keras_unet
 
 %environment
     export PATH=/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin:$PATH
