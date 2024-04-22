@@ -232,7 +232,7 @@ def findProjectionPoints(img, centre_point, nb_points, horn):
                 img[i, line_x[i]:] = 0
 
             elif horn == "right":
-                img[i, : line_x[i]] = 0
+                img[i, :line_x[i]+1] = 0
 
     # Select the correct centre point based on the horn
     if horn == "left":
