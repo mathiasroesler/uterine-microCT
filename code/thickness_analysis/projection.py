@@ -3,7 +3,7 @@
 #
 # projection.py: Functions used to find the projections points
 # Author: Mathias Roesler
-# Last modified: 06/23
+# Last modified: 04/24
 
 import logging
 import sys
@@ -94,6 +94,99 @@ def separationLine(img_shape, centre_point, normal):
     )
 
     return line_x, line_y
+
+
+def excludeCentralPoints(img, centre_points, projection_points, horn):
+    """Remove the projection points in the exclusion zone
+
+    Arguments:
+    img -- ndarray, image to analyse.
+    centre_points -- list[int], coordinates of the centre points (XY).
+    projection_points -- ndarray, list of the coordinates of the
+        projection points.
+    horn -- str {left, right}, horn that is being analysed.
+
+    Return:
+    projection_points_cleaned -- ndarray, list of the coordinates of the
+        projection points without those in the exclusion zone.
+    """
+    # Create the line between left and right horn centre points
+    hline_y, hline_x = skd.line(centre_points[1], centre_points[0],
+                                centre_points[5], centre_points[4])
+    hline = img[hline_y, hline_x]
+
+    # Find the indices of the inner and outer edges of the cervix
+    coords = np.where(hline[:-1] != hline[1:])[0]
+
+    # Normal vector for the horizontal line
+    normal = utils.getVector(
+        np.array([centre_points[5], centre_points[0]]),
+        np.array([centre_points[1], centre_points[4]]),
+    )
+
+    match horn:
+        case "left":
+            h_point = [hline_x[coords[0]-1], hline_y[coords[0]-1]]
+
+            # Create the lines delimiting the exclusion zone
+            first_vline_x, first_vline_y = separationLine(
+                img.shape, h_point, normal)
+            second_vline_x, second_vline_y = separationLine(
+                img.shape, centre_points[2:4], normal)
+
+        case "right":
+            h_point = [hline_x[coords[1]+1], hline_y[coords[1]+1]]
+
+            # Create the lines delimiting the exclusion zone
+            first_vline_x, first_vline_y = separationLine(
+                img.shape, centre_points[2:4], normal)
+            second_vline_x, second_vline_y = separationLine(
+                img.shape, h_point, normal)
+
+    first_vline_vector = utils.getVector(
+        np.array([first_vline_x[0], first_vline_y[0]]),
+        np.array([first_vline_x[-1], first_vline_y[-1]]))
+    second_vline_vector = utils.getVector(
+        np.array([second_vline_x[0], second_vline_y[0]]),
+        np.array([second_vline_x[-1], second_vline_y[-1]]))
+
+    unit_vector = np.array([1, 0])  # Unit vector x direction
+
+    # Get angles between x direction and exclusion lines
+    first_angle = utils.getAngle(first_vline_vector, unit_vector)
+    second_angle = utils.getAngle(second_vline_vector, unit_vector)
+
+    # Create an array to store point indices
+    ind_to_del = np.array([], dtype=int)
+
+    for i, point in enumerate(projection_points):
+        # Check if points are in exclusion zone
+        vec1 = utils.getVector(
+            np.array([first_vline_x[0], first_vline_y[0]]),
+            point
+        )
+        vec2 = utils.getVector(
+            np.array([second_vline_x[0], second_vline_y[0]]),
+            point
+        )
+
+        angle1 = utils.getAngle(vec1, unit_vector)
+        angle2 = utils.getAngle(vec2, unit_vector)
+
+        if angle1 <= first_angle and angle2 >= second_angle:
+            # If true add index to list marked for deletion
+            ind_to_del = np.append(ind_to_del, i)
+
+            if i % 2 == 0:
+                # If even add next index
+                ind_to_del = np.append(ind_to_del, i+1)
+
+            else:
+                # If odd add previous index
+                ind_to_del = np.append(ind_to_del, i-1)
+
+    ind_to_del = np.unique(ind_to_del)  # Remove duplicates
+    return np.delete(projection_points, ind_to_del, axis=0)
 
 
 def findProjectionPoints(img, centre_point, nb_points, horn):
