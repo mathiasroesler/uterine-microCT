@@ -449,6 +449,11 @@ def estimateMuscleThickness(img_stack, centreline, nb_points, slice_nbs, horn):
             projection_points = findProjectionPoints(
                 img, centreline[i, :], nb_points, horn
             )
+
+            if (centreline[i, 2:4] != np.array([0, 0])).all():
+                projection_points = excludeCentralPoints(
+                    img, centreline[i, :], projection_points, horn)
+
             diff = np.diff(projection_points, axis=0)
             norm = np.linalg.norm(diff, axis=1)
             thickness = norm[np.arange(0, projection_points.shape[0], 2)]
