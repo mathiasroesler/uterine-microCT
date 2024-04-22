@@ -57,8 +57,8 @@ def findLineCoordinates(img_shape, centre_point, theta):
     return line_x, line_y
 
 
-def separateHorns(img_shape, centre_point, normal):
-    """Finds the line in the image given an angle and a point.
+def separationLine(img_shape, centre_point, normal):
+    """Finds the line in the image given a normal and a point.
 
     Arguments:
     img_shape -- ndarray, shape of the image that is being analysed.
@@ -132,7 +132,7 @@ def findProjectionPoints(img, centre_point, nb_points, horn):
         normal = normal / np.linalg.norm(normal)
 
         # Use the middle point to draw a line
-        line_x, _ = separateHorns(img.shape, centre_point[2:4], normal)
+        line_x, _ = separationLine(img.shape, centre_point[2:4], normal)
 
         for i in range(len(line_x)):
             # Clear half of the image based on the horn
