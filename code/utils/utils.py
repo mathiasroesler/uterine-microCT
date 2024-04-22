@@ -91,6 +91,55 @@ def saveImageStack(img_stack, save_path, img_prefix, start_nb=0,
             i += 1
 
 
+def getVector(p1, p2):
+    """ Finds the vector given two points
+
+    Arguments:
+    p1 -- np.array, first point.
+    p2 -- np.array, second point.
+
+    Return:
+    vec -- np.array, normalised vector between p1 and p2.
+
+    """
+    try:
+        assert (p1.shape == p2.shape)
+
+    except AssertionError:
+        sys.stderr.write("Error: both points should have the same shape")
+        exit()
+
+    vec = p2 - p1
+    vec = vec / np.linalg.norm(vec)
+
+    return vec
+
+
+def getAngle(v1, v2):
+    """ Finds the angle given two vectors
+
+    Arguments:
+    v1 -- np.array, first vector.
+    v2 -- np.array, second vector.
+
+    Return:
+    angle -- float, angle between v1 and v2 in rad.
+
+    """
+    try:
+        assert (v1.shape == v2.shape)
+
+    except AssertionError:
+        sys.stderr.write("Error: both vectors should have the same shape")
+        exit()
+
+    angle = np.arccos(np.dot(v1, v2) / (
+        np.linalg.norm(v1) * np.linalg.norm(v2))
+    )
+
+    return angle
+
+
 def parseTOML(toml_file):
     """ Parse a toml file
 
