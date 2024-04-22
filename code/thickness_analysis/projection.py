@@ -10,6 +10,7 @@ import sys
 
 import numpy as np
 import skimage.draw as skd
+import utils.utils as utils
 
 
 def findLineCoordinates(img_shape, centre_point, theta):
@@ -124,12 +125,10 @@ def findProjectionPoints(img, centre_point, nb_points, horn):
     if (centre_point[2:4] != np.array([0, 0])).all():
         # The horns are not clearly separated and three points are given
         # Create a vector between the left and right points
-        normal = np.array(
-            [centre_point[1] - centre_point[5],
-             centre_point[4] - centre_point[0]]
+        normal = utils.getVector(
+            np.array([centre_point[5], centre_point[0]]),
+            np.array([centre_point[1], centre_point[4]]),
         )
-
-        normal = normal / np.linalg.norm(normal)
 
         # Use the middle point to draw a line
         line_x, _ = separationLine(img.shape, centre_point[2:4], normal)
