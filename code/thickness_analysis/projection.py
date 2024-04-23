@@ -407,6 +407,17 @@ def alignBorder(thickness):
     # Find the maximal thickness which typically is AM border
     max_idx = np.argmax(ordered_thickness)
 
+    if np.isnan(ordered_thickness[max_idx]):
+        if ~np.isnan(ordered_thickness[right_half][-1]) and ~np.isnan(
+                ordered_thickness[left_half][0]):
+            # The nan values are in the middle
+            nan_indices = np.where(np.isnan(ordered_thickness))[0]
+            max_idx = nan_indices[len(nan_indices) // 2]
+
+        else:
+            # The nan values are already on each side of the array
+            max_idx = 0
+
     # Roll array to line up 0 with anti-mesometrial border
     ordered_thickness = np.roll(ordered_thickness, nb_points - max_idx)
 
@@ -503,7 +514,6 @@ def estimateMuscleThickness(img_stack, centreline, nb_points, slice_nbs, horn):
                 "Warning: unable to process image number {}\n".format(i))
             idx_removed_slices.append(i)
             logger.exception(err)
-
     # Remove the slices the values of the slices that were not processed
     muscle_thickness_array = np.delete(muscle_thickness_array,
                                        idx_removed_slices)
