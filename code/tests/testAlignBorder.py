@@ -40,6 +40,8 @@ def alignBorderTest():
             diff = np.diff(projection_points, axis=0)
             norm = np.linalg.norm(diff, axis=1)
             thickness = norm[np.arange(0, projection_points.shape[0], 2)]
+            exclusion_indices = np.where(thickness == 0)[0]
+            thickness[exclusion_indices] = float('nan')
 
             # Find the two halves
             indices = np.arange(len(projection_points))
