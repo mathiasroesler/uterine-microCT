@@ -459,6 +459,9 @@ def estimateMuscleThickness(img_stack, centreline, nb_points, slice_nbs, horn):
             diff = np.diff(projection_points, axis=0)
             norm = np.linalg.norm(diff, axis=1)
             thickness = norm[np.arange(0, projection_points.shape[0], 2)]
+
+            exclusion_indices = np.where(thickness == 0)[0]
+            thickness[exclusion_indices] = float('nan')
             muscle_thickness_array[i] = np.mean(thickness)
 
             # Get points in the inner layer of muscles
@@ -494,6 +497,5 @@ def estimateMuscleThickness(img_stack, centreline, nb_points, slice_nbs, horn):
                                        idx_removed_slices)
 
     radius_array = np.delete(radius_array, idx_removed_slices)
-
     return muscle_thickness_array, np.transpose(
         slice_thickness_array), radius_array
