@@ -189,13 +189,13 @@ def excludeCentralPoints(img, centre_points, projection_points, horn):
     return np.delete(projection_points, ind_to_del, axis=0)
 
 
-def findProjectionPoints(img, centre_point, nb_points, horn):
+def findProjectionPoints(img, centre_points, nb_points, horn):
     """Find the projection points from the centre point onto the muscle
     layers given the desired number of points.
 
     Arguments:
     img -- ndarray, image to analyse.
-    centre_point -- list[int], coordinates of the centre point (XY).
+    centre_points -- list[int], coordinates of the centre points (XY).
     nb_points -- int, number of desired projection points, must be a
         multiple of 2.
     horn -- str {left, right}, horn that is being analysed.
@@ -215,16 +215,16 @@ def findProjectionPoints(img, centre_point, nb_points, horn):
     angles = np.arange(1, 1 + (nb_points / 2)) * (np.pi / (nb_points / 2))
     projection_points = np.zeros((nb_points * 2, 2), dtype=int)
 
-    if (centre_point[2:4] != np.array([0, 0])).all():
+    if (centre_points[2:4] != np.array([0, 0])).all():
         # The horns are not clearly separated and three points are given
         # Create a vector between the left and right points
         normal = utils.getVector(
-            np.array([centre_point[5], centre_point[0]]),
-            np.array([centre_point[1], centre_point[4]]),
+            np.array([centre_points[5], centre_points[0]]),
+            np.array([centre_points[1], centre_points[4]]),
         )
 
         # Use the middle point to draw a line
-        line_x, _ = separationLine(img.shape, centre_point[2:4], normal)
+        line_x, _ = separationLine(img.shape, centre_points[2:4], normal)
 
         for i in range(len(line_x)):
             # Clear half of the image based on the horn
@@ -236,10 +236,10 @@ def findProjectionPoints(img, centre_point, nb_points, horn):
 
     # Select the correct centre point based on the horn
     if horn == "left":
-        centre_point = centre_point[0:2]
+        centre_point = centre_points[0:2]
 
     elif horn == "right":
-        centre_point = centre_point[4:6]
+        centre_point = centre_points[4:6]
 
     for i, theta in enumerate(angles):
         # Find the line for the given angle
@@ -259,6 +259,10 @@ def findProjectionPoints(img, centre_point, nb_points, horn):
                                              theta)
 
         projection_points[i * 4: (i + 1) * 4] = points
+
+    if (centre_points[2:4] != np.array([0, 0])).all():
+        projection_points = excludeCentralPoints(
+            img, centre_points, projection_points, horn)
 
     return projection_points
 
@@ -449,10 +453,6 @@ def estimateMuscleThickness(img_stack, centreline, nb_points, slice_nbs, horn):
             projection_points = findProjectionPoints(
                 img, centreline[i, :], nb_points, horn
             )
-
-            if (centreline[i, 2:4] != np.array([0, 0])).all():
-                projection_points = excludeCentralPoints(
-                    img, centreline[i, :], projection_points, horn)
 
             diff = np.diff(projection_points, axis=0)
             norm = np.linalg.norm(diff, axis=1)
