@@ -230,18 +230,20 @@ def findProjectionPoints(img, centre_points, nb_points, horn):
 
         for i in range(len(line_x)):
             # Clear half of the image based on the horn
-            if horn == "left":
-                img[i, line_x[i]:] = 0
+            match horn:
+                case "left":
+                    img[i, line_x[i]:] = 0
 
-            elif horn == "right":
-                img[i, :line_x[i]+1] = 0
+                case "right":
+                    img[i, :line_x[i]+1] = 0
 
     # Select the correct centre point based on the horn
-    if horn == "left":
-        centre_point = centre_points[0:2]
+    match horn:
+        case "left":
+            centre_point = centre_points[0:2]
 
-    elif horn == "right":
-        centre_point = centre_points[4:6]
+        case "right":
+            centre_point = centre_points[4:6]
 
     for i, theta in enumerate(angles):
         # Find the line for the given angle
@@ -473,11 +475,12 @@ def estimateMuscleThickness(img_stack, centreline, nb_points, slice_nbs, horn):
             ]
 
             # Select the correct centre point based on the horn
-            if horn == "left":
-                centre_point = centreline[i, 0:2]
+            match horn:
+                case "left":
+                    centre_point = centreline[i, 0:2]
 
-            elif horn == "right":
-                centre_point = centreline[i, 4:6]
+                case "right":
+                    centre_point = centreline[i, 4:6]
 
             # Estimate average radius for the slice
             radius_array[i] = np.mean(
