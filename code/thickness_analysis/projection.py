@@ -97,7 +97,7 @@ def separationLine(img_shape, centre_point, normal):
 
 
 def excludeCentralPoints(img, centre_points, projection_points, horn):
-    """Remove the projection points in the exclusion zone
+    """Changes coordinates of points in the exclusion zone to [0, 0]
 
     Arguments:
     img -- ndarray, image to analyse.
@@ -107,8 +107,8 @@ def excludeCentralPoints(img, centre_points, projection_points, horn):
     horn -- str {left, right}, horn that is being analysed.
 
     Return:
-    projection_points_cleaned -- ndarray, list of the coordinates of the
-        projection points without those in the exclusion zone.
+    projection_points -- ndarray, list of the coordinates of the
+        projection points with [0, 0] coordinates if in the exclusion zone.
     """
     # Create the line between left and right horn centre points
     hline_y, hline_x = skd.line(centre_points[1], centre_points[0],
@@ -186,7 +186,9 @@ def excludeCentralPoints(img, centre_points, projection_points, horn):
                 ind_to_del = np.append(ind_to_del, i-1)
 
     ind_to_del = np.unique(ind_to_del)  # Remove duplicates
-    return np.delete(projection_points, ind_to_del, axis=0)
+    projection_points[ind_to_del] = np.array([0, 0])
+
+    return projection_points
 
 
 def findProjectionPoints(img, centre_points, nb_points, horn):
