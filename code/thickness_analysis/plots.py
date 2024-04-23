@@ -175,7 +175,7 @@ def plotAngularThickness(slice_thickness, projection=False):
             plt.xlim([0, 2 * np.pi])
             plt.ylim([0, 1.1])
             ticks = np.linspace(0, 2 * np.pi, 9)
-            plt.legend(loc="upper center")
+            plt.legend(loc="upper left")
 
             plt.xticks(
                 ticks=ticks,
