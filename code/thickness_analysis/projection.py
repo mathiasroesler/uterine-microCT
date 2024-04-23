@@ -110,6 +110,9 @@ def excludeCentralPoints(img, centre_points, projection_points, horn):
     projection_points -- ndarray, list of the coordinates of the
         projection points with [0, 0] coordinates if in the exclusion zone.
     """
+    # Ensure that coordinates are integers
+    centre_points = np.array([np.round(x) for x in centre_points], dtype=int)
+
     # Create the line between left and right horn centre points
     hline_y, hline_x = skd.line(centre_points[1], centre_points[0],
                                 centre_points[5], centre_points[4])
