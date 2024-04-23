@@ -69,7 +69,7 @@ def plotMuscleThickness(muscle_thickness, errors):
 
     ax.tick_params(length=6, width=2, labelsize=12)
 
-    plt.ylim([0, 0.7])
+    plt.ylim([0, 1])
     plt.xlim([0, 1])
     plt.xlabel("Locations", fontsize=12)
     plt.ylabel("Muscle thickness (mm)", fontsize=12)
