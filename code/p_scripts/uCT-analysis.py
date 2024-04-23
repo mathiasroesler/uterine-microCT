@@ -130,10 +130,11 @@ if __name__ == "__main__":
         nb_slices = len(centreline) - 1  # Number of slices in the horn
 
         print("   Estimating muscle thickness")
-        muscle_thickness, slice_thickness, radius = projection.estimateMuscleThickness(
-            mask_stack, centreline, args.points,
-            params[horn]["slice_nbs"], horn
-        )
+        muscle_thickness, slice_thickness, radius = \
+            projection.estimateMuscleThickness(
+                mask_stack, centreline, args.points,
+                params[horn]["slice_nbs"], horn
+            )
 
         # Estimate horn length
         print("   Estimating horn length")
