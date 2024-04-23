@@ -473,6 +473,9 @@ def estimateMuscleThickness(img_stack, centreline, nb_points, slice_nbs, horn):
             inner_points = projection_points[
                 np.arange(0, projection_points.shape[0], 2)
             ]
+            # Remove projection points in the exclusion zone
+            inner_indices = np.where(inner_points != np.array([0, 0]))[0]
+            inner_points = inner_points[inner_indices]
 
             # Select the correct centre point based on the horn
             match horn:
