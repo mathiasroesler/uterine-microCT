@@ -399,8 +399,10 @@ def alignBorder(thickness):
     ordered_thickness = np.concatenate((thickness[right_half],
                                         thickness[left_half]))
 
-    # Roll array to line up 0 with anti-mesometrial border
+    # Find the maximal thickness which typically is AM border
     max_idx = np.argmax(ordered_thickness)
+
+    # Roll array to line up 0 with anti-mesometrial border
     ordered_thickness = np.roll(ordered_thickness, nb_points - max_idx)
 
     return ordered_thickness
