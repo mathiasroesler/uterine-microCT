@@ -47,6 +47,10 @@ if __name__ == "__main__":
                                   args.base_name)
     save_directory = load_directory + "/masks"
 
+    # Check directory exists
+    if not os.path.isdir(save_directory):
+        os.mkdir(save_directory)
+
     imgs = utils.loadImageStack(load_directory + "/imgs")
 
     # Convert to floats between 0 and 1

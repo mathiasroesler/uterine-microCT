@@ -49,6 +49,10 @@ if __name__ == "__main__":
                                   args.base_name)
     save_directory = os.path.join(load_directory, "resized/")
 
+    # Check directory exists
+    if not os.path.isdir(save_directory):
+        os.mkdir(save_directory)
+
     img_list = sorted(glob.glob("*.{}".format(args.extension),
                                 root_dir=load_directory))
 
