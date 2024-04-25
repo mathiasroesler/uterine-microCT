@@ -6,6 +6,7 @@
 # Last modified: 04/24
 
 import os
+import glob
 import argparse
 
 import numpy as np
@@ -53,6 +54,8 @@ if __name__ == "__main__":
         os.mkdir(save_directory)
 
     imgs = utils.loadImageStack(load_directory + "/imgs")
+    img_names = sorted(glob.glob("*.{}".format(args.extension),
+                                 root_dir=load_directory + "/imgs"))
 
     # Convert to floats between 0 and 1
     imgs = np.asarray(imgs, dtype=np.float32) / imgs.max()
@@ -81,6 +84,6 @@ if __name__ == "__main__":
         threshold = threshold_otsu(mask)
         mask = mask > threshold
 
-        skio.imsave("{}/{}_{}.{}".format(
-            save_directory, args.base_name, i, args.extension
-        ), img_as_ubyte(mask), check_contrast=False)
+        skio.imsave("{}/{}.{}".format(
+            save_directory, os.path.splitext(img_names[i])[0],
+            args.extension), img_as_ubyte(mask), check_contrast=False)
