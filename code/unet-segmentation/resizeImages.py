@@ -91,5 +91,6 @@ if __name__ == "__main__":
 
                 # Save the image block
                 skio.imsave("{}/{}_block_{}_{}.{}".format(
-                    save_directory, img_name, i, j, args.extension
-                ), img_as_ubyte(img_block), check_contrast=False)
+                    save_directory, os.path.splitext(img_name)[0],
+                    i, j, args.extension),
+                    img_as_ubyte(img_block), check_contrast=False)
