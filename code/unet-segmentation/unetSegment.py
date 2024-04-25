@@ -14,6 +14,7 @@ import utils.utils as utils
 import skimage.io as skio
 
 from skimage.filters import threshold_otsu
+from skimage.util import img_as_ubyte
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -82,4 +83,4 @@ if __name__ == "__main__":
 
         skio.imsave("{}/{}_{}.{}".format(
             save_directory, args.base_name, i, args.extension
-        ), mask, check_contrast=False)
+        ), img_as_ubyte(mask), check_contrast=False)
