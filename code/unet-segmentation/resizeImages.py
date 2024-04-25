@@ -14,6 +14,8 @@ import numpy as np
 import skimage.io as skio
 import utils.utils as utils
 
+from skimage.util import img_as_ubyte
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Resizes images and masks to be square"
@@ -60,19 +62,30 @@ if __name__ == "__main__":
         img = skio.imread(path, as_gray=True)
         height, width = img.shape
 
-        if height <= new_size and width <= new_size:
-            # Make sure image block is the correct size
-            img_block = np.pad(img, ((0, new_size-img.shape[0]),
-                                     (0, new_size-img.shape[1])
-                                     )
-                               )
-
-            skio.imsave("{}/{}_block_{}_{}.{}".format(
-                save_directory, img_name, 0, 0, args.extension
-            ), img_block, check_contrast=False)
-
+        if height % new_size:
+            # Height padding
+            pad_h = new_size * ((height // new_size) + 1) - height
         else:
-            img_block = img[:512, :512]
-            skio.imsave("{}/{}_block_{}_{}.{}".format(
-                save_directory, img_name, 0, 0, args.extension
-            ), img_block, check_contrast=False)
+            pad_h = 0
+
+        if width % new_size:
+            # Width padding
+            pad_w = new_size * ((width // new_size) + 1) - width
+        else:
+            pad_w = 0
+
+        # Pad image
+        padded_img = np.pad(img, ((0, pad_h), (0, pad_w)))
+
+        for i in range((height + pad_h) // new_size):
+            for j in range((width + pad_w) // new_size):
+                # Get each image block
+                img_block = padded_img[
+                    i*new_size:(i+1)*new_size,
+                    j*new_size:(j+1)*new_size
+                ]
+
+                # Save the image block
+                skio.imsave("{}/{}_block_{}_{}.{}".format(
+                    save_directory, img_name, i, j, args.extension
+                ), img_as_ubyte(img_block), check_contrast=False)
