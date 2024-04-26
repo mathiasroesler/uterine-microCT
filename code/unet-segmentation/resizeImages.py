@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# cropImages.py: Script to resize images to for unet model
+# resizeImages.py: Script to resize images to for unet model
 # Author: Mathias Roesler
 # Last modified: 04/24
 
