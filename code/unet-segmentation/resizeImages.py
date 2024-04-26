@@ -64,19 +64,11 @@ if __name__ == "__main__":
             exit()
 
         img = skio.imread(path, as_gray=True)
+
+        # Getting padding values
         height, width = img.shape
-
-        if height % new_size:
-            # Height padding
-            pad_h = new_size * ((height // new_size) + 1) - height
-        else:
-            pad_h = 0
-
-        if width % new_size:
-            # Width padding
-            pad_w = new_size * ((width // new_size) + 1) - width
-        else:
-            pad_w = 0
+        pad_h = utils.findPadding(height, new_size)
+        pad_w = utils.findPadding(width, new_size)
 
         # Pad image
         padded_img = np.pad(img, ((0, pad_h), (0, pad_w)))
