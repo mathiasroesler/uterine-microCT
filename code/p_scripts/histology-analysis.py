@@ -45,6 +45,13 @@ if __name__ == "__main__":
         default=128,
     )
     parser.add_argument(
+        "--horn",
+        type=str,
+        choices={"left", "right", "both"},
+        help="horn to process",
+        default="both",
+    )
+    parser.add_argument(
         "-P",
         "--polar",
         action="store_true",
@@ -70,51 +77,59 @@ if __name__ == "__main__":
     avg_slice_thickness = dict()
     errors = dict()
 
-    # Use only the right horn
-    horn = "right"
+    # Convert both to left and right
+    if args.horn == "both":
+        horns = ["left", "right"]
 
-    print("Processing {} horn".format(horn))
-    print("   Loading mask stack")
-    mask_stack = utils.loadImageStack(
-        os.path.join(load_directory, "{}".format(horn)),
-        extension=args.extension
-    )
+    else:
+        horns = [args.horn]
 
-    circular_win_size = round(0.04 * args.points)
-
-    print("   Loading centreline")
-    centreline_dict = scipy.io.loadmat(
-        load_directory + "/{}/centreline.mat".format(horn)
-    )
-    centreline = np.transpose(centreline_dict["centreline"])
-
-    # Artificially create centrepoints to exclude central region of the cervix
-    if np.all(centreline[0][2:4] == np.array([0, 0])):
-        y_coord = centreline[0][-1]
-        centreline[0][0:4] = np.array([325, y_coord, 325, y_coord])
-
-    print("   Estimating muscle thickness")
-    muscle_thickness, slice_thickness, _ = projection.estimateMuscleThickness(
-        mask_stack, centreline, args.points, params[horn]["slice_nbs"], horn
-    )
-
-    # Rescale the thickness to mm
-    muscle_thickness *= params["scaling_factor"]
-    slice_thickness *= params["scaling_factor"]
-
-    print(
-        "{} horn muscle thickness: {:.2f} \u00B1 {:.2f}".format(
-            horn, np.mean(muscle_thickness), np.std(muscle_thickness)
+    for horn in horns:
+        print("Processing {} horn".format(horn))
+        print("   Loading mask stack")
+        mask_stack = utils.loadImageStack(
+            os.path.join(load_directory, "{}".format(horn)),
+            extension=args.extension
         )
-    )
 
-    avg_slice_thickness[horn] = utils.circularAverage(
-        slice_thickness, circular_win_size
-    ).round(5)
+        circular_win_size = round(0.04 * args.points)
 
-    # Plot everything
-    plots.plotAngularThickness(avg_slice_thickness, projection=args.polar)
+        print("   Loading centreline")
+        centreline_dict = scipy.io.loadmat(
+            load_directory + "/{}/centreline.mat".format(horn)
+        )
+        centreline = np.transpose(centreline_dict["centreline"])
 
-    # Save angular thickness
-    with open(load_directory + "/angular_thickness.pkl", "wb") as f:
-        pickle.dump(avg_slice_thickness, f)
+        # Artificially create centrepoints to exclude central
+        # region of the cervix
+        if np.all(centreline[0][2:4] == np.array([0, 0])):
+            y_coord = centreline[0][-1]
+            centreline[0][0:4] = np.array([325, y_coord, 325, y_coord])
+
+        print("   Estimating muscle thickness")
+        muscle_thickness, slice_thickness, _ = \
+            projection.estimateMuscleThickness(
+                mask_stack, centreline, args.points,
+                params[horn]["slice_nbs"], horn
+            )
+
+        # Rescale the thickness to mm
+        muscle_thickness *= params["scaling_factor"]
+        slice_thickness *= params["scaling_factor"]
+
+        print(
+            "{} horn muscle thickness: {:.2f} \u00B1 {:.2f}".format(
+                horn, np.mean(muscle_thickness), np.std(muscle_thickness)
+            )
+        )
+
+        avg_slice_thickness[horn] = utils.circularAverage(
+            slice_thickness, circular_win_size
+        ).round(5)
+
+        # Plot everything
+        plots.plotAngularThickness(avg_slice_thickness, projection=args.polar)
+
+        # Save angular thickness
+        with open(load_directory + "/angular_thickness.pkl", "wb") as f:
+            pickle.dump(avg_slice_thickness, f)
