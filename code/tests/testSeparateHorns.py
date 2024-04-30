@@ -41,15 +41,12 @@ def separateHornsTest():
                 # The horns are not clearly separated, three points are given
                 # Create a vector between the left and right points
 
-                n = np.array(
-                    [
-                        centre_point[1] - centre_point[5],
-                        centre_point[4] - centre_point[0],
-                    ]
+                n = utils.getVector(
+                    np.array([centre_point[5], centre_point[0]]),
+                    np.array([centre_point[1], centre_point[4]]),
                 )
-                n = n / np.linalg.norm(n)
 
-                line_x, line_y = projection.separateHorns(
+                line_x, line_y = projection.separationLine(
                     img.shape, centre_point[2:4], n
                 )
 
