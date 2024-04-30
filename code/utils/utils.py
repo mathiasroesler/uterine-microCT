@@ -109,7 +109,7 @@ def getVector(p1, p2):
         sys.stderr.write("Error: both points should have the same shape")
         exit()
 
-    vec = p2 - p1
+    vec = p2.astype(np.int16) - p1.astype(np.int16)
     vec = vec / np.linalg.norm(vec)
 
     return vec
