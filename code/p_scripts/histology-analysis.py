@@ -89,8 +89,9 @@ if __name__ == "__main__":
     centreline = np.transpose(centreline_dict["centreline"])
 
     # Artificially create centrepoints to exclude central region of the cervix
-    y_coord = centreline[0][-1]
-    centreline[0][0:4] = np.array([325, y_coord, 325, y_coord])
+    if np.all(centreline[0][2:4] == np.array([0, 0])):
+        y_coord = centreline[0][-1]
+        centreline[0][0:4] = np.array([325, y_coord, 325, y_coord])
 
     print("   Estimating muscle thickness")
     muscle_thickness, slice_thickness, _ = projection.estimateMuscleThickness(
