@@ -155,6 +155,14 @@ The average thickness, the average radius, and the length of each horn will be d
 variations and the plots of the angular thickness of the __4__ slices selected in the configuration file
 will be displayed. The angular and average thicknesses will be saved in the muscle_segmentation folder.
 
+If only a small number of slices are used, with histology for example, the analysis can be performed with the 
+__slice-analysis.py__ script located in the p_scripts folder. To see the arguments and options of the 
+script, use the --help flag:
+```bash
+python3 slice-analysis.py --help
+```
+Only the plots of the angular thickness of the __4__ slices selected in the configuration file
+will be displayed. The angular thicknesses will be saved in the muscle_segmentation folder.
 <a id="fibre"></a>
 #### Fibre analysis
 The muscle fibres can be extracted from the muscle segmentation masks. The __STPipeline.m__ script
