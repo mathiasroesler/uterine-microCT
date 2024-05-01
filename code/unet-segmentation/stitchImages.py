@@ -47,12 +47,6 @@ if __name__ == "__main__":
 
     main_directory = os.path.join(utils.HOME, utils.BASE, args.dir_path,
                                   args.base_name)
-    load_directory = os.path.join(main_directory, "masks/")
-    save_directory = os.path.join(main_directory, "stitched/")
-
-    # Check directory exists
-    if not os.path.isdir(save_directory):
-        os.mkdir(save_directory)
 
     if not args.not_d:
         # If the dataset is downsampled
@@ -63,6 +57,13 @@ if __name__ == "__main__":
     else:
         # If not use top-level parameter file
         param_file = os.path.join(main_directory, args.base_name + ".toml")
+
+    load_directory = os.path.join(main_directory, "masks/")
+    save_directory = os.path.join(main_directory, "stitched/")
+    #
+    # Check directory exists
+    if not os.path.isdir(save_directory):
+        os.mkdir(save_directory)
 
     # Get necessary parameters
     params = utils.parseTOML(param_file)
