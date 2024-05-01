@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# histology-analysis.py: Script to generate the thickness based on histology
+# slice-analysis.py: Script to generate the thickness based on slices
 # Author: Mathias Roesler
-# Last modified: 06/23
+# Last modified: 04/24
 
 import argparse
 import os
@@ -18,8 +18,7 @@ import utils.utils as utils
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Specific script to generate the thickness plot "
-        "based on histology"
+        description="Script to generate the thickness plots based on slices"
     )
 
     parser.add_argument(
