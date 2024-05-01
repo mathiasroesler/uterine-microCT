@@ -57,6 +57,11 @@ if __name__ == "__main__":
         help="switches the labels of the left and right horn, default False",
     )
     parser.add_argument(
+        "--uCT-flag",
+        action="store_true",
+        help="flag to set data is from microCT or histology, default False",
+    )
+    parser.add_argument(
         "-P",
         "--polar",
         action="store_true",
@@ -141,10 +146,12 @@ if __name__ == "__main__":
     if len(horns) == 2:
         for horn in horns:
             plots.plotAngularThickness(
-                {horn: avg_slice_thickness[horn]}, projection=args.polar
+                {horn: avg_slice_thickness[horn]}, projection=args.polar,
+                uCT_flag=args.uCT_flag
             )
     else:
-        plots.plotAngularThickness(avg_slice_thickness, projection=args.polar)
+        plots.plotAngularThickness(avg_slice_thickness, projection=args.polar,
+                                   uCT_flag=args.uCT_flag)
 
     # Save angular thickness
     with open(load_directory + "/angular_thickness.pkl", "wb") as f:
