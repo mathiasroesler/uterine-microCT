@@ -62,7 +62,7 @@ if __name__ == "__main__":
         # If not use top-level parameter file
         param_file = os.path.join(load_directory, args.base_name + ".toml")
 
-    save_directory = os.path.join(load_directory, "resized/")
+    save_directory = os.path.join(load_directory, "imgs/")
     # Check directory exists
     if not os.path.isdir(save_directory):
         os.mkdir(save_directory)
