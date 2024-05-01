@@ -55,12 +55,6 @@ if __name__ == "__main__":
     if not args.not_d:
         # If the dataset is downsampled
         load_directory = os.path.join(load_directory, "downsampled")
-        param_file = os.path.join(
-            load_directory, args.base_name + "_downsampled.toml")
-
-    else:
-        # If not use top-level parameter file
-        param_file = os.path.join(load_directory, args.base_name + ".toml")
 
     save_directory = os.path.join(load_directory, "imgs/")
     # Check directory exists
