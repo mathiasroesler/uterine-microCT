@@ -33,6 +33,11 @@ if __name__ == "__main__":
         help="size of the new training image"
     )
     parser.add_argument(
+        "--not-d",
+        action="store_true",
+        help="flag used if the dataset is not downsampled, default False",
+    )
+    parser.add_argument(
         "-e",
         "--extension",
         type=str,
@@ -47,8 +52,17 @@ if __name__ == "__main__":
     new_size = args.new_size
     load_directory = os.path.join(utils.HOME, utils.BASE, args.dir_path,
                                   args.base_name)
-    save_directory = os.path.join(load_directory, "resized/")
+    if not args.not_d:
+        # If the dataset is downsampled
+        load_directory = os.path.join(load_directory, "downsampled")
+        param_file = os.path.join(
+            load_directory, args.base_name + "_downsampled.toml")
 
+    else:
+        # If not use top-level parameter file
+        param_file = os.path.join(load_directory, args.base_name + ".toml")
+
+    save_directory = os.path.join(load_directory, "resized/")
     # Check directory exists
     if not os.path.isdir(save_directory):
         os.mkdir(save_directory)
