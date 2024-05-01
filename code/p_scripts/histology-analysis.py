@@ -52,6 +52,12 @@ if __name__ == "__main__":
         default="both",
     )
     parser.add_argument(
+        "-s",
+        "--switch",
+        action="store_true",
+        help="switches the labels of the left and right horn, default False",
+    )
+    parser.add_argument(
         "-P",
         "--polar",
         action="store_true",
@@ -84,7 +90,7 @@ if __name__ == "__main__":
     else:
         horns = [args.horn]
 
-    for horn in horns:
+    for i, horn in enumerate(horns):
         print("Processing {} horn".format(horn))
         print("   Loading mask stack")
         mask_stack = utils.loadImageStack(
@@ -123,13 +129,24 @@ if __name__ == "__main__":
             )
         )
 
-        avg_slice_thickness[horn] = utils.circularAverage(
-            slice_thickness, circular_win_size
-        ).round(5)
+        if args.switch:
+            avg_slice_thickness[horns[i - 1]] = utils.circularAverage(
+                slice_thickness, circular_win_size
+            ).round(5)
+
+        else:
+            avg_slice_thickness[horn] = utils.circularAverage(
+                slice_thickness, circular_win_size).round(5)
 
         # Plot everything
+    if len(horns) == 2:
+        for horn in horns:
+            plots.plotAngularThickness(
+                {horn: avg_slice_thickness[horn]}, projection=args.polar
+            )
+    else:
         plots.plotAngularThickness(avg_slice_thickness, projection=args.polar)
 
-        # Save angular thickness
-        with open(load_directory + "/angular_thickness.pkl", "wb") as f:
-            pickle.dump(avg_slice_thickness, f)
+    # Save angular thickness
+    with open(load_directory + "/angular_thickness.pkl", "wb") as f:
+        pickle.dump(avg_slice_thickness, f)
