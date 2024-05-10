@@ -8,6 +8,9 @@
    1. [Setup](#setup)
    2. [Resampling](#resampling)
    3. [Segmentation](#segmentation)
+	   1. [MATLAB segmentation](#matlab-segmentation)
+	   2. [UNet segmentation](#unet-segmentation)
+	   3. [Format conversion](#format-conversion)
    4. [Analysis](#analysis)
        1. [Thickness analysis](#thickness)
        2. [Fibre analysis](#fibre)
@@ -93,29 +96,58 @@ following the structure presented in the previous section.
 
 The MATLAB and Python scripts use a base directory which is the path to the microCT folder from $HOME.
 The default path is Documents/phd. The base directory can be changed for the MATLAB scripts by editing 
-the __baseDir.m__ function and for the Python scripts by editing the BASE variable in the __utils.py__
- file. Both of these files are located in the utils folder. 
+the __baseDir.m__ function and for the Python scripts by editing the BASE variable in the __utils.py__ file. Both of these files are located in the utils folder. 
 
 <a id="resampling"></a>
 ### Resampling 
 The image of the original $`\mu`$CT dataset can be downsampled using the __downsampleMicroCTDataset.m__ script 
 located in the m_scripts folder. The numbers of the first and last images to be downsampled are specified
-in the configuration file. The downsampled images will be saved in the downsampled folder.\
+in the configuration file. The downsampled images will be saved in the downsampled folder.
+
 The images can either be downsampled by a given factor (less than 1), or the new resolutions for each axis can be 
-provided as a 3D vector [x y z]. To upsample the images use a factor greater than 1. \
+provided as a 3D vector [x y z]. To upsample the images use a factor greater than 1. 
+
 Similarly, the segmentation masks can be upsampled with the __upsampleMicroCTDatasetSegmentation.m__ script located
 in the m_scripts folder. The masks are loaded from one of the segmentation folders and saved in the top-level 
 muscle_segmentation folder.
 
 <a id="segmentation"></a>
-### Segmentation 
+### Segmentation
+<a id="matlab-segmentation"></a>
+#### MATLAB segmentation 
 The image of the downsampled or original dataset can be segmented with the __segmentMicroCTDataset.m__
 script located in the m_scripts folder. There are four types of segmentation possible: fat, tissue,
 shape, and muscle. The segmentation masks are saved in different folders depending on the chosen type.
 For example, the muscle segmentation masks will be saved in the muscle_segmentation folder, and the
-tissue segmentation masks will be saved in the tissue_segmentation folder. The parameters for the 
-segmentation script are set in the configuration file.
+tissue segmentation masks will be saved in the tissue_segmentation folder. The parameters for the segmentation script are set in the configuration file.
+<a id="unet-segmentation"></a>
+#### UNet segmentation
+The images can be segmented using a UNet deep neural network as well. 
 
+**NOTE:** The scripts for running inference and training are placed in the unet-segmentation folder. 
+
+##### Training
+The training images should be placed in a specific folder with an imgs folder containing the $`mu`$CT images an a masks folder containing the training masks. As of now, only images that are smaller than 512 x 512 pixels should be placed in the training dataset. 
+
+The **resizeImages.py** script is used to resize the images in the training set to be 512 x 512 pixels by padding the images with 0s. A folder named resized should be created in the imgs and masks folders. The resized images will placed in it once resized. To see the arguments and options of the script, use the --help flag:
+```bash
+python3 resizeImages.py --help
+```
+
+The **unetTraining.py** script trains the network using the images in the training folder. The images and masks are read from the imgs and masks folder. If the they have been resized, the contents of the resized folders need to replace the contents of the imgs and masks folders. The model is saved as unet-model.keras. 
+To see the arguments and options of the script, use the --help flag:
+```bash
+python3 unetTraining.py --help
+```
+
+##### Segmenting
+The **unetSegment.py** script segments a dataset using a trained model. The images should be 512 x 512 pixels and placed in the imgs folder of the dataset directory. The segmentation masks are saved in the masks folder of that directory. 
+To see the arguments and options of the script, use the --help flag:
+```bash
+python3 unetSegment.py --help
+```
+<a id="format-conversion"></a>
+#### Format conversion
 The segmentation masks and $`\mu`$CT images can be converted to a 
 [NIfTI](https://nifti.nimh.nih.gov/nifti-2/) archive with the __nifti-converter.py__ script located in the
  p_scripts folder. To see the arguments and options of the script, use the --help flag:
@@ -124,8 +156,7 @@ python3 nifti-converter.py --help
 ```
 The NIfTI archive can be read by software such as [ITK-SNAP](http://www.itksnap.org/pmwiki/pmwiki.php) to
  edit the segmentation masks. The edited masks can be exported with the __readNiftiSegmentation.m__
-script located in the utils folder. This script requires that the $`\mu`$CT images and the segmentations be 
-located in the same folder.
+script located in the utils folder. This script requires that the $`\mu`$CT images and the segmentations be located in the same folder.
 
 <a id="analysis"></a>
 ### Analysis 

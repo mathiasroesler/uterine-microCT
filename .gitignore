@@ -24,3 +24,6 @@ code/thickness_analysis/*.asv
 
 # Ignore backup files
 *.backup
+        
+# Ignore unet model
+code/unet-segmentation/*.h5

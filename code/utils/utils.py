@@ -156,6 +156,23 @@ def parseTOML(toml_file):
     return data
 
 
+def findPadding(cur_size, new_size):
+    """ Finds the padding size to add to be able to split an image
+
+    Arguments:
+    cur_size -- int, current size.
+    new_size -- int, desired size.
+
+    Return:
+    pad -- int, padding value to make the cur_size divisible by new_size.
+
+    """
+    if cur_size % new_size:
+        return new_size * ((cur_size // new_size) + 1) - cur_size
+    else:
+        return 0
+
+
 def movingAverage(array, window_size):
     """ Computes the moving average of an array
 
