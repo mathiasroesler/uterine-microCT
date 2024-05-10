@@ -130,10 +130,11 @@ if __name__ == "__main__":
         nb_slices = len(centreline) - 1  # Number of slices in the horn
 
         print("   Estimating muscle thickness")
-        muscle_thickness, slice_thickness, radius = projection.estimateMuscleThickness(
-            mask_stack, centreline, args.points,
-            params[horn]["slice_nbs"], horn
-        )
+        muscle_thickness, slice_thickness, radius = \
+            projection.estimateMuscleThickness(
+                mask_stack, centreline, args.points,
+                params[horn]["slice_nbs"], horn
+            )
 
         # Estimate horn length
         print("   Estimating horn length")
@@ -143,17 +144,18 @@ if __name__ == "__main__":
         centreline = np.transpose(centreline_dict["centreline"])
         centreline = np.round(centreline).astype(int)  # Convert to int
 
-        if horn == "left":
-            ind = np.where(centreline[:nb_slices, 0:4] == 0)[0]
-            horn_start = np.append(centreline[ind[0], 0:2], 0)
-            # Divide len by 2 because np.where doubles the length
-            horn_end = np.append(centreline[ind[-1], 0:2], len(ind) / 2)
+        match horn:
+            case "left":
+                ind = np.where(centreline[:nb_slices, 0:4] == 0)[0]
+                horn_start = np.append(centreline[ind[0], 0:2], 0)
+                # Divide len by 2 because np.where doubles the length
+                horn_end = np.append(centreline[ind[-1], 0:2], len(ind) / 2)
 
-        elif horn == "right":
-            ind = np.where(centreline[:nb_slices, 2:6] == 0)[0]
-            horn_start = np.append(centreline[ind[0], 4:6], 0)
-            # Divide len by 2 because np.where doubles the length
-            horn_end = np.append(centreline[ind[-1], 4:6], len(ind) / 2)
+            case "right":
+                ind = np.where(centreline[:nb_slices, 2:6] == 0)[0]
+                horn_start = np.append(centreline[ind[0], 4:6], 0)
+                # Divide len by 2 because np.where doubles the length
+                horn_end = np.append(centreline[ind[-1], 4:6], len(ind) / 2)
 
         length = np.linalg.norm(horn_end - horn_start)
 

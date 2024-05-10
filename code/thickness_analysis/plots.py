@@ -69,7 +69,7 @@ def plotMuscleThickness(muscle_thickness, errors):
 
     ax.tick_params(length=6, width=2, labelsize=12)
 
-    plt.ylim([0, 0.7])
+    plt.ylim([0, 1])
     plt.xlim([0, 1])
     plt.xlabel("Locations", fontsize=12)
     plt.ylabel("Muscle thickness (mm)", fontsize=12)
@@ -79,14 +79,16 @@ def plotMuscleThickness(muscle_thickness, errors):
     plt.show()
 
 
-def plotAngularThickness(slice_thickness, projection=False):
+def plotAngularThickness(slice_thickness, projection=False, uCT_flag=True):
     """Plots the muscle thickness of one slice as a function of the
     angle theta
 
     Arguments:
     slice_thickness -- dict(ndarray), array containing the angluar thickness
-            of four slices for each horn.
+        of four slices for each horn.
     projection -- str, projection type of the plot, default value False.
+    uCT_flag -- bool, True if the data is from microCT False if the data is
+        from histology, default value True.
 
     Return:
 
@@ -99,6 +101,12 @@ def plotAngularThickness(slice_thickness, projection=False):
     if not hasattr(ax, "__len__"):
         # If only one subplot is created
         ax = [ax]  # Convert to list for rest of code to work
+
+    if uCT_flag:
+        data_type = r"$\mu$CT"
+
+    else:
+        data_type = "histology"
 
     for i, horn in enumerate(slice_thickness.keys()):
         y_values = slice_thickness[horn]
@@ -139,7 +147,8 @@ def plotAngularThickness(slice_thickness, projection=False):
             label="Ovarian end",
             linewidth=2,
         )
-        ax[i].set_title("{} horn thickness".format(horn.capitalize()))
+        ax[i].set_title(r"{} horn thickness (from {} data)".format(
+            horn.capitalize(), data_type))
 
         ax[i].tick_params(length=6, width=2, labelsize=12)
 
@@ -175,7 +184,7 @@ def plotAngularThickness(slice_thickness, projection=False):
             plt.xlim([0, 2 * np.pi])
             plt.ylim([0, 1.1])
             ticks = np.linspace(0, 2 * np.pi, 9)
-            plt.legend(loc="upper center")
+            plt.legend(loc="upper left")
 
             plt.xticks(
                 ticks=ticks,

@@ -72,6 +72,12 @@ if __name__ == "__main__":
     histo_data = np.load(histo_directory + "/angular_thickness.pkl",
                          allow_pickle=True)[horn]
 
+    # Set nan values to 0
+    uCT_nan_ind = np.where(np.isnan(uCT_data))
+    histo_nan_ind = np.where(np.isnan(histo_data))
+    uCT_data[uCT_nan_ind[0], uCT_nan_ind[1]] = 0
+    histo_data[histo_nan_ind[0], histo_nan_ind[1]] = 0
+
     try:
         assert uCT_data.shape == histo_data.shape
 

@@ -1,10 +1,11 @@
 # Uterine $`\mu`$CT analysis
+This repository contains code to analyse $`\mu`$CT datasets of rat uteri and used for the paper
+__3D virtual histology of the rat uterus musculature using micro-computed tomography__
 # Table of contents
-1. [General description](#general-description)
-2. [Requirements](#requirements)
-3. [Workflow](#workflow)
-4. [Data folder structure](#structure)
-5. [Usage](#usage)
+1. [Requirements](#requirements)
+2. [Workflow](#workflow)
+3. [Data folder structure](#structure)
+4. [Usage](#usage)
    1. [Setup](#setup)
    2. [Resampling](#resampling)
    3. [Segmentation](#segmentation)
@@ -16,19 +17,16 @@
        2. [Fibre analysis](#fibre)
        3. [Mesh generation](#mesh)
     5. [Visualisation](#visualisation)
-6. [Testing](#testing)
-7. [Data availability](#data-availability)
+5. [Testing](#testing)
+6. [Data availability](#data-availability)
 
-<a id="general-description"></a>
-## General description
-This repository contains code to analyse $`\mu`$CT datasets of rat uteri and used for the paper
-__3D virtual histology of the rat uterus musculature using micro-computed tomography__
 
 <a id="requirements"></a>
 ## Requirements
 The code was run on Linux Ubuntu 22.04.2 LTS\
 The code was developed in [MATLAB](https://www.mathworks.com/products/matlab.html) version 2022a and [Python](https://www.python.org/) version 3.10.6\
 The visualisation was done in [cmgui](https://www.cmiss.org/cmgui/)\
+The MATLAB code requires the **Image Processing Toolbox** package.\
 The required packages for Python are found in requirements.txt\
 This project uses [TOML](https://toml.io/en/) files for configuration.
 
@@ -56,7 +54,9 @@ The folders that contain the data are structured in the following way:
 ```bash
 data
 ├── AWA015_PTA_1_Rec_Trans
+|   ├── AWA015_PTA_1_Rec_Trans.toml
 │   └── downsampled
+│       ├── AWA015_PTA_1_Rec_Trans_downsampled.toml
 │       ├── muscle_segmentation
 │       │   ├── left
 │       │   └── right
@@ -74,8 +74,7 @@ data
 ```
 Configuration files should have the same name as the dataset and be placed in the data folders.\
 There is one configuration file for the main dataset (AWA015_PTA_1_Rec_Trans.toml) and one for the 
-downsampled dataset (AWA015_PTA_1_Rec_Trans_downsampled.toml). The configuration files used in this
-project are placed in the config folder.
+downsampled dataset (AWA015_PTA_1_Rec_Trans_downsampled.toml). Example of the configuration files used in this project are placed in the config folder.
 
 <a id="usage"></a>
 ## Usage 
@@ -127,24 +126,30 @@ The images can be segmented using a UNet deep neural network as well.
 **NOTE:** The scripts for running inference and training are placed in the unet-segmentation folder. 
 
 ##### Training
-The training images should be placed in a specific folder with an imgs folder containing the $`mu`$CT images an a masks folder containing the training masks. As of now, only images that are smaller than 512 x 512 pixels should be placed in the training dataset. 
+The training images should be placed in a specific folder with an imgs folder containing the $`mu`$CT images an a masks folder containing the training masks. The images should be 512 x 512 pixels.
 
-The **resizeImages.py** script is used to resize the images in the training set to be 512 x 512 pixels by padding the images with 0s. A folder named resized should be created in the imgs and masks folders. The resized images will placed in it once resized. To see the arguments and options of the script, use the --help flag:
+The **resizeImages.py** script is used to resize images to be 512 x 512 pixels by splitting images into blocks of 512 x 512 pixels. If they are smaller than the required dimensions, they are simply padded with 0s. The script creates a folder called imgs, if it does not already exist, to save the resized images in. To see the arguments and options of the script, use the --help flag:
 ```bash
 python3 resizeImages.py --help
 ```
 
-The **unetTraining.py** script trains the network using the images in the training folder. The images and masks are read from the imgs and masks folder. If the they have been resized, the contents of the resized folders need to replace the contents of the imgs and masks folders. The model is saved as unet-model.keras. 
+The **unetTraining.py** script trains the network using the images in the training folder. The images and masks are read from the imgs and masks folder inside the training folder. The model is saved as unet-model_vX.h5 and the weights are saved as unet-weights_vX.keras, where X is replaced with the value for the version argument of the script.
 To see the arguments and options of the script, use the --help flag:
 ```bash
 python3 unetTraining.py --help
 ```
 
 ##### Segmenting
-The **unetSegment.py** script segments a dataset using a trained model. The images should be 512 x 512 pixels and placed in the imgs folder of the dataset directory. The segmentation masks are saved in the masks folder of that directory. 
+The **unetSegment.py** script segments a dataset using a trained model. The images should be 512 x 512 pixels and placed in the imgs folder of the dataset directory. The segmentation masks are saved in the masks folder of that directory. If that folder does not exist, the script will create it.
 To see the arguments and options of the script, use the --help flag:
 ```bash
 python3 unetSegment.py --help
+```
+
+The segmentation masks will be 512 x 512 images. The **stitchImages.py** script is used to stitch the image blocks back into their original dimensions. The script will read the images placed in the masks folder and can therefore be used immediately after the **unetSegment.py** script. The stitched images are saved in the stitched folder of that directory. If that folder does not exist, the script will create it.
+To see the arguments and options of the script, use the --help flag:
+```bash
+python3 stitchImages.py --help
 ```
 <a id="format-conversion"></a>
 #### Format conversion
@@ -186,6 +191,14 @@ The average thickness, the average radius, and the length of each horn will be d
 variations and the plots of the angular thickness of the __4__ slices selected in the configuration file
 will be displayed. The angular and average thicknesses will be saved in the muscle_segmentation folder.
 
+If only a small number of slices are used, with histology for example, the analysis can be performed with the 
+__slice-analysis.py__ script located in the p_scripts folder. To see the arguments and options of the 
+script, use the --help flag:
+```bash
+python3 slice-analysis.py --help
+```
+Only the plots of the angular thickness of the __4__ slices selected in the configuration file
+will be displayed. The angular thicknesses will be saved in the muscle_segmentation folder.
 <a id="fibre"></a>
 #### Fibre analysis
 The muscle fibres can be extracted from the muscle segmentation masks. The __STPipeline.m__ script
@@ -258,7 +271,12 @@ data
             └── centreline.mat
 ```
 
-More test sets can be added with a similar structure. The **_sets** variable needs to be updated in the test scripts for it to be included in the tests. 
+The tests are piloted by the test.toml configuration file, which can be found in the config folder. The fields in the test.toml are as follows:
+ - sets, which is a list of the names of the folder contained in the data/tests folder on which the tests should be run.
+ - horn, which is the horn to process for the first and second image respectfully. For example, if horn is ["left", "right"], the left side of the first image and the right side of the second image will be processed.
+ - nb_points, the number of projection points to use when the test requires this value. 
+ 
+ To add new datasets to test, create a similar structure as shown above and edit the sets field of the configuration file. As of now, only two images per dataset are processed.
 
 <a id="data-availability"></a>
 ## Data availability
