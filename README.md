@@ -126,24 +126,30 @@ The images can be segmented using a UNet deep neural network as well.
 **NOTE:** The scripts for running inference and training are placed in the unet-segmentation folder. 
 
 ##### Training
-The training images should be placed in a specific folder with an imgs folder containing the $`mu`$CT images an a masks folder containing the training masks. As of now, only images that are smaller than 512 x 512 pixels should be placed in the training dataset. 
+The training images should be placed in a specific folder with an imgs folder containing the $`mu`$CT images an a masks folder containing the training masks. The images should be 512 x 512 pixels.
 
-The **resizeImages.py** script is used to resize the images in the training set to be 512 x 512 pixels by padding the images with 0s. A folder named resized should be created in the imgs and masks folders. The resized images will placed in it once resized. To see the arguments and options of the script, use the --help flag:
+The **resizeImages.py** script is used to resize images to be 512 x 512 pixels by splitting images into blocks of 512 x 512 pixels. If they are smaller than the required dimensions, they are simply padded with 0s. The script creates a folder called imgs, if it does not already exist, to save the resized images in. To see the arguments and options of the script, use the --help flag:
 ```bash
 python3 resizeImages.py --help
 ```
 
-The **unetTraining.py** script trains the network using the images in the training folder. The images and masks are read from the imgs and masks folder. If the they have been resized, the contents of the resized folders need to replace the contents of the imgs and masks folders. The model is saved as unet-model.keras. 
+The **unetTraining.py** script trains the network using the images in the training folder. The images and masks are read from the imgs and masks folder inside the training folder. The model is saved as unet-model_vX.h5 and the weights are saved as unet-weights_vX.keras, where X is replaced with the value for the version argument of the script.
 To see the arguments and options of the script, use the --help flag:
 ```bash
 python3 unetTraining.py --help
 ```
 
 ##### Segmenting
-The **unetSegment.py** script segments a dataset using a trained model. The images should be 512 x 512 pixels and placed in the imgs folder of the dataset directory. The segmentation masks are saved in the masks folder of that directory. 
+The **unetSegment.py** script segments a dataset using a trained model. The images should be 512 x 512 pixels and placed in the imgs folder of the dataset directory. The segmentation masks are saved in the masks folder of that directory. If that folder does not exist, the script will create it.
 To see the arguments and options of the script, use the --help flag:
 ```bash
 python3 unetSegment.py --help
+```
+
+The segmentation masks will be 512 x 512 images. The **stitchImages.py** script is used to stitch the image blocks back into their original dimensions. The script will read the images placed in the masks folder and can therefore be used immediately after the **unetSegment.py** script. The stitched images are saved in the stitched folder of that directory. If that folder does not exist, the script will create it.
+To see the arguments and options of the script, use the --help flag:
+```bash
+python3 stitchImages.py --help
 ```
 <a id="format-conversion"></a>
 #### Format conversion
