@@ -36,6 +36,9 @@ if __name__ == "__main__":
     parser.add_argument(
         "steps", type=int, help="number of steps per epoch"
     )
+    parser.add_argument(
+        "version", type=str, help="version number for saving the model"
+    )
 
     # Parse input arguments
     args = parser.parse_args()
@@ -79,8 +82,8 @@ if __name__ == "__main__":
         num_layers=8
     )
 
-    model_weights = 'unet-weights.keras'
-    model_name = 'unet-model.keras'
+    model_weights = "unet-weights_v{}.keras".format(args.version)
+    model_name = "unet-model_v{}.keras".format(args.version)
 
     callback_checkpoint = ModelCheckpoint(
         model_weights,

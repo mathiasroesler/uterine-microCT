@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# unetSegmentation.py: Script to segment microCT using unet model
+# unetSegment.py: Script to segment microCT using unet model
 # Author: Mathias Roesler
-# Last modified: 04/24
+# Last modified: 05/24
 
 import os
 import glob
