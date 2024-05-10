@@ -1,10 +1,11 @@
 # Uterine $`\mu`$CT analysis
+This repository contains code to analyse $`\mu`$CT datasets of rat uteri and used for the paper
+__3D virtual histology of the rat uterus musculature using micro-computed tomography__
 # Table of contents
-1. [General description](#general-description)
-2. [Requirements](#requirements)
-3. [Workflow](#workflow)
-4. [Data folder structure](#structure)
-5. [Usage](#usage)
+1. [Requirements](#requirements)
+2. [Workflow](#workflow)
+3. [Data folder structure](#structure)
+4. [Usage](#usage)
    1. [Setup](#setup)
    2. [Resampling](#resampling)
    3. [Segmentation](#segmentation)
@@ -16,19 +17,16 @@
        2. [Fibre analysis](#fibre)
        3. [Mesh generation](#mesh)
     5. [Visualisation](#visualisation)
-6. [Testing](#testing)
-7. [Data availability](#data-availability)
+5. [Testing](#testing)
+6. [Data availability](#data-availability)
 
-<a id="general-description"></a>
-## General description
-This repository contains code to analyse $`\mu`$CT datasets of rat uteri and used for the paper
-__3D virtual histology of the rat uterus musculature using micro-computed tomography__
 
 <a id="requirements"></a>
 ## Requirements
 The code was run on Linux Ubuntu 22.04.2 LTS\
 The code was developed in [MATLAB](https://www.mathworks.com/products/matlab.html) version 2022a and [Python](https://www.python.org/) version 3.10.6\
 The visualisation was done in [cmgui](https://www.cmiss.org/cmgui/)\
+The MATLAB code requires the **Image Processing Toolbox** package.\
 The required packages for Python are found in requirements.txt\
 This project uses [TOML](https://toml.io/en/) files for configuration.
 
@@ -56,7 +54,9 @@ The folders that contain the data are structured in the following way:
 ```bash
 data
 ├── AWA015_PTA_1_Rec_Trans
+|   ├── AWA015_PTA_1_Rec_Trans.toml
 │   └── downsampled
+│       ├── AWA015_PTA_1_Rec_Trans_downsampled.toml
 │       ├── muscle_segmentation
 │       │   ├── left
 │       │   └── right
@@ -74,8 +74,7 @@ data
 ```
 Configuration files should have the same name as the dataset and be placed in the data folders.\
 There is one configuration file for the main dataset (AWA015_PTA_1_Rec_Trans.toml) and one for the 
-downsampled dataset (AWA015_PTA_1_Rec_Trans_downsampled.toml). The configuration files used in this
-project are placed in the config folder.
+downsampled dataset (AWA015_PTA_1_Rec_Trans_downsampled.toml). Example of the configuration files used in this project are placed in the config folder.
 
 <a id="usage"></a>
 ## Usage 
@@ -266,7 +265,12 @@ data
             └── centreline.mat
 ```
 
-More test sets can be added with a similar structure. The **_sets** variable needs to be updated in the test scripts for it to be included in the tests. 
+The tests are piloted by the test.toml configuration file, which can be found in the config folder. The fields in the test.toml are as follows:
+ - sets, which is a list of the names of the folder contained in the data/tests folder on which the tests should be run.
+ - horn, which is the horn to process for the first and second image respectfully. For example, if horn is ["left", "right"], the left side of the first image and the right side of the second image will be processed.
+ - nb_points, the number of projection points to use when the test requires this value. 
+ 
+ To add new datasets to test, create a similar structure as shown above and edit the sets field of the configuration file. As of now, only two images per dataset are processed.
 
 <a id="data-availability"></a>
 ## Data availability
