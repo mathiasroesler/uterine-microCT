@@ -257,7 +257,12 @@ data
             └── centreline.mat
 ```
 
-More test sets can be added with a similar structure. The **_sets** variable needs to be updated in the test scripts for it to be included in the tests. 
+The tests are piloted by the test.toml configuration file, which can be found in the config folder. The fields in the test.toml are as follows:
+ - sets, which is a list of the names of the folder contained in the data/tests folder on which the tests should be run.
+ - horn, which is the horn to process for the first and second image respectfully. For example, if horn is ["left", "right"], the left side of the first image and the right side of the second image will be processed.
+ - nb_points, the number of projection points to use when the test requires this value. 
+ 
+ To add new datasets to test, create a similar structure as shown above and edit the sets field of the configuration file. As of now, only two images per dataset are processed.
 
 <a id="data-availability"></a>
 ## Data availability
