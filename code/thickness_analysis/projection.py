@@ -3,13 +3,14 @@
 #
 # projection.py: Functions used to find the projections points
 # Author: Mathias Roesler
-# Last modified: 06/23
+# Last modified: 04/24
 
 import logging
 import sys
 
 import numpy as np
 import skimage.draw as skd
+import utils.utils as utils
 
 
 def findLineCoordinates(img_shape, centre_point, theta):
@@ -57,8 +58,8 @@ def findLineCoordinates(img_shape, centre_point, theta):
     return line_x, line_y
 
 
-def separateHorns(img_shape, centre_point, normal):
-    """Finds the line in the image given an angle and a point.
+def separationLine(img_shape, centre_point, normal):
+    """Finds the line in the image given a normal and a point.
 
     Arguments:
     img_shape -- ndarray, shape of the image that is being analysed.
@@ -95,13 +96,111 @@ def separateHorns(img_shape, centre_point, normal):
     return line_x, line_y
 
 
-def findProjectionPoints(img, centre_point, nb_points, horn):
+def excludeCentralPoints(img, centre_points, projection_points, horn):
+    """Changes coordinates of points in the exclusion zone to [0, 0]
+
+    Arguments:
+    img -- ndarray, image to analyse.
+    centre_points -- list[int], coordinates of the centre points (XY).
+    projection_points -- ndarray, list of the coordinates of the
+        projection points.
+    horn -- str {left, right}, horn that is being analysed.
+
+    Return:
+    projection_points -- ndarray, list of the coordinates of the
+        projection points with [0, 0] coordinates if in the exclusion zone.
+    """
+    # Ensure that coordinates are integers
+    centre_points = np.array([np.round(x) for x in centre_points], dtype=int)
+
+    # Create the line between left and right horn centre points
+    hline_y, hline_x = skd.line(centre_points[1], centre_points[0],
+                                centre_points[5], centre_points[4])
+    hline = img[hline_y, hline_x]
+
+    # Find the indices of the inner and outer edges of the cervix
+    coords = np.where(hline[:-1] != hline[1:])[0]
+
+    # Normal vector for the horizontal line
+    normal = utils.getVector(
+        np.array([centre_points[5], centre_points[0]]),
+        np.array([centre_points[1], centre_points[4]]),
+    )
+
+    match horn:
+        case "left":
+            h_point = [hline_x[coords[0]-1], hline_y[coords[0]-1]]
+
+            # Create the lines delimiting the exclusion zone
+            first_vline_x, first_vline_y = separationLine(
+                img.shape, h_point, normal)
+            second_vline_x, second_vline_y = separationLine(
+                img.shape, centre_points[2:4], normal)
+
+        case "right":
+            h_point = [hline_x[coords[1]+1], hline_y[coords[1]+1]]
+
+            # Create the lines delimiting the exclusion zone
+            first_vline_x, first_vline_y = separationLine(
+                img.shape, centre_points[2:4], normal)
+            second_vline_x, second_vline_y = separationLine(
+                img.shape, h_point, normal)
+
+    first_vline_vector = utils.getVector(
+        np.array([first_vline_x[0], first_vline_y[0]]),
+        np.array([first_vline_x[-1], first_vline_y[-1]]))
+    second_vline_vector = utils.getVector(
+        np.array([second_vline_x[0], second_vline_y[0]]),
+        np.array([second_vline_x[-1], second_vline_y[-1]]))
+
+    unit_vector = np.array([1, 0])  # Unit vector x direction
+
+    # Get angles between x direction and exclusion lines
+    first_angle = utils.getAngle(first_vline_vector, unit_vector)
+    second_angle = utils.getAngle(second_vline_vector, unit_vector)
+
+    # Create an array to store point indices
+    ind_to_del = np.array([], dtype=int)
+
+    for i, point in enumerate(projection_points):
+        # Check if points are in exclusion zone
+        vec1 = utils.getVector(
+            np.array([first_vline_x[0], first_vline_y[0]]),
+            point
+        )
+        vec2 = utils.getVector(
+            np.array([second_vline_x[0], second_vline_y[0]]),
+            point
+        )
+
+        angle1 = utils.getAngle(vec1, unit_vector)
+        angle2 = utils.getAngle(vec2, unit_vector)
+
+        if angle1 <= first_angle and angle2 >= second_angle:
+            # If true add index to list marked for deletion
+            ind_to_del = np.append(ind_to_del, i)
+
+            if i % 2 == 0:
+                # If even add next index
+                ind_to_del = np.append(ind_to_del, i+1)
+
+            else:
+                # If odd add previous index
+                ind_to_del = np.append(ind_to_del, i-1)
+
+    ind_to_del = np.unique(ind_to_del)  # Remove duplicates
+    projection_points[ind_to_del] = np.array([0, 0])
+
+    return projection_points
+
+
+def findProjectionPoints(img, centre_points, nb_points, horn):
     """Find the projection points from the centre point onto the muscle
     layers given the desired number of points.
 
     Arguments:
     img -- ndarray, image to analyse.
-    centre_point -- list[int], coordinates of the centre point (XY).
+    centre_points -- list[int], coordinates of the centre points (XY).
     nb_points -- int, number of desired projection points, must be a
         multiple of 2.
     horn -- str {left, right}, horn that is being analysed.
@@ -121,33 +220,33 @@ def findProjectionPoints(img, centre_point, nb_points, horn):
     angles = np.arange(1, 1 + (nb_points / 2)) * (np.pi / (nb_points / 2))
     projection_points = np.zeros((nb_points * 2, 2), dtype=int)
 
-    if (centre_point[2:4] != np.array([0, 0])).all():
+    if (centre_points[2:4] != np.array([0, 0])).all():
         # The horns are not clearly separated and three points are given
         # Create a vector between the left and right points
-        normal = np.array(
-            [centre_point[1] - centre_point[5],
-             centre_point[4] - centre_point[0]]
+        normal = utils.getVector(
+            np.array([centre_points[5], centre_points[0]]),
+            np.array([centre_points[1], centre_points[4]]),
         )
 
-        normal = normal / np.linalg.norm(normal)
-
         # Use the middle point to draw a line
-        line_x, _ = separateHorns(img.shape, centre_point[2:4], normal)
+        line_x, _ = separationLine(img.shape, centre_points[2:4], normal)
 
         for i in range(len(line_x)):
             # Clear half of the image based on the horn
-            if horn == "left":
-                img[i, line_x[i]:] = 0
+            match horn:
+                case "left":
+                    img[i, line_x[i]:] = 0
 
-            elif horn == "right":
-                img[i, : line_x[i]] = 0
+                case "right":
+                    img[i, :line_x[i]+1] = 0
 
     # Select the correct centre point based on the horn
-    if horn == "left":
-        centre_point = centre_point[0:2]
+    match horn:
+        case "left":
+            centre_point = centre_points[0:2]
 
-    elif horn == "right":
-        centre_point = centre_point[4:6]
+        case "right":
+            centre_point = centre_points[4:6]
 
     for i, theta in enumerate(angles):
         # Find the line for the given angle
@@ -167,6 +266,10 @@ def findProjectionPoints(img, centre_point, nb_points, horn):
                                              theta)
 
         projection_points[i * 4: (i + 1) * 4] = points
+
+    if (centre_points[2:4] != np.array([0, 0])).all():
+        projection_points = excludeCentralPoints(
+            img, centre_points, projection_points, horn)
 
     return projection_points
 
@@ -301,8 +404,21 @@ def alignBorder(thickness):
     ordered_thickness = np.concatenate((thickness[right_half],
                                         thickness[left_half]))
 
-    # Roll array to line up 0 with anti-mesometrial border
+    # Find the maximal thickness which typically is AM border
     max_idx = np.argmax(ordered_thickness)
+
+    if np.isnan(ordered_thickness[max_idx]):
+        if ~np.isnan(ordered_thickness[right_half][-1]) and ~np.isnan(
+                ordered_thickness[left_half][0]):
+            # The nan values are in the middle
+            nan_indices = np.where(np.isnan(ordered_thickness))[0]
+            max_idx = nan_indices[len(nan_indices) // 2]
+
+        else:
+            # The nan values are already on each side of the array
+            max_idx = 0
+
+    # Roll array to line up 0 with anti-mesometrial border
     ordered_thickness = np.roll(ordered_thickness, nb_points - max_idx)
 
     return ordered_thickness
@@ -357,22 +473,31 @@ def estimateMuscleThickness(img_stack, centreline, nb_points, slice_nbs, horn):
             projection_points = findProjectionPoints(
                 img, centreline[i, :], nb_points, horn
             )
+
             diff = np.diff(projection_points, axis=0)
             norm = np.linalg.norm(diff, axis=1)
             thickness = norm[np.arange(0, projection_points.shape[0], 2)]
-            muscle_thickness_array[i] = np.mean(thickness)
+
+            exclusion_indices = np.where(thickness == 0)[0]
+            thickness[exclusion_indices] = float('nan')
+            muscle_thickness_array[i] = np.mean(
+                thickness[~np.isnan(thickness)])
 
             # Get points in the inner layer of muscles
             inner_points = projection_points[
                 np.arange(0, projection_points.shape[0], 2)
             ]
+            # Remove projection points in the exclusion zone
+            inner_indices = np.where(inner_points != np.array([0, 0]))[0]
+            inner_points = inner_points[inner_indices]
 
             # Select the correct centre point based on the horn
-            if horn == "left":
-                centre_point = centreline[i, 0:2]
+            match horn:
+                case "left":
+                    centre_point = centreline[i, 0:2]
 
-            elif horn == "right":
-                centre_point = centreline[i, 4:6]
+                case "right":
+                    centre_point = centreline[i, 4:6]
 
             # Estimate average radius for the slice
             radius_array[i] = np.mean(
@@ -389,12 +514,10 @@ def estimateMuscleThickness(img_stack, centreline, nb_points, slice_nbs, horn):
                 "Warning: unable to process image number {}\n".format(i))
             idx_removed_slices.append(i)
             logger.exception(err)
-
     # Remove the slices the values of the slices that were not processed
     muscle_thickness_array = np.delete(muscle_thickness_array,
                                        idx_removed_slices)
 
     radius_array = np.delete(radius_array, idx_removed_slices)
-
     return muscle_thickness_array, np.transpose(
         slice_thickness_array), radius_array
