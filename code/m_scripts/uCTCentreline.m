@@ -59,11 +59,18 @@ for k = 1:length(regions)
     nb_slices = size(mask_stack, 3);
     centreline = zeros(6, nb_slices); % Placeholder for 3 centre points
 
-    for m = 1:nb_slices
-        centre_points = findCentrepoints(mask_stack(:, :, m), region);
-        centreline(:, m) = reshape(centre_points', [6, 1]);
+    for l = 1:nb_slices
+        centre_points = findCentrepoints(mask_stack(:, :, l), region);
+        centreline(:, l) = reshape(centre_points', [6, 1]);
     end
 
+    for m = 1:size(centreline, 1)
+        % Smooth centreline coordinates
+        end_idx = find(centreline(m, :), 1, 'last');
+        centreline(m, 1:end_idx) = smoothdata(centreline(m, 1:end_idx), ...
+            2, "sgolay");
+    end
+    
     disp("Saving centreline")
     save(tmp_load_directory + "/centreline.mat", "centreline");
     
