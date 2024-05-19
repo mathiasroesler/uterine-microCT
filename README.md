@@ -173,7 +173,9 @@ If the $`\mu`$CT images do not slice the uterine horns perpendicularly, the segm
 to align each horn with the z-axis. The __uCTRotation.m__ script located in the m_scripts folder rotates
 the left and right horns. The rotated images of each horn are saved in their respective folders. The number
 of the first and last images to be rotated can be chosen in the configuration file in case some slices are
-already aligned with the z-axis.
+already aligned with the z-axis. The **uCTCentreline.m** must be run on the segmentation masks before trying to rotate them.
+
+For example, if the muscle layers have been segmented for a dataset and saved in the muscle_segmentation folder, use the **uCTCentreline.m** script with region "both" to compute the centreline of the segmentation masks. 
 
 Before calculating the muscle wall thickness, the centreline of each horn must be computed with the
 __uCTCenterline.m__ script located in the m_scripts folder. The region argument determines which 
