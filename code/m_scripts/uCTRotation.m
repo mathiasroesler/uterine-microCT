@@ -49,6 +49,7 @@ nb_used_slices = double(params.nb_used_slices);
 
 mask_paths = getImagePaths(load_directory, extension);
 mask_stack = loadImageStack(mask_paths);
+load(load_directory + 'centreline.mat', 'centreline');
 
 for k = 1:length(regions)
     region = regions(k);
@@ -63,7 +64,8 @@ for k = 1:length(regions)
 
     disp("Rotating region: " + region);
     rotated_stack = rotateImageStack( ...
-        mask_stack(:, :, start_nb:end_nb), region, nb_used_slices); 
+        mask_stack(:, :, start_nb:end_nb), region, nb_used_slices, ...
+        centreline(:, start_nb:end_nb)); 
 
     disp("Saving region: " + region);
     save_directory = join([load_directory, region], '/');

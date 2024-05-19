@@ -1,4 +1,5 @@
-function rotated_stack = rotateImageStack(img_stack, region, nb_used_slices)
+function rotated_stack = rotateImageStack(img_stack, region, ...
+    nb_used_slices, centreline)
 %ROTATEIMAGESTACK Rotates each image in the stack based on the direction of
 %the centreline vector
 %
@@ -7,6 +8,7 @@ function rotated_stack = rotateImageStack(img_stack, region, nb_used_slices)
 %    - region, selects which region to rotate, either left, right.
 %    - nb_used_slices, number of slices to take to estimate the centre
 %    vector.
+%    - centreline, centrepoints for each slice, centreline(6xN).
 %
 %   Return:
 %    - rotated_stack, stack of N MxP rotated images,
@@ -17,7 +19,7 @@ rotated_stack = zeros(size(img_stack));
 if matches(region, 'left')
     region_nb = 1;
 elseif matches(region, 'right')
-    region_nb = 3;
+    region_nb = 5;
 else
     error("Error: incorrect value for horn. Should be either left or right")
 end
@@ -35,34 +37,21 @@ for k = 1:nb_slices
 
     cur_mask = img_stack(:, :, k); % Current mask to rotate
 
-    % Next mask for finding rotation axis
-    if k < nb_slices-nb_used_slices
-        next_mask = img_stack(:, :, k+nb_used_slices);
-        z_centre = nb_used_slices;
-    else
-        % Use less slices to get rotation vector
-        next_mask = img_stack(:, :, k-nb_used_slices);
-        z_centre = nb_used_slices;
-    end
-
     % Find centre points
-    cur_centrepoints = findCentrepoints(cur_mask, region);
-    next_centrepoints = findCentrepoints(next_mask, region);
+    cur_centrepoints = centreline(region_nb:region_nb+1, k)';
+    z_centre = nb_used_slices;
 
-    % Get correct centre point
-    cur_centrepoints = cur_centrepoints(region_nb, :);
-    next_centrepoints = next_centrepoints(region_nb, :);
+    if k < nb_slices-nb_used_slices
+        next_centrepoints = centreline(region_nb:region_nb+1, ...
+            k + nb_used_slices)';
+    else
+        % Use previous slices to get rotation vector
+        next_centrepoints = centreline(region_nb:region_nb+1, ...
+            k - nb_used_slices)';
+    end
 
     % Add the z component
     centre_vector = [next_centrepoints - cur_centrepoints, z_centre];
-
-    % Ensure consistent x direction
-    condition_1 = centre_vector(1) < 0 && strcmp(region, 'right');
-    condition_2 = centre_vector(1) > 0 && strcmp(region, 'left');
-
-    if condition_1 || condition_2
-        centre_vector(1) = -centre_vector(1);
-    end
 
     % Normalise the centre vector
     centre_vector = centre_vector ./ norm(centre_vector);
