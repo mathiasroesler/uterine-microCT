@@ -1,7 +1,10 @@
 function uCTCentreline(dir_path, base_name, regions, downsampled, ST, ...
     extension)
 %UCTCENTRELINE Computes the centreline for the dataset provided by
-%base_name given the selected regions.
+%base_name given the selected regions. 
+%
+%   If the region is "both", the centreline is smoothed using a
+%   Savitzky-Golay method.
 %   
 %   base_dir is $HOME/Documents/phd/ and set in utils/baseDir()
 %
@@ -64,15 +67,17 @@ for k = 1:length(regions)
         centreline(:, l) = reshape(centre_points', [6, 1]);
     end
 
-    for m = 1:size(centreline, 1)
-        % Smooth centreline coordinates
-        end_idx = find(centreline(m, :), 1, 'last');
-        centreline(m, 1:end_idx) = smoothdata(centreline(m, 1:end_idx), ...
-            2, "sgolay");
+    if strcmp(region, "both")
+        for m = 1:size(centreline, 1)
+            % Smooth centreline coordinates
+            end_idx = find(centreline(m, :), 1, 'last');
+            centreline(m, 1:end_idx) = smoothdata(centreline(m, 1:end_idx), ...
+                2, "sgolay");
+        end
     end
-    
+
     disp("Saving centreline")
     save(tmp_load_directory + "/centreline.mat", "centreline");
-    
+
     clear centreline
 end
